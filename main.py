@@ -12,6 +12,7 @@ gestureDetector = GestureDetector(time_increment)
 
 gestureDetector.on_fist(lambda: print("fist"))
 gestureDetector.on_palm(lambda: print("palm"))
-gestureDetector.on_wink(lambda: print("wink"))
+gestureDetector.on_left_wink(lambda: print("left wink"))
+gestureDetector.on_right_wink(lambda: print("right wink"))
 
 gestureDetector.start()
