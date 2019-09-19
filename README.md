@@ -32,6 +32,8 @@
 
 Pass an argument into main.py to set the number of seconds between ticks (default is 3).
 
-Everything is sketchy and broken right now, but it does run. Logs "tick" every tick, "fist" if it detected a fist in the last tick, "palm" if it detected a palm with spread out fingers in the last tick, and "wink" if it detected exactly one eye at any point during the last tick. It's WAAAAY too trigger-happy about claiming to see winks, since the eye detection in general is still sketch.
+Everything is sketchy and broken right now, but it does run. Logs "tick" every tick, "fist" if it detected a fist in the last tick, "palm" if it detected a palm with spread out fingers, "left wink" if it detected the left eye winking, and "right wink" if it detected the right eye winking.
 
 GestureDetector has a bunch of repeating code in it, and we obvious need to abstract that stuff out into a separate class called Gesture.
+
+Timer probably doesn't belong in GestureDetector as far as code structure is concerned, but our frame processing loop in GestureDetector is currently blocking, so we can't have an asynchronous loop running at the same time. We should probably eventually make that frame processing loop asynchronous and then handle the timer loop in a different file.
