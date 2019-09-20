@@ -1,0 +1,1 @@
+For this, you will need the shape_predictor_68_face_landmarks.dat file in this same directory to work (shape_pre... file was too large to include). I will change it soon to where it detects the face with glasses on live video rather than on an image you upload. 
