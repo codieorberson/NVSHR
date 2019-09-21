@@ -1,23 +1,28 @@
 import cv2
 from timer import Timer
+from gesture import Gesture
 
 class GestureDetector():
     def __init__(self, time_increment):
         self.time_increment = time_increment
-        self.has_made_fist = False
-        self.has_made_palm = False
+
         self.has_made_left_wink = False
         self.has_made_right_wink = False
-        self.fist_callback = None
-        self.palm_callback = None
+
         self.left_wink_callback = None
         self.right_wink_callback = None
 
+        self.fist_gesture = Gesture("fist.xml")
+        self.fist_gesture.set_debug_color((0, 0, 255))
+
+        self.palm_gesture = Gesture("palm.xml")
+        self.palm_gesture.set_debug_color((0, 255, 255))
+
     def on_fist(self, callback):
-        self.fist_callback = callback
+        self.fist_gesture.on_gesture(callback)
 
     def on_palm(self, callback):
-        self.palm_callback = callback
+        self.palm_gesture.on_gesture(callback)
 
     def on_left_wink(self, callback):
         self.left_wink_callback = callback
@@ -29,13 +34,8 @@ class GestureDetector():
         #The next line is just for debugging, we need to remove it eventually.
         print("tick")
 
-        if self.has_made_fist and self.fist_callback:
-            self.fist_callback()
-            self.has_made_fist = False
-
-        if self.has_made_palm and self.palm_callback:
-            self.palm_callback()
-            self.has_made_palm = False
+        self.fist_gesture.cycle()
+        self.palm_gesture.cycle()
 
         if self.has_made_left_wink and self.left_wink_callback:
             self.left_wink_callback()
@@ -51,29 +51,15 @@ class GestureDetector():
 
         cap = cv2.VideoCapture(0)
 
-
         face_cascade = cv2.CascadeClassifier('face.xml')
-        fist_cascade = cv2.CascadeClassifier('fist.xml')
-        palm_cascade = cv2.CascadeClassifier('palm.xml')
         eye_cascade = cv2.CascadeClassifier('eye.xml')
 
         while(True):
             ret, frame = cap.read()
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            fists = fist_cascade.detectMultiScale(gray, 1.3, 5)
-
-            if len(fists) > 0:                
-                self.has_made_fist = True
-
-            for (x,y,w,h) in fists:
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
-
-            palms = palm_cascade.detectMultiScale(gray, 1.3, 5)
-            if len(palms) > 0:
-                self.has_made_palm = True
-            for (x,y,w,h) in palms:
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,255),2)
+            self.fist_gesture.detect(frame)
+            self.palm_gesture.detect(frame) 
 
             faces = face_cascade.detectMultiScale(gray, 1.3, 5)
             center_pixel = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/2
