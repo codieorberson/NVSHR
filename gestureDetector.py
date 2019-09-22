@@ -45,7 +45,7 @@ class GestureDetector():
             self.face_gesture_detector.detect(frame, gray, cap)
 
             timer.check_time()
-            cv2.imshow('insaneInTheFrame', cv2.flip(frame, 1))
+            cv2.imshow('NVSHR', cv2.flip(frame, 1))
             if cv2.waitKey(1) & 0xFF == ord('q'):
                  break
 
