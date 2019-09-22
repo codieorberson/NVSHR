@@ -12,6 +12,8 @@ class FaceGestureDetector():
         self.face_cascade = cv2.CascadeClassifier('face.xml')
         self.eye_cascade = cv2.CascadeClassifier('eye.xml')
 
+        self.eye = Gesture("eye.xml")
+
 #        self.left_wink = Gesture("eye.xml")
 #        self.right_wink = Gesture("eye.xml")
 #        self.fist.set_debug_color((0, 0, 255))
@@ -23,8 +25,8 @@ class FaceGestureDetector():
     def on_right_wink(self, callback):
         self.right_wink_callback = callback
 
-    def detect(self, frame, gray, cap):
-
+    def detect(self, frame, cap):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
         center_pixel = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/2
         center_face = None

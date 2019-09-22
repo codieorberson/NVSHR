@@ -39,10 +39,9 @@ class GestureDetector():
 
         while(True):
             ret, frame = cap.read()
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             self.hand_gesture_detector.detect(frame)
-            self.face_gesture_detector.detect(frame, gray, cap)
+            self.face_gesture_detector.detect(frame, cap)
 
             timer.check_time()
             cv2.imshow('NVSHR', cv2.flip(frame, 1))
