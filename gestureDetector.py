@@ -1,6 +1,7 @@
 import cv2
 from timer import Timer
 
+
 class GestureDetector():
     def __init__(self, time_increment):
         self.time_increment = time_increment
