@@ -26,7 +26,7 @@ class GestureDetector():
     def on_right_wink(self, callback):
         self.right_wink_callback = callback
 
-    def __on_tick__(self):
+    def on_tick(self):
         #The next line is just for debugging, we need to remove it eventually.
         print("tick")
 
@@ -48,7 +48,7 @@ class GestureDetector():
 
     def start(self):
         timer = Timer(self.time_increment)
-        timer.on_time(self.__on_tick__)
+        timer.on_time(self.on_tick)
 
         cap = cv2.VideoCapture(0)
 
