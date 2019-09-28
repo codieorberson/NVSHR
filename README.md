@@ -58,3 +58,13 @@ Everything is sketchy and broken right now, but it does run. Logs "tick" every t
 GestureDetector has a bunch of repeating code in it, and we obvious need to abstract that stuff out into a separate class called Gesture.
 
 Timer probably doesn't belong in GestureDetector as far as code structure is concerned, but our frame processing loop in GestureDetector is currently blocking, so we can't have an asynchronous loop running at the same time. We should probably eventually make that frame processing loop asynchronous and then handle the timer loop in a different file.
+
+### Testing the NVSHR System
+
+For unit testing purposes, the NVSHR system will make use of Magic Mock for various tests. 
+
+To run all unit tests:
+
+1. Navigate to `test-files`
+
+2. Complie and run `main_test.py`. The console will output data based on the test results. Please look through console output to ensure all tests have passed.
