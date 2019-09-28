@@ -1,5 +1,5 @@
 import sys
-from gestureDetector import GestureDetector
+from gestureDetector_hand_gesture_only import GestureDetector
 #from smartHomeActivator import SmartHomeActivator
 #from commandMapper import CommandMapper
 
