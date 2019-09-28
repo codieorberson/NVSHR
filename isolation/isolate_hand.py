@@ -9,47 +9,47 @@ cv2.namedWindow('panel')
 def nothing(x):
     pass
 
-cv2.createTrackbar('L - h', 'panel', 0, 255, nothing)
-cv2.createTrackbar('U - h', 'panel', 132, 255, nothing) #This one we may have to change
+cv2.createTrackbar('High Contrast Red', 'panel', 0, 255, nothing)
+cv2.createTrackbar('Low Contrast Red', 'panel', 132, 255, nothing) #This one we may have to change
 
-cv2.createTrackbar('L - s', 'panel', 0, 255, nothing)
-cv2.createTrackbar('U - s', 'panel', 255, 255, nothing)
+cv2.createTrackbar('High Contrast Green', 'panel', 0, 255, nothing)
+cv2.createTrackbar('Low Contrast Green', 'panel', 255, 255, nothing)
 
-cv2.createTrackbar('L - v', 'panel', 0, 255, nothing)
-cv2.createTrackbar('U - v', 'panel', 255, 255, nothing)
+cv2.createTrackbar('High Contrast Blue', 'panel', 0, 255, nothing)
+cv2.createTrackbar('Low Contrast Blue', 'panel', 255, 255, nothing)
 
-cv2.createTrackbar('S ROWS', 'panel', 0, 480, nothing)
-cv2.createTrackbar('E ROWS', 'panel', 480, 480, nothing)
-cv2.createTrackbar('S COL', 'panel', 0, 640, nothing)
-cv2.createTrackbar('E COL', 'panel', 640, 640, nothing)
+cv2.createTrackbar('North Rows', 'panel', 0, 480, nothing)
+cv2.createTrackbar('South Rows', 'panel', 480, 480, nothing)
+cv2.createTrackbar('Left Columns', 'panel', 0, 640, nothing)
+cv2.createTrackbar('Right Columns', 'panel', 640, 640, nothing)
 
 while True:
     ret, frame = cap.read()
 
-    s_r = cv2.getTrackbarPos('S ROWS', 'panel')
-    e_r = cv2.getTrackbarPos('E ROWS', 'panel')
-    s_c = cv2.getTrackbarPos('S COL', 'panel')
-    e_c = cv2.getTrackbarPos('E COL', 'panel')
+    north_rows = cv2.getTrackbarPos('North Rows', 'panel')
+    south_rows = cv2.getTrackbarPos('South Rows', 'panel')
+    left_columns = cv2.getTrackbarPos('Left Columns', 'panel')
+    right_columns = cv2.getTrackbarPos('Right Columns', 'panel')
 
-    roi = frame[s_r: e_r, s_c: e_c]
+    roi = frame[north_rows: south_rows, left_columns: right_columns]
 
-    l_h = cv2.getTrackbarPos('L - h', 'panel')
-    u_h = cv2.getTrackbarPos('U - h', 'panel')
-    l_s = cv2.getTrackbarPos('L - s', 'panel')
-    u_s = cv2.getTrackbarPos('U - s', 'panel')
-    l_v = cv2.getTrackbarPos('L - v', 'panel')
-    u_v = cv2.getTrackbarPos('U - v', 'panel')
+    high_contrast_red = cv2.getTrackbarPos('High Contrast Red', 'panel')
+    low_contrast_red = cv2.getTrackbarPos('Low Contrast Red', 'panel')
+    high_contrast_green = cv2.getTrackbarPos('High Contrast Green', 'panel')
+    low_contrast_green = cv2.getTrackbarPos('Low Contrast Green', 'panel')
+    high_contrast_blue = cv2.getTrackbarPos('High Contrast Blue', 'panel')
+    low_contrast_blue = cv2.getTrackbarPos('Low Contrast Blue', 'panel')
 
-    lower = np.array([l_h, l_s, l_v])
-    upper = np.array([u_h, u_s, u_v])
+    low_contrast = np.array([high_contrast_red, high_contrast_green, high_contrast_blue])
+    high_contrast = np.array([low_contrast_red, low_contrast_green, low_contrast_blue])
 
-    mask = cv2.inRange(roi, lower, upper)
+    mask = cv2.inRange(roi, low_contrast, high_contrast)
     mask_inv = cv2.bitwise_not(mask)
 
-    grayFrame = cv2.bitwise_and(roi, roi, mask=mask_inv)
-    official_grayFrame = cv2.cvtColor(grayFrame, cv2.COLOR_BGR2GRAY)
+    color_frame = cv2.bitwise_and(roi, roi, mask=mask_inv)
+    gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
 
-    cv2.imshow('Frame', official_grayFrame)
+    cv2.imshow('Frame', gray_frame)
 
     #I tried commenting out the panel below, however it still displays when the program is ran
     cv2.imshow('panel', panel)
