@@ -1,3 +1,2 @@
 *.sw[a-p]
-__pycache__
-blink-detection/__pycache__/Blink.cpython-37.pyc
+**/__pycache__
