@@ -12,6 +12,7 @@ from gesture import Gesture
 from handGestureDetector import HandGestureDetector
 from faceGestureDetector import FaceGestureDetector
 
+
 class GestureDetector():
     def __init__(self, time_increment):
         self.time_increment = time_increment
