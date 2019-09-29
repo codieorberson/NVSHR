@@ -1,6 +1,4 @@
-from time import time
 from processManager import ProcessManager
-from sharedBool import SharedBool
 from gesture import Gesture
 
 class HandGestureDetector():
@@ -11,9 +9,7 @@ class HandGestureDetector():
         self.fist.set_debug_color((0, 0, 255))
         self.palm.set_debug_color((0, 255, 255))
 
-    def detect(self, frame, timestamp, has_made_fist, has_made_palm):
-        timestamp = time()
-
+    def detect(self, frame, has_made_fist, has_made_palm):
         self.process_manager.add_process(self.fist.detect, (frame, has_made_fist))
         self.process_manager.add_process(self.palm.detect, (frame, has_made_palm))
         self.process_manager.on_done()

@@ -14,11 +14,11 @@ class Gesture():
     def set_detection_criteria(self, detection_check):
         self.detection_check = detection_check
 
-    def detect(self, frame, was_gesture_detected):
+    def detect(self, frame, multithreaded_perimeter):
         gestures = self.haar_cascade.detectMultiScale(frame, 1.3, 5)
 
         if self.detection_check(gestures):
-            was_gesture_detected.set(True)
+            multithreaded_perimeter.set(gestures[0])
 
 #            for (x,y,w,h) in gestures:
 #                cv2.rectangle(frame, (x,y), (x+w,y+h), self.debug_color, 2)
