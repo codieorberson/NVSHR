@@ -1,31 +1,20 @@
 import cv2
+from processManager import ProcessManager
 from gesture import Gesture
 
 class FaceGestureDetector():
     def __init__(self):
-        self.has_made_left_wink = False
-        self.has_made_right_wink = False
-
-        self.left_wink_callback = None
-        self.right_wink_callback = None
-
         self.face_cascade = cv2.CascadeClassifier('face.xml')
         self.eye_cascade = cv2.CascadeClassifier('eye.xml')
 
-        self.eye = Gesture("eye.xml")
+    def __adjust_perimeter__(self, eye_position, face_position):
+        return (face_position[0] + eye_position[0],
+                face_position[1] + eye_position[1],
+                eye_position[2],
+                eye_position[3])
 
-#        self.left_wink = Gesture("eye.xml")
-#        self.right_wink = Gesture("eye.xml")
-#        self.fist.set_debug_color((0, 0, 255))
-#        self.palm.set_debug_color((0, 255, 255))
-
-    def on_left_wink(self, callback):
-        self.left_wink_callback = callback
-
-    def on_right_wink(self, callback):
-        self.right_wink_callback = callback
-
-    def detect(self, frame, cap):
+    def detect(self, frame, cap, face_perimeter,
+            left_eye_perimeter, right_eye_perimeter):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
         center_pixel = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/2
@@ -43,28 +32,18 @@ class FaceGestureDetector():
             h = center_face[3]
             center_of_face = x + (w / 2)
 
-            cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
+            face_perimeter.set(center_face)
+
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = frame[y:y+h, x:x+w]
             eyes = self.eye_cascade.detectMultiScale(roi_gray)
 
             if len(eyes) == 1:
                 if (x + eyes[0][0] + (eyes[0][2] / 2)) < center_of_face:
-                    self.has_made_left_wink = True
+                    right_eye_perimeter.set(self.__adjust_perimeter__(eyes[0], center_face))
                 else:
-                    self.has_made_right_wink = True
+                    left_eye_perimeter.set(self.__adjust_perimeter__(eyes[0], center_face))
 
-            for (ex,ey,ew,eh) in eyes:
-                roi_gray = gray[y:y+h, x:x+w]
-                roi_color = frame[y:y+h, x:x+w]
-                cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-        
-    def cycle(self):
-
-        if self.has_made_left_wink and self.left_wink_callback:
-            self.left_wink_callback()
-            self.has_made_left_wink = False
-
-        if self.has_made_right_wink and self.right_wink_callback:
-            self.right_wink_callback()
-            self.has_made_right_wink = False
+            elif len(eyes) > 1:
+                left_eye_perimeter.set(self.__adjust_perimeter__(eyes[0], center_face))
+                right_eye_perimeter.set(self.__adjust_perimeter__(eyes[1], center_face))

@@ -19,6 +19,3 @@ class Gesture():
 
         if self.detection_check(gestures):
             multithreaded_perimeter.set(gestures[0])
-
-#            for (x,y,w,h) in gestures:
-#                cv2.rectangle(frame, (x,y), (x+w,y+h), self.debug_color, 2)

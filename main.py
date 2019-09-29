@@ -14,7 +14,6 @@ gestureDetector = GestureDetector(time_increment)
 #once we have some basic tests up.
 gestureDetector.on_fist(lambda timestamp: print("fist @" + str(timestamp)))
 gestureDetector.on_palm(lambda timestamp: print("palm @" + str(timestamp)))
-
 gestureDetector.on_left_wink(lambda: print("left wink"))
 gestureDetector.on_right_wink(lambda: print("right wink"))
 
