@@ -19,8 +19,8 @@ gestureDetector.on_palm(lambda: print("palm"))
 #gestureDetector.on_left_wink(lambda: print("left wink"))
 #gestureDetector.on_right_wink(lambda: print("right wink"))
 
-#blink_detector = Blink(detector = dlib.get_frontal_face_detector(),
-    #                 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
+blink_detector = Blink(detector = dlib.get_frontal_face_detector(),
+                     predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
 
-#blink_detector.detect()
+blink_detector.detect()
 gestureDetector.start()
