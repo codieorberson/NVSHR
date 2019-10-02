@@ -17,6 +17,13 @@ if len(sys.argv) > 2 and not bool(int(sys.argv[2])):
 else:
     is_black_and_white = True
 
+if len(sys.argv) > 3 and not bool(int(sys.argv[2])):
+    is_blink = False
+else:
+    is_blink = True
+
+
+
 gesture_detector = GestureDetector(time_increment, is_black_and_white)
 gesture_lexer = GestureLexer()
 
@@ -32,5 +39,8 @@ gesture_detector.on_palm(lambda timestamp: gesture_lexer.lex("palm", timestamp))
 blink_detector = Blink(detector = dlib.get_frontal_face_detector(),
         predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
 
-#blink_detector.detect()
-gesture_detector.start()
+#Temporary switch cuz we haven't integrated this code:
+if is_blink:
+    blink_detector.detect()
+else:
+    gesture_detector.start()
