@@ -8,7 +8,7 @@ import time
 import dlib
 import cv2
 
-class Blink:
+class BlinkDetector:
 
     def __init__(self, detector, predictor, 
                 ear_thresh = 0.2, ear_consec_frame = 2,ear= None, blinks = None, source=None ):

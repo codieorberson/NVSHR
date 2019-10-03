@@ -2,7 +2,7 @@ import sys
 import dlib
 from gestureLexer import GestureLexer
 from gestureDetector import GestureDetector
-from Blink import Blink
+from blinkDetector import BlinkDetector
 
 #from smartHomeActivator import SmartHomeActivator
 #from commandMapper import CommandMapper
@@ -36,7 +36,7 @@ gesture_detector.on_palm(lambda timestamp: gesture_lexer.lex("palm", timestamp))
 #gestureDetector.on_left_wink(lambda: print("left wink"))
 #gestureDetector.on_right_wink(lambda: print("right wink"))
 
-blink_detector = Blink(detector = dlib.get_frontal_face_detector(),
+blink_detector = BlinkDetector(detector = dlib.get_frontal_face_detector(),
         predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
 
 #Temporary switch cuz we haven't integrated this code:
