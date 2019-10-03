@@ -1,5 +1,4 @@
 import sys
-import dlib
 from gestureLexer import GestureLexer
 from gestureDetector import GestureDetector
 from blinkDetector import BlinkDetector
@@ -22,8 +21,6 @@ if len(sys.argv) > 3 and not bool(int(sys.argv[2])):
 else:
     is_blink = True
 
-
-
 gesture_detector = GestureDetector(time_increment, is_black_and_white)
 gesture_lexer = GestureLexer()
 
@@ -36,8 +33,7 @@ gesture_detector.on_palm(lambda timestamp: gesture_lexer.lex("palm", timestamp))
 #gestureDetector.on_left_wink(lambda: print("left wink"))
 #gestureDetector.on_right_wink(lambda: print("right wink"))
 
-blink_detector = BlinkDetector(detector = dlib.get_frontal_face_detector(),
-        predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
+blink_detector = BlinkDetector()
 
 #Temporary switch cuz we haven't integrated this code:
 if is_blink:

@@ -10,11 +10,10 @@ import cv2
 
 class BlinkDetector:
 
-    def __init__(self, detector, predictor, 
-                ear_thresh = 0.2, ear_consec_frame = 2,ear= None, blinks = None, source=None ):
+    def __init__(self, ear_thresh = 0.2, ear_consec_frame = 2,ear= None, blinks = None, source=None ):
+        self.detector = dlib.get_frontal_face_detector()
+        self.predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat') 
         self.source = source
-        self.detector = detector
-        self.predictor = predictor
         self.ear_thresh = ear_thresh
         self.ear_consec_frame = ear_consec_frame
         self.ear = ear
