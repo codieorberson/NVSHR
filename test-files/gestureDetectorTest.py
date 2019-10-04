@@ -10,14 +10,14 @@ detector = GestureDetector(3)
 def test_gesture_detector_init():
     assert detector.time_increment is 3
     assert detector.timer is not None
-    assert detector.has_made_right_wink is False
-    assert detector.has_made_left_wink is False
+    assert detector.has_made_blink is False
     assert detector.has_made_palm is False
     assert detector.has_made_fist is False
-    assert detector.right_wink_callback is None
-    assert detector.left_wink_callback is None
+    assert detector.blink_callback is None
     assert detector.palm_callback is None
     assert detector.fist_callback is None
+    assert detector.source = None
+
 
 
 def test_gesture_detector_set_right_wink_callback():

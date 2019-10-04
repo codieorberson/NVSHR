@@ -12,7 +12,6 @@ import dlib
 import os
 
 
-
 class GestureDetector():
     def __init__(self, time_increment, detector, predictor):
         self.time_increment = time_increment
@@ -42,7 +41,7 @@ class GestureDetector():
         self.blink_callback = callback
 
     def on_tick(self):
-        #The next line is just for debugging, we need to remove it eventually.
+        # The next line is just for debugging, we need to remove it eventually.
         file_exists = os.path.getsize("logfile.txt")
         if file_exists == 0:
             file = open("logfile.txt", 'w+')
@@ -213,7 +212,7 @@ class GestureDetector():
                 self, hand_frame, low_contrast, high_contrast)
 
             GestureDetector.detectFistorPalm(self, gray_frame)
-            timer.check_time()
+            self.timer.check_time()
             cv2.imshow("Blink Frame", blink_frame)
             cv2.imshow('Hand Gesture Frame', gray_frame)
 
