@@ -1,10 +1,11 @@
 import cv2
-from timer import Timer
+from timerClass import Timer
 
 
 class GestureDetector():
     def __init__(self, time_increment):
         self.time_increment = time_increment
+        self.timer = Timer(self.time_increment)
         self.has_made_fist = False
         self.has_made_palm = False
         self.has_made_left_wink = False
@@ -47,8 +48,7 @@ class GestureDetector():
             self.has_made_right_wink = False
 
     def start(self):
-        timer = Timer(self.time_increment)
-        timer.on_time(self.on_tick)
+        self.timer.on_time(self.on_tick)
 
         cap = cv2.VideoCapture(0)
 
