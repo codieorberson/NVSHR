@@ -1,5 +1,6 @@
 import gestureDetector
 from gestureDetector import GestureDetector
+from timerClass import Timer
 from unittest import mock
 from unittest.mock import Mock
 
@@ -8,6 +9,7 @@ detector = GestureDetector(3)
 
 def test_gesture_detector_init():
     assert detector.time_increment is 3
+    assert detector.timer is not None
     assert detector.has_made_right_wink is False
     assert detector.has_made_left_wink is False
     assert detector.has_made_palm is False

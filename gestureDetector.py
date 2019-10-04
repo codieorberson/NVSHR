@@ -52,7 +52,6 @@ class GestureDetector():
 
         cap = cv2.VideoCapture(0)
 
-
         face_cascade = cv2.CascadeClassifier('face.xml')
         fist_cascade = cv2.CascadeClassifier('fist.xml')
         palm_cascade = cv2.CascadeClassifier('palm.xml')
@@ -108,7 +107,7 @@ class GestureDetector():
                     roi_color = frame[y:y+h, x:x+w]
                     cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 
-            timer.check_time()
+            self.timer.check_time()
             cv2.imshow('insaneInTheFrame', cv2.flip(frame, 1))
             if cv2.waitKey(1) & 0xFF == ord('q'):
                  break
