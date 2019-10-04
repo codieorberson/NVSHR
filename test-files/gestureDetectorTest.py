@@ -4,6 +4,7 @@ from timerClass import Timer
 from unittest import mock
 from unittest.mock import Mock
 import dlib
+import os
 
 detector = GestureDetector(3, detector=dlib.get_frontal_face_detector(),
                            predictor=dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
@@ -26,6 +27,7 @@ def test_gesture_detector_init():
     assert detector.ear is None, "gestureDetector.ear was not initialized correctly"
     assert detector.blinks is None, "gestureDetector.blinks was not initialized correctly"
     assert detector.cont_frames is 0, "gestureDetector.cont_frames was not initialized correctly"
+    assert detector.file is None, "gestureDetector.file was not initialized correctly"
 
     print("test_gesture_detector_init() passed.")
 
@@ -63,45 +65,55 @@ def test_gesture_detector_set_fist_callback():
     print("test_gesture_detector_set_fist_callback() passed.")
 
 
-# @mock.patch("os.path.getsize")
-# def test_gesture_detector_on_tick_check_logfile_exists():
+@mock.patch("os.path.getsize", return_value=0)
+def test_gesture_detector_on_tick_check_logfile_not_exists(log_location):
+    detector.on_tick()
 
+    assert detector.file is not None, "gestureDetector.file was not created and opened for writing."
+    assert os.stat("logfile.txt").st_size is not 0, "gestureDetector.file header was not written"
+
+    print("test_gesture_on_tick_check_logfile_not_exists() passed.")
+
+
+def test_gesture_detector_on_tick_check_logfile_exists():
+    detector.on_tick()
+
+    assert detector.file is not None, "gestureDetector.file was not opened for writing."
+
+    print("test_gesture_on_tick_check_logfile_exists() passed.")
 
 
 @mock.patch("gestureDetector.GestureDetector")
-def test_gesture_detector_on_tick_right_wink(mock_detector):
-    mock_detector.return_value.has_made_right_wink = True
-    mock_detector.return_value.right_wink_callback(print("Right wink callback was called."))
+def test_gesture_detector_on_tick_blink(mock_detector):
+    mock_detector.return_value.has_made_blink = True
+    mock_detector.return_value.right_blink(print("* Blink callback was called. *"))
 
     mock = gestureDetector.GestureDetector(3)
     mock.on_tick()
 
-
-@mock.patch("gestureDetector.GestureDetector")
-def test_gesture_detector_on_tick_left_wink(mock_detector):
-    mock_detector.return_value.has_made_left_wink = True
-    mock_detector.return_value.left_wink_callback(print("Left wink callback was called."))
-
-    mock = gestureDetector.GestureDetector(3)
-    mock.on_tick()
+    print("test_gesture_detector_on_tick_blink() passed.")
 
 
 @mock.patch("gestureDetector.GestureDetector")
 def test_gesture_detector_on_tick_palm(mock_detector):
     mock_detector.return_value.has_made_palm = True
-    mock_detector.return_value.palm_callback(print("Palm callback was called."))
+    mock_detector.return_value.palm_callback(print("* Palm callback was called. *"))
 
     mock = gestureDetector.GestureDetector(3)
     mock.on_tick()
+
+    print("test_gesture_detector_on_tick_palm() passed.")
 
 
 @mock.patch("gestureDetector.GestureDetector")
 def test_gesture_detector_on_tick_fist(mock_detector):
     mock_detector.return_value.has_made_fist = True
-    mock_detector.return_value.fist_callback(print("Fist callback was called."))
+    mock_detector.return_value.fist_callback(print("* Fist callback was called. *"))
 
     mock = gestureDetector.GestureDetector(3)
     mock.on_tick()
+
+    print("test_gesture_detector_on_tick_fist() passed.")
 
 
 if __name__ == '__main__':
@@ -110,9 +122,10 @@ if __name__ == '__main__':
     test_gesture_detector_set_blink_callback()
     test_gesture_detector_set_palm_callback()
     test_gesture_detector_set_palm_callback()
-    # test_gesture_detector_on_tick_right_wink()
-    # test_gesture_detector_on_tick_left_wink()
-    # test_gesture_detector_on_tick_palm()
-    # test_gesture_detector_on_tick_fist()
+    test_gesture_detector_on_tick_check_logfile_not_exists()
+    test_gesture_detector_on_tick_check_logfile_exists()
+    test_gesture_detector_on_tick_blink()
+    test_gesture_detector_on_tick_palm()
+    test_gesture_detector_on_tick_fist()
 
     print("<=========== GestureDetector tests have passed. ===========>")

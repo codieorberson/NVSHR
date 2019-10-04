@@ -67,4 +67,6 @@ To run all unit tests:
 
 1. Navigate to `test-files`
 
-2. Complie and run `main_test.py`. The console will output data based on the test results. Please look through console output to ensure all tests have passed.
+2. If a `logfile.txt` file exists within the `test-files` directory, delete it before moving on to step 3. *This file should be deleted after each run of all tests.*
+
+3. Complie and run `main_test.py`. The console will output data based on the test results. Please look through console output to ensure all tests have passed.

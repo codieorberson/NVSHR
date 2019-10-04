@@ -30,6 +30,7 @@ class GestureDetector():
         self.ear = None
         self.blinks = None
         self.cont_frames = 0
+        self.file = None
 
     def on_fist(self, callback):
         self.fist_callback = callback
@@ -44,21 +45,21 @@ class GestureDetector():
         # The next line is just for debugging, we need to remove it eventually.
         file_exists = os.path.getsize("logfile.txt")
         if file_exists == 0:
-            file = open("logfile.txt", 'w+')
-            file.write("   Date        Time     Command\n")
+            self.file = open("logfile.txt", 'w+')
+            self.file.write("   Date        Time     Command\n")
         else:
-            file = open("logfile.txt", "a+")
+            self.file = open("logfile.txt", "a+")
         now = datetime.datetime.now()
 
         print("tick")
+
         if self.has_made_fist and self.fist_callback:
             self.fist_callback()
             self.has_made_fist = False
             fist_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
                           12:19], "    ", "fist", " \n")
             fist_text = ''.join(fist_tuple)
-            file.write(fist_text)
-            time.sleep(.75)
+            self.file.write(fist_text)
 
         if self.has_made_palm and self.palm_callback:
             self.palm_callback()
@@ -66,7 +67,7 @@ class GestureDetector():
             palm_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
                           12:19], "    ", "palm", "\n")
             palm_text = ''.join(palm_tuple)
-            file.write(palm_text)
+            self.file.write(palm_text)
             time.sleep(.75)
 
         if self.has_made_blink and self.blink_callback:
@@ -75,18 +76,18 @@ class GestureDetector():
             blink_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
                 12:19], "    ", "blink", "\n")
             blink_text = ''.join(blink_tuple)
-            file.write(blink_text)
+            self.file.write(blink_text)
             time.sleep(.75)
 
-        file.close()
+        self.file.close()
 
-    def setFrameContrast(Red, Green, Blue):
+    def set_frame_contrast(Red, Green, Blue):
         redContrast = Red
         greenContrast = Green
         blueContrast = Blue
         return [redContrast, greenContrast, blueContrast]
 
-    def setCroppedFaceFrame(self, rects, frame, color_frame):
+    def set_cropped_face_frame(self, rects, frame, color_frame):
         rects = self.detector(color_frame, 0)
         for rect in rects:
             (x, y, w, h) = face_utils.rect_to_bb(rect)
@@ -94,14 +95,14 @@ class GestureDetector():
             face = imutils.resize(face, width=400)
             cv2.imshow("Cropped Blink Frame", face)
 
-    def setEars(self, leftEye, rightEye, contFrames):
+    def set_ears(self, leftEye, rightEye, contFrames):
         leftEAR = self.eye_aspect_ratio(leftEye)
         rightEAR = self.eye_aspect_ratio(rightEye)
         self.ear = (leftEAR + rightEAR) / 2.0
 
     # check to see if the eye aspect ratio is below the blink
     # threshold, and if so, increment the blink frame counter
-    def checkEyeAspectRatio(self, ear, ear_thresh, ear_consec_frame):
+    def check_eye_aspect_ratio(self, ear, ear_thresh, ear_consec_frame):
         if ear < ear_thresh:
             self.cont_frames += 1
         # otherwise, the eye aspect ratio is not below the blink
@@ -118,7 +119,7 @@ class GestureDetector():
 
     # draw the total number of blinks on the frame along with
     # the computed eye aspect ratio for the frame
-    def makeFrameLabels(self, frame):
+    def make_frame_labels(self, frame):
         cv2.putText(frame, "Blinks: {}".format(self.blinks), (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         cv2.putText(frame, "EAR: {:.2f}".format(self.ear), (300, 30),
@@ -127,7 +128,7 @@ class GestureDetector():
 
     # compute the convex hull for the left and right eye, then
     # visualize each of the eyes
-    def visualizeEyes(self, leftEye, rightEye, frame):
+    def visualize_eyes(self, leftEye, rightEye, frame):
         leftEyeHull = cv2.convexHull(leftEye)
         rightEyeHull = cv2.convexHull(rightEye)
         cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
@@ -136,7 +137,7 @@ class GestureDetector():
     # determine the facial landmarks for the face region, then
     # convert the facial landmark (x, y)-coordinates to a NumPy
     # array
-    def convertFacialLandmark(self, shape, rect, frame_color):
+    def convert_facial_landmark(self, shape, rect, frame_color):
         (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
         (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
         shape = face_utils.shape_to_np(shape)
@@ -148,14 +149,14 @@ class GestureDetector():
         rightEAR = self.eye_aspect_ratio(rightEye)
         return leftEye, rightEye
 
-    def changingHandFrame(self, frame, low_cont, high_cont):
+    def changing_hand_frame(self, frame, low_cont, high_cont):
         mask = cv2.inRange(frame, low_cont, high_cont)
         mask_inv = cv2.bitwise_not(mask)
         color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
         gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
         return gray_frame
 
-    def detectFistorPalm(self, frame):
+    def detect_fist_or_palm(self, frame):
         fist_cascade = cv2.CascadeClassifier('fist.xml')
         palm_cascade = cv2.CascadeClassifier('palm.xml')
         fist = fist_cascade.detectMultiScale(frame, 1.3, 5)
@@ -190,28 +191,28 @@ class GestureDetector():
             for rect in rects:
 
                 shape = self.predictor(gray, rect)
-                leftEye, rightEye = GestureDetector.convertFacialLandmark(
+                leftEye, rightEye = GestureDetector.convert_facial_landmark(
                     self, shape, rect, gray)
                 # average the eye aspect ratio together for both eyes
-                GestureDetector.setEars(
+                GestureDetector.set_ears(
                     self, leftEye, rightEye, self.cont_frames)
-                GestureDetector.visualizeEyes(
+                GestureDetector.visualize_eyes(
                     self, leftEye, rightEye, cropped_blink_frame)
-                GestureDetector.checkEyeAspectRatio(
+                GestureDetector.check_eye_aspect_ratio(
                     self, self.ear, self.ear_thresh, self.ear_consec_frame)
-                GestureDetector.makeFrameLabels(self, blink_frame)
-                GestureDetector.setCroppedFaceFrame(
+                GestureDetector.make_frame_labels(self, blink_frame)
+                GestureDetector.set_cropped_face_frame(
                     self, rects, cropped_blink_frame, gray)
 
             hand_frame = self.source.read()
-            low_contrast = np.array(GestureDetector.setFrameContrast(0, 0, 0))
+            low_contrast = np.array(GestureDetector.set_frame_contrast(0, 0, 0))
             high_contrast = np.array(
-                GestureDetector.setFrameContrast(132, 255, 255))
+                GestureDetector.set_frame_contrast(132, 255, 255))
 
-            gray_frame = GestureDetector.changingHandFrame(
+            gray_frame = GestureDetector.changing_hand_frame(
                 self, hand_frame, low_contrast, high_contrast)
 
-            GestureDetector.detectFistorPalm(self, gray_frame)
+            GestureDetector.detect_fist_or_palm(self, gray_frame)
             self.timer.check_time()
             cv2.imshow("Blink Frame", blink_frame)
             cv2.imshow('Hand Gesture Frame', gray_frame)
