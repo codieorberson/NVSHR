@@ -17,8 +17,10 @@ class GestureDetector():
         self.time_increment = time_increment
         self.has_made_fist = False
         self.has_made_palm = False
+        self.has_made_blink = False
         self.fist_callback = None
         self.palm_callback = None
+        self.blink_callback = None
         self.source = None
         self.detector = detector
         self.predictor = predictor
@@ -33,6 +35,9 @@ class GestureDetector():
 
     def on_palm(self, callback):
         self.palm_callback = callback
+
+    def on_blink(self, callback):
+        self.blink_callback = callback
 
     def __on_tick__(self):
         #The next line is just for debugging, we need to remove it eventually.
@@ -52,6 +57,7 @@ class GestureDetector():
                           12:19], "    ", "fist", " \n")
             fist_text = ''.join(fist_tuple)
             file.write(fist_text)
+            time.sleep(.75)
 
         if self.has_made_palm and self.palm_callback:
             self.palm_callback()
@@ -60,6 +66,17 @@ class GestureDetector():
                           12:19], "    ", "palm", "\n")
             palm_text = ''.join(palm_tuple)
             file.write(palm_text)
+            time.sleep(.75)
+
+        if self.has_made_blink and self.blink_callback:
+            self.blink_callback()
+            self.has_made_blink = False
+            blink_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
+                12:19], "    ", "blink", "\n")
+            blink_text = ''.join(blink_tuple)
+            file.write(blink_text)
+            time.sleep(.75)
+
         file.close()
 
     def setFrameContrast(Red, Green, Blue):
@@ -92,20 +109,8 @@ class GestureDetector():
             # if the eyes were closed for a sufficient number of
             # then increment the total number of blinks
             if self.cont_frames >= self.ear_consec_frame:
-                self.blinks += 1
-                file_exists = os.path.getsize("logfile.txt")
-                if file_exists == 0:
-                    file = open("logfile.txt", 'w+')
-                    file.write("   Date        Time     Command\n")
-                else:
-                    file = open("logfile.txt", "a+")
-                now = datetime.datetime.now()
-                wink_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                    12:19], "    ", "wink", "\n")
-                wink_text = ''.join(wink_tuple)
-                file.write(wink_text)
-                file.close()
-                print("wink")
+                self.blinks += 1 #This is where its printing out all the blinks in total
+                self.has_made_blink = True
                 # reset the eye frame counter
                 self.cont_frames = 0
         return self.cont_frames
