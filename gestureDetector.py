@@ -25,7 +25,7 @@ class GestureDetector():
         self.source = None
         self.detector = detector
         self.predictor = predictor
-        self.ear_thresh = .2
+        self.ear_thresh = 0.2
         self.ear_consec_frame = 2
         self.ear = None
         self.blinks = None
