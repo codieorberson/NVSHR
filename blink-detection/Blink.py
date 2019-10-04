@@ -79,7 +79,6 @@ class Blink:
                     # then increment the total number of blinks
                     if cont_frames >= self.ear_consec_frame:
                         self.blinks += 1
-
                     # reset the eye frame counter
                     cont_frames = 0
 
