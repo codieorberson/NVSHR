@@ -22,6 +22,8 @@ class GestureDetector():
         self.fist_callback = None
         self.palm_callback = None
         self.blink_callback = None
+        self.fist = None
+        self.palm = None
         self.source = None
         self.detector = detector
         self.predictor = predictor
@@ -68,7 +70,6 @@ class GestureDetector():
                           12:19], "    ", "palm", "\n")
             palm_text = ''.join(palm_tuple)
             self.file.write(palm_text)
-            time.sleep(.75)
 
         if self.has_made_blink and self.blink_callback:
             self.blink_callback()
@@ -77,7 +78,6 @@ class GestureDetector():
                 12:19], "    ", "blink", "\n")
             blink_text = ''.join(blink_tuple)
             self.file.write(blink_text)
-            time.sleep(.75)
 
         self.file.close()
 
@@ -159,17 +159,17 @@ class GestureDetector():
     def detect_fist_or_palm(self, frame):
         fist_cascade = cv2.CascadeClassifier('fist.xml')
         palm_cascade = cv2.CascadeClassifier('palm.xml')
-        fist = fist_cascade.detectMultiScale(frame, 1.3, 5)
-        palm = palm_cascade.detectMultiScale(frame, 1.3, 5)
+        self.fist = fist_cascade.detectMultiScale(frame, 1.3, 5)
+        self.palm = palm_cascade.detectMultiScale(frame, 1.3, 5)
 
-        if len(fist) > 0:
+        if len(self.fist) > 0:
             self.has_made_fist = True
-        if len(palm) > 0:
+        if len(self.palm) > 0:
             self.has_made_palm = True
 
-        for (x, y, w, h) in fist:
+        for (x, y, w, h) in self.fist:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
-        for (x, y, w, h) in palm:
+        for (x, y, w, h) in self.palm:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
 
     def start(self):

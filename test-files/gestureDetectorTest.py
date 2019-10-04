@@ -1,8 +1,9 @@
 import gestureDetector
 from gestureDetector import GestureDetector
-from timerClass import Timer
+from imutils.video import VideoStream
 from unittest import mock
 from unittest.mock import Mock
+import numpy as np
 import dlib
 import os
 
@@ -116,6 +117,21 @@ def test_gesture_detector_on_tick_fist(mock_detector):
     print("test_gesture_detector_on_tick_fist() passed.")
 
 
+def test_gesture_detector_set_frame_contrast():
+    colors = GestureDetector.set_frame_contrast(100, 200, 250)
+
+    assert colors[0] is 100, "detector.set_frame_contrast did not return the correct red value."
+    assert colors[1] is 200, "detector.set_frame_contrast did not return the correct green value."
+    assert colors[2] is 250, "detector.set_frame_contrast did not return the correct blue value."
+
+    print("test_gesutre_detector_set_frame_contrast() passed.")
+
+
+#
+#
+#
+
+
 if __name__ == '__main__':
 
     test_gesture_detector_init()
@@ -127,5 +143,6 @@ if __name__ == '__main__':
     test_gesture_detector_on_tick_blink()
     test_gesture_detector_on_tick_palm()
     test_gesture_detector_on_tick_fist()
+    test_gesture_detector_set_frame_contrast()
 
     print("<=========== GestureDetector tests have passed. ===========>")
