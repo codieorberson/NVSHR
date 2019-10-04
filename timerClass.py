@@ -4,6 +4,7 @@ class Timer():
     def __init__(self, time_increment):
        self.last_time = time.time()
        self.time_increment = time_increment
+       self.callback = None
 
     def set_time(self, new_time_increment):
         self.time_increment = new_time_increment

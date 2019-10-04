@@ -1,20 +1,22 @@
+import cv2
+from timerClass import Timer
 from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
 from imutils.video import VideoStream
 from imutils import face_utils
-from timer import Timer
 import numpy as np
 import imutils
 import time
 import datetime
 import dlib
-import cv2
 import os
+
 
 
 class GestureDetector():
     def __init__(self, time_increment, detector, predictor):
         self.time_increment = time_increment
+        self.timer = Timer(self.time_increment)
         self.has_made_fist = False
         self.has_made_palm = False
         self.has_made_blink = False
@@ -39,7 +41,7 @@ class GestureDetector():
     def on_blink(self, callback):
         self.blink_callback = callback
 
-    def __on_tick__(self):
+    def on_tick(self):
         #The next line is just for debugging, we need to remove it eventually.
         file_exists = os.path.getsize("logfile.txt")
         if file_exists == 0:
@@ -171,8 +173,7 @@ class GestureDetector():
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
 
     def start(self):
-        timer = Timer(self.time_increment)
-        timer.on_time(self.__on_tick__)
+        self.timer.on_time(self.on_tick)
 
         self.source = VideoStream(src=0).start()
         self.blinks = 0
