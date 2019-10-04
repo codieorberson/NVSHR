@@ -7,6 +7,8 @@
  If the SDKs are missing, you can download them from the official Windows website (https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk) or install the tool kits via Visual Studio Installer.
  ![](Src/pics/SDKs.png)
  
+ *If an IDE is being used, ensure that Cmake is installed before installing dlib.*
+ 
  For Windows machines, please follow these steps to set up your environment for the NVSHR System:
 
 1. Install Python3.7 (https://www.python.org/downloads/)
@@ -49,16 +51,15 @@
     + Version of dlib is: 19.17.0
     + Version of imutils is: 0.5.3
 
-### Intializing the NVSHR System
+### Initializing the NVSHR System
 
-Pass an argument into main.py to set the number of seconds between ticks (default is 3).
+Follow these steps to initialize the NVSHR system on your device: 
 
-Everything is sketchy and broken right now, but it does run. Logs "tick" every tick, "fist" if it detected a fist in the last tick, "palm" if it detected a palm with spread out fingers, "left wink" if it detected the left eye winking, and "right wink" if it detected the right eye winking.
+1. Run `main.py`. 
+    + The default "tick" time is set at 4 seconds. If you wish to initialize this time interval to a custom time, please pass this time increment in as your second argument. *For example: `python main.py 5`* 
 
-GestureDetector has a bunch of repeating code in it, and we obvious need to abstract that stuff out into a separate class called Gesture.
-
-Timer probably doesn't belong in GestureDetector as far as code structure is concerned, but our frame processing loop in GestureDetector is currently blocking, so we can't have an asynchronous loop running at the same time. We should probably eventually make that frame processing loop asynchronous and then handle the timer loop in a different file.
-
+2. After running the previous command, a pop-up window will appear with video feedback from the connected camera. Please ensure the camera is placed properly so that the user is within the camera frame. 
+    
 ### Testing the NVSHR System
 
 For unit testing purposes, the NVSHR system will make use of Magic Mock for various tests. 
