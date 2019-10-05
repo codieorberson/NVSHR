@@ -213,7 +213,7 @@ class GestureDetector():
                 self, hand_frame, low_contrast, high_contrast)
 
             GestureDetector.detectFistorPalm(self, gray_frame)
-            timer.check_time()
+            self.timer.check_time()
             cv2.imshow("Blink Frame", blink_frame)
             cv2.imshow('Hand Gesture Frame', gray_frame)
 
