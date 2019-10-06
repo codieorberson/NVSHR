@@ -92,7 +92,7 @@ def test_gesture_detector_on_tick_check_logfile_exists():
 @mock.patch("gestureDetector.GestureDetector")
 def test_gesture_detector_on_tick_blink(mock_detector):
     mock_detector.return_value.has_made_blink = True
-    mock_detector.return_value.blink(print("* Blink callback was called. *"))
+    mock_detector.return_value.blink_callback(print("* Blink callback was called. *"))
 
     mock = gestureDetector.GestureDetector(3)
     mock.on_tick()
