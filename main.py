@@ -1,4 +1,7 @@
 import sys
+import cv2
+from datetime import datetime
+from multithreadedPerimeter import MultithreadedPerimeter
 from gestureLexer import GestureLexer
 from gestureDetector import GestureDetector
 from blinkDetector import BlinkDetector
@@ -35,4 +38,31 @@ gesture_detector.on_blink(lambda timestamp: gesture_lexer.lex("blink", timestamp
 gesture_detector.on_left_wink(lambda timestamp: gesture_lexer.lex("left wink", timestamp))
 gesture_detector.on_right_wink(lambda timestamp: gesture_lexer.lex("right wink", timestamp))
 
-gesture_detector.start(0.2)
+should_continue = True
+cap = cv2.VideoCapture(0)
+
+while should_continue:
+
+    ret, frame = cap.read()
+    timestamp = datetime.now()
+
+    open_eye_threshold = 0.2
+
+    fist_perimeter = MultithreadedPerimeter()
+    palm_perimeter = MultithreadedPerimeter()
+    left_eye_perimeter = MultithreadedPerimeter()
+    right_eye_perimeter = MultithreadedPerimeter() 
+
+    gesture_detector.detect(frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
+
+    for perimeter in [fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter]:
+        if perimeter.is_set():
+            cv2.rectangle(frame, perimeter.get_top_corner(), perimeter.get_bottom_corner(), (0, 0, 255), 2)
+
+    cv2.imshow('NVSHR', cv2.flip(frame, 1))
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        should_continue = False
+
+cap.release()
+cv2.destroyAllWindows()

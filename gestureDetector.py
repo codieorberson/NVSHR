@@ -43,8 +43,8 @@ class GestureDetector():
     def on_right_wink(self, callback):
         self.right_wink_event = callback      
 
-    def start(self, open_eye_threshold):
-        cap = cv2.VideoCapture(0)
+    def detect(self, frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
+#        cap = cv2.VideoCapture(0)
         panel = np.zeros([100, 700], np.uint8)
 
         hContrastRed = 0
@@ -59,105 +59,100 @@ class GestureDetector():
         low_contrast = np.array([hContrastRed, hContrastGreen, hContrastBlue])
         high_contrast = np.array([lContrastRed, lContrastGreen, lContrastBlue])
 
-        while(True):
-            ret, frame = cap.read()
-            timestamp = datetime.now()
+#        while(True):
+#            ret, frame = cap.read()
+#            timestamp = datetime.now()
 
-            mask = cv2.inRange(frame, low_contrast, high_contrast)
-            mask_inv = cv2.bitwise_not(mask)
+        mask = cv2.inRange(frame, low_contrast, high_contrast)
+        mask_inv = cv2.bitwise_not(mask)
 
-            color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
-            gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
+        color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
+        gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
 
-            is_left_eye_closed = False
-            is_right_eye_closed = False
+        is_left_eye_closed = False
+        is_right_eye_closed = False
 
-            if self.is_black_and_white:
-                current_frame = gray_frame
-            else:
-                current_frame = frame
+        if self.is_black_and_white:
+            current_frame = gray_frame
+        else:
+            current_frame = frame
+          
+        self.process_manager.add_process(self.hand_gesture_detector.detect, 
+                (current_frame, fist_perimeter, palm_perimeter))
+        self.process_manager.add_process(self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
 
-            fist_perimeter = MultithreadedPerimeter()
-            palm_perimeter = MultithreadedPerimeter()
-            left_eye_perimeter = MultithreadedPerimeter()
-            right_eye_perimeter = MultithreadedPerimeter()
-           
-            self.process_manager.add_process(self.hand_gesture_detector.detect, 
-                    (current_frame, fist_perimeter, palm_perimeter))
-            self.process_manager.add_process(self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
+        self.process_manager.on_done()
 
-            self.process_manager.on_done()
-
-            if fist_perimeter.is_set():
+        if fist_perimeter.is_set():
                 #There shouldn't be any actual scenario where this takes one 
                 #argument, but since Landan is already working on testing the
                 #GestureDetector interface I'm allowing this callback to continue
                 #functioning with just one argument. When Landan commits his tests
                 #I'll modify them and change this part of the code. This comment
                 #applies to palm_perimeter as well.
-                if len(signature(self.fist_event).parameters) == 1:
-                    self.fist_event(timestamp)
-                else:
-                    self.fist_event()
+            if len(signature(self.fist_event).parameters) == 1:
+                self.fist_event(timestamp)
+            else:
+                self.fist_event()
 
-                cv2.rectangle(current_frame, fist_perimeter.get_top_corner(),
-                        fist_perimeter.get_bottom_corner(), (255, 0, 0), 2)
+#           cv2.rectangle(current_frame, fist_perimeter.get_top_corner(),
+#                    fist_perimeter.get_bottom_corner(), (255, 0, 0), 2)
 
-            if palm_perimeter.is_set():
-                if len(signature(self.palm_event).parameters) == 1:
-                    self.palm_event(timestamp)
-                else:             
-                    self.palm_event()
+        if palm_perimeter.is_set():
+            if len(signature(self.palm_event).parameters) == 1:
+                self.palm_event(timestamp)
+            else:             
+                self.palm_event()
 
-                cv2.rectangle(current_frame, palm_perimeter.get_top_corner(), 
-                        palm_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
-            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
+#            cv2.rectangle(current_frame, palm_perimeter.get_top_corner(), 
+#                    palm_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
+#        cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+#        if cv2.waitKey(1) & 0xFF == ord('q'):
+#            break
 
 
-            if left_eye_perimeter.is_set():
+        if left_eye_perimeter.is_set():
 
-                if open_eye_threshold > left_eye_perimeter.get_ratio():
-                    is_left_eye_closed = True
-                cv2.rectangle(current_frame, left_eye_perimeter.get_top_corner(), 
-                        left_eye_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
-            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
+            if open_eye_threshold > left_eye_perimeter.get_ratio():
+                is_left_eye_closed = True
+#            cv2.rectangle(current_frame, left_eye_perimeter.get_top_corner(), 
+#                        left_eye_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
+#            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+#            if cv2.waitKey(1) & 0xFF == ord('q'):
+#                break
 
-            if right_eye_perimeter.is_set():
+        if right_eye_perimeter.is_set():
 
-                if open_eye_threshold > right_eye_perimeter.get_ratio():
-                    is_right_eye_closed = True
-                cv2.rectangle(current_frame, right_eye_perimeter.get_top_corner(), 
-                        right_eye_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
-            if is_right_eye_closed and is_left_eye_closed:
-                if len(signature(self.blink_event).parameters) == 1:
-                    self.blink_event(timestamp)
-                else:             
-                    self.blink_event()
+            if open_eye_threshold > right_eye_perimeter.get_ratio():
+                is_right_eye_closed = True
+#                cv2.rectangle(current_frame, right_eye_perimeter.get_top_corner(), 
+#                        right_eye_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
+        if is_right_eye_closed and is_left_eye_closed:
+            if len(signature(self.blink_event).parameters) == 1:
+                self.blink_event(timestamp)
+            else:             
+                self.blink_event()
 
                
-            elif is_left_eye_closed:
-                if len(signature(self.left_wink_event).parameters) == 1:
-                    self.left_wink_event(timestamp)
-                else:             
-                    self.left_wink_event()
+        elif is_left_eye_closed:
+            if len(signature(self.left_wink_event).parameters) == 1:
+                self.left_wink_event(timestamp)
+            else:             
+                self.left_wink_event()
 
 
-            elif is_right_eye_closed:
-                if len(signature(self.right_wink_event).parameters) == 1:
-                    self.right_wink_event(timestamp)
-                else:             
-                    self.right_wink_event()
+        elif is_right_eye_closed:
+            if len(signature(self.right_wink_event).parameters) == 1:
+                self.right_wink_event(timestamp)
+            else:             
+                self.right_wink_event()
 
-            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
+#            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+#            if cv2.waitKey(1) & 0xFF == ord('q'):
+#                break
 
-        cap.release()
-        cv2.destroyAllWindows()
+#        cap.release()
+#        cv2.destroyAllWindows()
