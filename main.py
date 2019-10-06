@@ -31,14 +31,6 @@ if len(sys.argv) > 3:
 else:
     open_eye_threshold = 0.2
 
-#The third command line argument determines whether or not a black and white
-#filter should be used when detecting gestures. It displays color regardless.
-#Any value whatsoever will set this to False, otherwise it defaults to True.
-if len(sys.argv) > 2 and not bool(int(sys.argv[2])):
-    is_black_and_white = False
-else:
-    is_black_and_white = True
-
 gesture_detector = GestureDetector()
 gesture_lexer = GestureLexer()
 gesture_parser = GestureParser()
