@@ -54,6 +54,8 @@ gesture_detector.on_blink(lambda timestamp: gesture_lexer.add("blink", timestamp
 gesture_detector.on_left_wink(lambda timestamp: gesture_lexer.add("left_wink", timestamp))
 gesture_detector.on_right_wink(lambda timestamp: gesture_lexer.add("right_wink", timestamp))
 
+gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: print("fist-palm-fist pattern"))
+
 should_continue = True
 cap = cv2.VideoCapture(0)
 process_manager = ProcessManager()
