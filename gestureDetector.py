@@ -14,9 +14,9 @@ from handGestureDetector import HandGestureDetector
 from blinkDetector import BlinkDetector
 
 class GestureDetector():
-    def __init__(self, time_increment, is_black_and_white):
-        self.time_increment = time_increment
-        self.is_black_and_white = is_black_and_white
+    def __init__(self):
+        #Next value not being used right now, but may be in the near future.
+        self.is_black_and_white = False
 
         self.process_manager = ProcessManager()
         self.hand_gesture_detector = HandGestureDetector()

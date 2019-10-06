@@ -39,8 +39,12 @@ class GestureLexer():
             if float(now) > max_increment + self.gestures[len(self.gestures) - 1][1]:
                 if gesture_pattern != []:
                     self.gesture_patterns.append(gesture_pattern)
-                    print("Gesture pattern: " + str(gesture_pattern))
                     self.gestures = []
+
+        current_patterns = self.gesture_patterns
+        self.gesture_patterns = []
+
+        return current_patterns
 
     def close(self):
         self.file.close()
