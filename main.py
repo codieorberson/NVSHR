@@ -62,6 +62,9 @@ while should_continue:
     left_eye_perimeter = MultithreadedPerimeter()
     right_eye_perimeter = MultithreadedPerimeter() 
 
+    gesture_patterns = gesture_lexer.lex(timestamp, min_increment, max_increment)
+
+    process_manager.add_process(gesture_parser.parse_patterns, (gesture_patterns, ))
     process_manager.add_process(gesture_detector.detect, 
             (frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, 
             left_eye_perimeter, right_eye_perimeter))
@@ -69,9 +72,6 @@ while should_continue:
     process_manager.on_done()
 
     gesture_detector.trigger_events(timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
-
-    for gesture_pattern in gesture_lexer.lex(timestamp, min_increment, max_increment):
-        gesture_parser.parse(gesture_pattern)
 
     for perimeter in [fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter]:
         if perimeter.is_set():
