@@ -14,7 +14,7 @@ import os
 
 class GestureDetector():
     def __init__(self, time_increment, detector, predictor):
-        self.time_increment = time_increment
+        self.time_increment = time_increment  # time increment used by the system to check for gestures/blinks
         self.timer = Timer(self.time_increment)
         self.has_made_fist = False
         self.has_made_palm = False
@@ -29,8 +29,8 @@ class GestureDetector():
         self.predictor = predictor
         self.ear_thresh = 0.2
         self.ear_consec_frame = 2
-        self.ear = None
-        self.blinks = None
+        self.ear = None  # eye aspect ratio
+        self.blinks = 0
         self.cont_frames = 0
         self.file = None
 
@@ -44,16 +44,15 @@ class GestureDetector():
         self.blink_callback = callback
 
     def on_tick(self):
-        # The next line is just for debugging, we need to remove it eventually.
-        file_exists = os.path.getsize("logfile.txt")
-        if file_exists == 0:
+        file_exists = os.path.exists("logfile.txt")
+        if file_exists == False:
             self.file = open("logfile.txt", 'w+')
             self.file.write("   Date        Time     Command\n")
         else:
             self.file = open("logfile.txt", "a+")
         now = datetime.datetime.now()
 
-        print("tick")
+        print("tick")  # used for debugging purposes
 
         if self.has_made_fist and self.fist_callback:
             self.fist_callback()
@@ -81,7 +80,8 @@ class GestureDetector():
 
         self.file.close()
 
-    def set_frame_contrast(Red, Green, Blue):
+    def set_frame_contrast(Red, Green, Blue):  # used for creating contrast within the frame to detect hand gestures
+        # more clearly
         redContrast = Red
         greenContrast = Green
         blueContrast = Blue
@@ -95,7 +95,7 @@ class GestureDetector():
             face = imutils.resize(face, width=400)
             cv2.imshow("Cropped Blink Frame", face)
 
-    def set_ears(self, leftEye, rightEye, contFrames):
+    def set_ears(self, leftEye, rightEye):
         leftEAR = self.eye_aspect_ratio(leftEye)
         rightEAR = self.eye_aspect_ratio(rightEye)
         self.ear = (leftEAR + rightEAR) / 2.0
@@ -111,7 +111,7 @@ class GestureDetector():
             # if the eyes were closed for a sufficient number of
             # then increment the total number of blinks
             if self.cont_frames >= self.ear_consec_frame:
-                self.blinks += 1 #This is where its printing out all the blinks in total
+                self.blinks += 1  # This is where its printing out all the blinks in total
                 self.has_made_blink = True
                 # reset the eye frame counter
                 self.cont_frames = 0
@@ -176,12 +176,11 @@ class GestureDetector():
         self.timer.on_time(self.on_tick)
 
         self.source = VideoStream(src=0).start()
-        self.blinks = 0
 
         while True:
 
             blink_frame = self.source.read()
-            cropped_blink_frame = imutils.resize(blink_frame, width=800)
+            cropped_blink_frame = imutils.resize(self.source.read(), width=800)
             gray = cv2.cvtColor(cropped_blink_frame, cv2.COLOR_BGR2GRAY)
 
             # detect faces in the grayscale blink_frame
@@ -195,7 +194,7 @@ class GestureDetector():
                     self, shape, rect, gray)
                 # average the eye aspect ratio together for both eyes
                 GestureDetector.set_ears(
-                    self, leftEye, rightEye, self.cont_frames)
+                    self, leftEye, rightEye)
                 GestureDetector.visualize_eyes(
                     self, leftEye, rightEye, cropped_blink_frame)
                 GestureDetector.check_eye_aspect_ratio(
@@ -219,10 +218,10 @@ class GestureDetector():
 
             key = cv2.waitKey(1) & 0xff
             if key == ord('q'):
-                file = open("logfile.txt", "w+")
-                file.seek(0)
-                file.truncate()
-                file.close()
+                self.file = open("logfile.txt", "w+")
+                self.file.seek(0)
+                self.file.truncate()
+                self.file.close()
                 break
 
     def eye_aspect_ratio(self, eye):

@@ -1,14 +1,19 @@
 import gestureDetector
 from gestureDetector import GestureDetector
-from imutils.video import VideoStream
 from unittest import mock
 from unittest.mock import Mock
-import numpy as np
 import dlib
 import os
 
 detector = GestureDetector(3, detector=dlib.get_frontal_face_detector(),
                            predictor=dlib.shape_predictor('shape_predictor_68_face_landmarks.dat'))
+
+
+# As of right now, there is not a way (that I have found) to properly mock/test these functions :
+# set_cropped_face_frame, set_ears, make_frame_labels, visual_eyes, convert_facial_landmark, changing_hand_frame,
+# detect_fist_or_palm, start
+# This is due to the fact that these deal with resizing the frame or camera inputs and I have not found a way to
+# easily mock these
 
 
 def test_gesture_detector_init():
@@ -26,7 +31,7 @@ def test_gesture_detector_init():
     assert detector.ear_thresh == 0.2, "gestureDetector.ear_thresh was not initialized correctly"
     assert detector.ear_consec_frame is 2, "gestureDetector.ear_consec_frame was not initialized correctly"
     assert detector.ear is None, "gestureDetector.ear was not initialized correctly"
-    assert detector.blinks is None, "gestureDetector.blinks was not initialized correctly"
+    assert detector.blinks is 0, "gestureDetector.blinks was not initialized correctly"
     assert detector.cont_frames is 0, "gestureDetector.cont_frames was not initialized correctly"
     assert detector.file is None, "gestureDetector.file was not initialized correctly"
 
@@ -127,9 +132,29 @@ def test_gesture_detector_set_frame_contrast():
     print("test_gesutre_detector_set_frame_contrast() passed.")
 
 
-#
-#
-#
+def test_gesture_detector_check_eye_aspect_ratio_if():
+    detector.ear = 0.1
+
+    result = detector.check_eye_aspect_ratio(detector.ear, detector.ear_thresh, detector.ear_consec_frame)
+
+    assert detector.cont_frames is 1, "detector.check_eye_aspect_ratio did not update detector.cont_frames."
+    assert detector.cont_frames is result, "detector.check_eye_aspect_ratio did not return the correct result."
+
+    print("test_gesture_detector_check_eye_aspect_ratio_if() passed.")
+
+
+def test_gesture_detector_check_eye_aspect_ratio_else():
+    detector.ear = 0.3
+    detector.cont_frames = 3
+
+    result = detector.check_eye_aspect_ratio(detector.ear, detector.ear_thresh, detector.ear_consec_frame)
+
+    assert detector.blinks is 1, "detector.check_eye_aspect_ratio did not update detector.blinks."
+    assert detector.has_made_blink is True, "detector.check_eye_aspect_ratio did not update detector.has_made_blink."
+    assert detector.cont_frames is 0, "detector.check_eye_aspect_ratio did not update detector.cont_frames."
+    assert detector.cont_frames is result, "detector.check_eye_aspect_ratio did not return the correct result."
+
+    print("test_gesture_detector_check_eye_aspect_ratio_else() passed.")
 
 
 if __name__ == '__main__':
@@ -144,5 +169,7 @@ if __name__ == '__main__':
     test_gesture_detector_on_tick_palm()
     test_gesture_detector_on_tick_fist()
     test_gesture_detector_set_frame_contrast()
+    test_gesture_detector_check_eye_aspect_ratio_if()
+    test_gesture_detector_check_eye_aspect_ratio_else()
 
     print("<=========== GestureDetector tests have passed. ===========>")
