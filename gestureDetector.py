@@ -69,9 +69,6 @@ class GestureDetector():
         color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
         gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
 
-        is_left_eye_closed = False
-        is_right_eye_closed = False
-
         if self.is_black_and_white:
             current_frame = gray_frame
         else:
@@ -82,6 +79,11 @@ class GestureDetector():
         self.process_manager.add_process(self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
 
         self.process_manager.on_done()
+
+
+    def trigger_events(self, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
+        is_left_eye_closed = False
+        is_right_eye_closed = False
 
         if fist_perimeter.is_set():
                 #There shouldn't be any actual scenario where this takes one 
@@ -95,64 +97,36 @@ class GestureDetector():
             else:
                 self.fist_event()
 
-#           cv2.rectangle(current_frame, fist_perimeter.get_top_corner(),
-#                    fist_perimeter.get_bottom_corner(), (255, 0, 0), 2)
-
         if palm_perimeter.is_set():
             if len(signature(self.palm_event).parameters) == 1:
                 self.palm_event(timestamp)
             else:             
                 self.palm_event()
 
-#            cv2.rectangle(current_frame, palm_perimeter.get_top_corner(), 
-#                    palm_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
-#        cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
-
-#        if cv2.waitKey(1) & 0xFF == ord('q'):
-#            break
-
-
         if left_eye_perimeter.is_set():
 
             if open_eye_threshold > left_eye_perimeter.get_ratio():
                 is_left_eye_closed = True
-#            cv2.rectangle(current_frame, left_eye_perimeter.get_top_corner(), 
-#                        left_eye_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
-#            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
-
-#            if cv2.waitKey(1) & 0xFF == ord('q'):
-#                break
 
         if right_eye_perimeter.is_set():
 
             if open_eye_threshold > right_eye_perimeter.get_ratio():
                 is_right_eye_closed = True
-#                cv2.rectangle(current_frame, right_eye_perimeter.get_top_corner(), 
-#                        right_eye_perimeter.get_bottom_corner(), (0, 0, 255), 2)             
+
         if is_right_eye_closed and is_left_eye_closed:
             if len(signature(self.blink_event).parameters) == 1:
                 self.blink_event(timestamp)
             else:             
                 self.blink_event()
 
-               
         elif is_left_eye_closed:
             if len(signature(self.left_wink_event).parameters) == 1:
                 self.left_wink_event(timestamp)
             else:             
                 self.left_wink_event()
 
-
         elif is_right_eye_closed:
             if len(signature(self.right_wink_event).parameters) == 1:
                 self.right_wink_event(timestamp)
             else:             
                 self.right_wink_event()
-
-#            cv2.imshow('NVSHR', cv2.flip(current_frame, 1))
-
-#            if cv2.waitKey(1) & 0xFF == ord('q'):
-#                break
-
-#        cap.release()
-#        cv2.destroyAllWindows()
