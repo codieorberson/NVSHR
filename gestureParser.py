@@ -9,6 +9,6 @@ class GestureParser():
     def parse(self, gesture_pattern):
         if "".join(gesture_pattern) in self.gesture_pattern_map:
             print("Gesture recognized.")
-            self.gesture_pattern_map["".join(gesture_pattern)].event()
+            self.gesture_pattern_map["".join(gesture_pattern)]()
         else:
             print("Gesture pattern not recognized: " + str(gesture_pattern))
