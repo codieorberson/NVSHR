@@ -33,6 +33,7 @@ class GestureLexer():
                 last_dict[gesture[0]] = gesture[1]
                 gesture_pattern.append(gesture[0])
             elif last_dict[gesture[0]] + min_increment < gesture[1]:
+                last_dict[gesture[0]] = gesture[1]
                 gesture_pattern.append(gesture[0])
 
         if len(self.gestures) > 0:
