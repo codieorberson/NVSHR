@@ -30,13 +30,9 @@ gesture_lexer = GestureLexer()
 #once we have some basic tests up.
 gesture_detector.on_fist(lambda timestamp: gesture_lexer.lex("fist", timestamp))
 gesture_detector.on_palm(lambda timestamp: gesture_lexer.lex("palm", timestamp))
-#gestureDetector.on_left_wink(lambda: print("left wink"))
-#gestureDetector.on_right_wink(lambda: print("right wink"))
 
-blink_detector = BlinkDetector()
+gesture_detector.on_blink(lambda timestamp: gesture_lexer.lex("blink", timestamp))
+gesture_detector.on_left_wink(lambda timestamp: gesture_lexer.lex("left wink", timestamp))
+gesture_detector.on_right_wink(lambda timestamp: gesture_lexer.lex("right wink", timestamp))
 
-#Temporary switch cuz we haven't integrated this code:
-if is_blink:
-    blink_detector.detect()
-else:
-    gesture_detector.start()
+gesture_detector.start(0.2)

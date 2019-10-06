@@ -13,6 +13,9 @@ class MultithreadedPerimeter():
     def get_bottom_corner(self):
         return (self.x2.value, self.y2.value)
 
+    def get_ratio(self):
+        return (self.y2.value - self.y1.value) / (self.x2.value - self.x1.value)
+
     def set(self, x_y_w_h_tuple):
         self.x1.value = x_y_w_h_tuple[0]
         self.y1.value = x_y_w_h_tuple[1]
