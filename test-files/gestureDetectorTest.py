@@ -11,7 +11,7 @@ detector = GestureDetector(3, detector=dlib.get_frontal_face_detector(),
 
 # As of right now, there is not a way (that I have found) to properly mock/test these functions :
 # set_cropped_face_frame, set_ears, make_frame_labels, visual_eyes, convert_facial_landmark, changing_hand_frame,
-# detect_fist_or_palm, start
+# detect_fist_or_palm, start, eye_aspect_ratio
 # This is due to the fact that these deal with resizing the frame or camera inputs and I have not found a way to
 # easily mock these
 
