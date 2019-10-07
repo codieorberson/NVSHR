@@ -206,7 +206,7 @@ class GestureDetector():
             hand_frame = self.source.read()
             low_contrast = np.array(GestureDetector.set_frame_contrast(0, 0, 0))
             high_contrast = np.array(
-                GestureDetector.set_frame_contrast(132, 255, 255))
+                GestureDetector.set_frame_contrast(90, 255, 255))
 
             gray_frame = GestureDetector.changing_hand_frame(
                 self, hand_frame, low_contrast, high_contrast)
