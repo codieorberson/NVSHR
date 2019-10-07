@@ -17,6 +17,10 @@ def test_blink_init():
     assert detector.ear_thresh == 0.2, "blink.ear_thresh was not initialized correctly"
     assert detector.source is None, "blink.sources was not initialized correctly"
 
+    print("test_blink_init() passed.")
+
 
 if __name__ == '__main__':
     test_blink_init()
+
+    print("<================ Blink class tests passed. ===============>")
