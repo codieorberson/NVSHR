@@ -47,7 +47,7 @@ gesture_detector.on_blink(lambda timestamp: gesture_lexer.add("blink", timestamp
 #This is a test pattern to find in a gesture sequence. The gesture sequence 
 #being detected as a pattern must be made up of strings which correspond to the
 #strings passed into gesture_lexer.add in the anonymous lambdas above.
-gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: print("fist-palm-fist pattern"))
+gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: print("fist-palm-fist event has fired -- this message is not logged, only printed."))
 
 should_continue = True
 cap = cv2.VideoCapture(0)
