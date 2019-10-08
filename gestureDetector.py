@@ -132,56 +132,5 @@ class GestureDetector():
     def get_cropped_hand_frame():
        return imutils.resize(frame, width=800)
 
-#Well, these two are for writing to the log file. I don't think this belongs in
-#this class, or the class I have it in (more on that in a comment at the end of
-#main.py), but I do think the code shoved in these methods may be better than
-#the code I'm currently using.
-
     def get_gray_blink_frame(cropped_blink_frame):
        return cv2.cvtColor(cropped_blink_frame, cv2.COLOR_BGR2GRAY)
-
-    def operate_on_file():
-        #import os to use this method, wherever it goes.
-        file_exists = os.path.exists("logfile.txt")
-        if file_exists == False:
-            self.file = open("logfile.txt", 'w+')
-            self.file.write("   Date        Time     Command\n")
-        else:
-            self.file = open("logfile.txt", "a+")
-        now = datetime.datetime.now()
-
-        print("tick")  # used for debugging purposes
-
-        if self.has_made_fist and self.fist_callback:
-            self.fist_callback()
-            self.has_made_fist = False
-            fist_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                          12:19], "    ", "fist", " \n")
-            fist_text = ''.join(fist_tuple)
-            self.file.write(fist_text)
-
-        if self.has_made_palm and self.palm_callback:
-            self.palm_callback()
-            self.has_made_palm = False
-            palm_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                          12:19], "    ", "palm", "\n")
-            palm_text = ''.join(palm_tuple)
-            self.file.write(palm_text)
-
-        if self.has_made_blink and self.blink_callback:
-            self.blink_callback()
-            self.has_made_blink = False
-            blink_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                12:19], "    ", "blink", "\n")
-            blink_text = ''.join(blink_tuple)
-            self.file.write(blink_text)
-
-        self.file.close()
-
-    def close_file():
-        key = cv2.waitKey(1) & 0xff
-        if key == ord('q'):
-            self.file = open("logfile.txt", "w+")
-            self.file.seek(0)
-            self.file.truncate()
-            self.file.close()

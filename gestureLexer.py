@@ -4,17 +4,20 @@ import os
 
 class GestureLexer():
     def __init__(self):
-        exists = os.path.getsize("logfile.txt")
-        if exists > 0:
-            self.file=open("logfile.txt", 'a')
-
-        else:
-            self.file=open("logfile.txt", 'a+')
-            self.file.write("   Date        Time     Command\n")
-            print("   Date        Time     Command\n")
 
         self.gestures = []
         self.gesture_patterns = []
+
+        #Again, everything related to logging should be moved to a different
+        #class. I think a shared instance of that class should be passed to
+        #both GestureLexer and GestureParser.
+        exists =  os.path.exists("logfile.txt")
+        if not os.path.exists("logfile.txt"):
+            self.file = open("logfile.txt", 'w+')
+            self.file.write("   Date        Time     Command\n")
+        else:
+            self.file = open("logfile.txt", "a+")
+        print("   Date        Time     Command\n")
 
     def add(self, gesture_name, now):
         gesture_tuple = (now.isoformat()[:10], "    ", now.isoformat()[12:19], "    ", gesture_name ," \n")
@@ -48,4 +51,6 @@ class GestureLexer():
         return current_patterns
 
     def close(self):
+        self.file.seek(0)
+        self.file.truncate()
         self.file.close()
