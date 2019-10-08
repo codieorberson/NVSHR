@@ -3,27 +3,13 @@ import datetime
 import os
 
 class GestureLexer():
-    def __init__(self):
-
+    def __init__(self, logger):
+        self.logger = logger
         self.gestures = []
         self.gesture_patterns = []
 
-        #Again, everything related to logging should be moved to a different
-        #class. I think a shared instance of that class should be passed to
-        #both GestureLexer and GestureParser.
-        exists =  os.path.exists("logfile.txt")
-        if not os.path.exists("logfile.txt"):
-            self.file = open("logfile.txt", 'w+')
-            self.file.write("   Date        Time     Command\n")
-        else:
-            self.file = open("logfile.txt", "a+")
-        print("   Date        Time     Command\n")
-
     def add(self, gesture_name, now):
-        gesture_tuple = (now.isoformat()[:10], "    ", now.isoformat()[12:19], "    ", gesture_name ," \n")
-        gesture_text=''.join(gesture_tuple)
-        print(gesture_text)
-        self.file.write(gesture_text)
+        self.logger.log_gesture(gesture_name, now)
         self.gestures.append((gesture_name, now.timestamp()))
 
     def lex(self, now, min_increment, max_increment):
@@ -49,8 +35,3 @@ class GestureLexer():
         self.gesture_patterns = []
 
         return current_patterns
-
-    def close(self):
-        self.file.seek(0)
-        self.file.truncate()
-        self.file.close()

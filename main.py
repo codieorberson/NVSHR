@@ -6,9 +6,11 @@ from processManager import ProcessManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
+from logger import Logger
 
+logger = Logger()
 gesture_detector = GestureDetector()
-gesture_lexer = GestureLexer()
+gesture_lexer = GestureLexer(logger)
 gesture_parser = GestureParser()
 
 #The first command line argument determines the minimum time needed between
@@ -131,7 +133,6 @@ while should_continue:
         if perimeter.is_set():
             cv2.rectangle(frame, perimeter.get_top_corner(), perimeter.get_bottom_corner(), (0, 0, 255), 2)
 
-
     #Display the frame, flipping it to look like a mirror. I have way too much
     #trouble orienting my body to get gestures detected without doing this.
     #It's pretty embarassing.
@@ -145,10 +146,5 @@ while should_continue:
 cap.release()
 cv2.destroyAllWindows()
 
-#Close down the file gesture_lexer is writing to. Yes, Codie, I agree -- it
-#doesn't belong there. I don't think it belongs in GestureDetector, either. I
-#think it actually belongs in an instance of a yet-to-be-written class that is
-#passed to both gesture_lexer and gesture_parser. The class would be in charge
-#of logging. I believe we want to end up logging both gestures and gesture 
-#sequences; we're currently neglecting the latter.
-gesture_lexer.close()
+#Close log file.
+logger.close()
