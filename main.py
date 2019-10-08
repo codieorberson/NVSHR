@@ -3,15 +3,15 @@ import cv2
 from datetime import datetime
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
+from logger import Logger
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
-from logger import Logger
 
 logger = Logger()
 gesture_detector = GestureDetector()
 gesture_lexer = GestureLexer(logger)
-gesture_parser = GestureParser()
+gesture_parser = GestureParser(logger)
 
 #The first command line argument determines the minimum time needed between
 #identical gestures for them to be considered separate gestures in a pattern.
@@ -82,7 +82,8 @@ while should_continue:
     #gestures in the list of gesture sequences we just aggregated. The child
     #process gets added to the thread pool, but we don't know exactly when it
     #will start executing.
-    process_manager.add_process(gesture_parser.parse_patterns, (gesture_sequences, ))
+    process_manager.add_process(gesture_parser.parse_patterns, 
+            (gesture_sequences, timestamp))
 
     #This line spawns another child process, this time telling gesture_detector
     #to find gestures in the current frame. We pass the frame in for detection,

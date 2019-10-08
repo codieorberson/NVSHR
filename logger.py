@@ -18,9 +18,13 @@ class Logger():
         self.log(''.join((now.isoformat()[:10], "    ", now.isoformat()[12:19], 
                 "    ", gesture_name ," \n")))
 
-    def log_gesture_sequence(self, gesture_sequence):
-        #This method should probably be radically different.
-        log(''.join(gesture_sequence))
+    def log_gesture_sequence(self, gesture_sequence, now, was_recognised):
+        if was_recognised:
+            ending = "] recognised"
+        else:
+            ending = "] not recognised"
+
+        self.log_gesture("pattern: [" + ', '.join(gesture_sequence) + ending, now)
 
     def close(self):
         self.file.seek(0)
