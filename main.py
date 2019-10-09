@@ -1,14 +1,20 @@
-import sys
-import cv2
-from datetime import datetime
-from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
-from logger import Logger
-from gestureDetector import GestureDetector
-from gestureLexer import GestureLexer
-from gestureParser import GestureParser
-
 if __name__ == '__main__':
+    #Hacky code that is attempting to make multiprocessing run on windows:
+    import multiprocessing
+    multiprocessing.freeze_support()
+    multiprocessing.set_start_method('fork')
+    import windowsMultiprocessingGuard
+    windowsMultiprocessingGuard.deploy()
+
+    import sys
+    import cv2
+    from datetime import datetime
+    from multithreadedPerimeter import MultithreadedPerimeter
+    from processManager import ProcessManager
+    from logger import Logger
+    from gestureDetector import GestureDetector
+    from gestureLexer import GestureLexer
+    from gestureParser import GestureParser
 
     logger = Logger()
     gesture_detector = GestureDetector()
@@ -84,6 +90,8 @@ if __name__ == '__main__':
     #gestures in the list of gesture sequences we just aggregated. The child
     #process gets added to the thread pool, but we don't know exactly when it
     #will start executing.
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         process_manager.add_process(gesture_parser.parse_patterns, 
                 (gesture_sequences, timestamp))
 
