@@ -2,7 +2,7 @@ if __name__ == '__main__':
     #Hacky code that is attempting to make multiprocessing run on windows:
     import multiprocessing
     multiprocessing.freeze_support()
-    multiprocessing.set_start_method('fork')
+#    multiprocessing.set_start_method('fork')
     import windowsMultiprocessingGuard
     windowsMultiprocessingGuard.deploy()
 
