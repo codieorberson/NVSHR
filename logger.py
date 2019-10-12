@@ -3,14 +3,15 @@ import os
 class Logger():
     def __init__(self):
         exists =  os.path.exists("logfile.txt")
-        if not os.path.exists("logfile.txt"):
+        if not exists:
             self.file = open("logfile.txt", 'w+')
             self.file.write("   Date        Time     Command\n")
+            print("   Date        Time     Command\n")
         else:
             self.file = open("logfile.txt", "a+")
-        print("   Date        Time     Command\n")
-
+            
     def log(self, output):
+        self.__init__()
         self.file.write(output)
         print(output) 
 
@@ -30,3 +31,4 @@ class Logger():
         self.file.seek(0)
         self.file.truncate()
         self.file.close()
+        os.remove("logfile.txt")
