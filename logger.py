@@ -11,8 +11,8 @@ class Logger():
         print("   Date        Time     Command\n")
 
     def log(self, output):
-       self.file.write(output)
-       print(output) 
+        self.file.write(output)
+        print(output) 
 
     def log_gesture(self, gesture_name, now):
         self.log(''.join((now.isoformat()[:10], "    ", now.isoformat()[12:19], 

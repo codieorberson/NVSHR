@@ -9,7 +9,8 @@ class GestureParser():
 
     def parse_pattern(self, gesture_sequence, now):
         joined_gesture_sequence = "".join(gesture_sequence)
-        was_recognised = bool(joined_gesture_sequence in self.gesture_pattern_map)
+        was_recognised = bool(
+            joined_gesture_sequence in self.gesture_pattern_map)
         self.logger.log_gesture_sequence(gesture_sequence, now, was_recognised)
 
         if was_recognised:

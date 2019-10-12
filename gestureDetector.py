@@ -75,9 +75,8 @@ class GestureDetector():
         #Of these, the first (hand_gesture_detector.detect) will spin up
         #two more subprocesses, while blink_detector.detect will not --
         #which isn't to say that it shouldn't.
-        self.process_manager.add_process(self.hand_gesture_detector.detect, 
-                (current_frame, fist_perimeter, palm_perimeter))
-        self.process_manager.add_process(self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
+        self.process_manager.add_process(self.hand_gesture_detector.detect(current_frame, fist_perimeter, palm_perimeter))
+        self.process_manager.add_process(self.blink_detector.detect(current_frame, left_eye_perimeter, right_eye_perimeter))
 
         #Wait for children to yield control back to this process...
         self.process_manager.on_done()
