@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         process_manager.add_process(
-            gesture_parser.parse_patterns(gesture_sequences, timestamp))
+                gesture_parser.parse_patterns, (gesture_sequences, timestamp))
 
     # This line spawns another child process, this time telling gesture_detector
     # to find gestures in the current frame. We pass the frame in for detection,
@@ -103,8 +103,10 @@ if __name__ == '__main__':
     # (Side note -- if we want to display the frame using the same filters used
     # for detection, we should apply those filters before this point. Currently
     # that is done in GestureDetector, and we display the frame as captured.)
-        process_manager.add_process(gesture_detector.detect(
-            frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter))
+        process_manager.add_process(
+                gesture_detector.detect, (frame, timestamp, open_eye_threshold, 
+                fist_perimeter, palm_perimeter, left_eye_perimeter, 
+                right_eye_perimeter))
 
     # The child processes may or may not have started by now. Calling on_done
     # will make the current process cede control until all of the subprocesses
