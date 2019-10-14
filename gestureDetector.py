@@ -1,84 +1,112 @@
 import cv2
-from timerClass import Timer
+import numpy as np
 from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
 from imutils.video import VideoStream
 from imutils import face_utils
-import numpy as np
-import imutils
-import time
-import datetime
-import dlib
-import os
-
+from datetime import datetime
+from multithreadedPerimeter import MultithreadedPerimeter
+from processManager import ProcessManager
+from gesture import Gesture
+#I really don't like the following two module names, we should change them.
+from handGestureDetector import HandGestureDetector
+from blinkDetector import BlinkDetector
 
 class GestureDetector():
-    def __init__(self, time_increment, detector, predictor):
-        self.time_increment = time_increment  # time increment used by the system to check for gestures/blinks
-        self.timer = Timer(self.time_increment)
-        self.has_made_fist = False
-        self.has_made_palm = False
-        self.has_made_blink = False
-        self.fist_callback = None
-        self.palm_callback = None
-        self.blink_callback = None
-        self.fist = None
-        self.palm = None
-        self.source = None
-        self.detector = detector
-        self.predictor = predictor
-        self.ear_thresh = 0.2
-        self.ear_consec_frame = 2
-        self.ear = None  # eye aspect ratio
-        self.blinks = 0
-        self.cont_frames = 0
-        self.file = None
+    def __init__(self):
+        #Next value not being used right now, but may be in the near future.
+        #self.is_black_and_white = False
+
+        self.process_manager = ProcessManager()
+        self.hand_gesture_detector = HandGestureDetector()
+        self.blink_detector = BlinkDetector()
+
+        self.fist_event = None
+        self.palm_event = None
+        self.blink_event = None
 
     def on_fist(self, callback):
-        self.fist_callback = callback
+        self.fist_event = callback
 
     def on_palm(self, callback):
-        self.palm_callback = callback
+        self.palm_event = callback
 
     def on_blink(self, callback):
-        self.blink_callback = callback
+        self.blink_event = callback
 
-    def on_tick(self):
-        file_exists = os.path.exists("logfile.txt")
-        if file_exists == False:
-            self.file = open("logfile.txt", 'w+')
-            self.file.write("   Date        Time     Command\n")
+    #This method is expected to be run in a separate thread, which is why it
+    #accepts MultithreadedPerimeter instances as arguments.
+    def detect(self, frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
+
+        '''
+        panel = np.zeros([100, 700], np.uint8)
+
+        hContrastRed = 0
+        lContrastRed = 170
+
+        low_contrast = np.array([hContrastRed, hContrastGreen, hContrastBlue])
+        high_contrast = np.array([lContrastRed, lContrastGreen, lContrastBlue])
+
+        mask = cv2.inRange(frame, low_contrast, high_contrast)
+        mask_inv = cv2.bitwise_not(mask)
+
+        color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
+        gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
+
+        if self.is_black_and_white:
+            current_frame = gray_frame
         else:
-            self.file = open("logfile.txt", "a+")
-        now = datetime.datetime.now()
+            current_frame = frame
+        '''
+        #The above code makes gesture detection worse for me right now, but may
+        #be useful shortly. Codie's code at the bottom of this file might be
+        #better, and it should certainly be in a separate method. The next line
+        #just sets an alias for frame that will be convenient if we want to
+        #detect gestures from a modified version while keeping the original.
+        #At the moment renaming every instance of current_frame to frame
+        #wouldn't have broken anything, but it used to, and it probably will
+        #again once we start using that high-contrast/low-contrast code in a 
+        #way that allows it to be adjusted for a particular environment with
+        #particular lighting details.
+        current_frame = frame
+          
+        #We're already in a child process, relative to main.py; now we're
+        #spawning two grandchild processes (again relative to main.py).
+        #Of these, the first (hand_gesture_detector.detect) will spin up
+        #two more subprocesses, while blink_detector.detect will not --
+        #which isn't to say that it shouldn't.
+        self.process_manager.add_process(
+                self.hand_gesture_detector.detect, (current_frame, fist_perimeter, palm_perimeter))
+        self.process_manager.add_process(
+                self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
 
-        print("tick")  # used for debugging purposes
+        #Wait for children to yield control back to this process...
+        self.process_manager.on_done()
+        #...then yield control back to the parent process (main).
 
-        if self.has_made_fist and self.fist_callback:
-            self.fist_callback()
-            self.has_made_fist = False
-            fist_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                          12:19], "    ", "fist", " \n")
-            fist_text = ''.join(fist_tuple)
-            self.file.write(fist_text)
+    #This method will be run synchronously, allowing the callbacks to have
+    #access to the actual values of the parent process instead of just
+    #operating on copies of them.
+    def trigger_events(self, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
 
-        if self.has_made_palm and self.palm_callback:
-            self.palm_callback()
-            self.has_made_palm = False
-            palm_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                          12:19], "    ", "palm", "\n")
-            palm_text = ''.join(palm_tuple)
-            self.file.write(palm_text)
+        if fist_perimeter.is_set():
+            self.fist_event(timestamp)
 
-        if self.has_made_blink and self.blink_callback:
-            self.blink_callback()
-            self.has_made_blink = False
-            blink_tuple = (now.isoformat()[:10], "    ", now.isoformat()[
-                12:19], "    ", "blink", "\n")
-            blink_text = ''.join(blink_tuple)
-            self.file.write(blink_text)
+        if palm_perimeter.is_set():
+            self.palm_event(timestamp)
 
-        self.file.close()
+        #Repetitious, I know. This could be written in a more clever manner.
+        
+        if left_eye_perimeter.is_set() and right_eye_perimeter.is_set():
+            if  open_eye_threshold > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio() / 2):
+                self.blink_event(timestamp)
+
+#The methods beyond this point were things pulled from Codie's code that I
+#didn't want to throw out entirely, but which seemed to generally impair
+#my ability to detect frames. This wasn't always the case, it seems to depend
+#highly on lighting. I think having this logic would be really useful once the
+#high-contrast/low-contrast settings can be set by an admin looking at a debug
+#screen. For the demo tomorrow, I think we'll have better luck without them.
 
     def set_frame_contrast(Red, Green, Blue):  # used for creating contrast within the frame to detect hand gestures
         # more clearly
@@ -87,67 +115,13 @@ class GestureDetector():
         blueContrast = Blue
         return [redContrast, greenContrast, blueContrast]
 
-    def set_cropped_face_frame(self, rects, frame, color_frame):
-        rects = self.detector(color_frame, 0)
-        for rect in rects:
-            (x, y, w, h) = face_utils.rect_to_bb(rect)
-            face = frame[y: y + h, x: x + w]
-            face = imutils.resize(face, width=400)
-            cv2.imshow("Cropped Blink Frame", face)
+    def get_gray_hand_frame():
+        low_contrast = np.array(GestureDetector.set_frame_contrast(0, 0, 0))
+        high_contrast = np.array(
+                GestureDetector.set_frame_contrast(132, 255, 255))
 
-    def set_ears(self, leftEye, rightEye):
-        leftEAR = self.eye_aspect_ratio(leftEye)
-        rightEAR = self.eye_aspect_ratio(rightEye)
-        self.ear = (leftEAR + rightEAR) / 2.0
-
-    # check to see if the eye aspect ratio is below the blink
-    # threshold, and if so, increment the blink frame counter
-    def check_eye_aspect_ratio(self, ear, ear_thresh, ear_consec_frame):
-        if ear < ear_thresh:
-            self.cont_frames += 1
-        # otherwise, the eye aspect ratio is not below the blink
-        # threshold
-        else:
-            # if the eyes were closed for a sufficient number of
-            # then increment the total number of blinks
-            if self.cont_frames >= self.ear_consec_frame:
-                self.blinks += 1  # This is where its printing out all the blinks in total
-                self.has_made_blink = True
-                # reset the eye frame counter
-                self.cont_frames = 0
-        return self.cont_frames
-
-    # draw the total number of blinks on the frame along with
-    # the computed eye aspect ratio for the frame
-    def make_frame_labels(self, frame):
-        cv2.putText(frame, "Blinks: {}".format(self.blinks), (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        cv2.putText(frame, "EAR: {:.2f}".format(self.ear), (300, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        return frame
-
-    # compute the convex hull for the left and right eye, then
-    # visualize each of the eyes
-    def visualize_eyes(self, leftEye, rightEye, frame):
-        leftEyeHull = cv2.convexHull(leftEye)
-        rightEyeHull = cv2.convexHull(rightEye)
-        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
-        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
-
-    # determine the facial landmarks for the face region, then
-    # convert the facial landmark (x, y)-coordinates to a NumPy
-    # array
-    def convert_facial_landmark(self, shape, rect, frame_color):
-        (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-        (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-        shape = face_utils.shape_to_np(shape)
-        # extract the left and right eye coordinates, then use the
-        # coordinates to compute the eye aspect ratio for both eyes
-        leftEye = shape[lStart:lEnd]
-        rightEye = shape[rStart:rEnd]
-        leftEAR = self.eye_aspect_ratio(leftEye)
-        rightEAR = self.eye_aspect_ratio(rightEye)
-        return leftEye, rightEye
+        return GestureDetector.changing_hand_frame(
+                self, hand_frame, low_contrast, high_contrast)
 
     def changing_hand_frame(self, frame, low_cont, high_cont):
         mask = cv2.inRange(frame, low_cont, high_cont)
@@ -239,5 +213,10 @@ class GestureDetector():
         # compute the eye aspect ratio
         ear = (A + B) / (2.0 * C)
 
-        # return the eye aspect ratio
-        return ear
+    def get_cropped_hand_frame():
+       return imutils.resize(frame, width=800)
+
+
+    def get_gray_blink_frame(cropped_blink_frame):
+       return cv2.cvtColor(cropped_blink_frame, cv2.COLOR_BGR2GRAY)
+
