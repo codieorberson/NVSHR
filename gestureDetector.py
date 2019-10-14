@@ -216,5 +216,8 @@ class GestureDetector():
         # compute the eye aspect ratio
         ear = (A + B) / (2.0 * C)
 
+    def get_cropped_hand_frame():
+       return imutils.resize(frame, width=800)
+
     def get_gray_blink_frame(cropped_blink_frame):
        return cv2.cvtColor(cropped_blink_frame, cv2.COLOR_BGR2GRAY)
