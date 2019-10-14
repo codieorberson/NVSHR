@@ -59,7 +59,8 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    contained in ProcessManager and MultithreadedPerimeter. You'll see a
 #    demonstration of them being used together shortly.
         self.process_manager = ProcessManager()
-        self.gui_manager = GuiManager(self.cap)
+        self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold)
+#        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
@@ -147,6 +148,9 @@ class NonVerbalSmartHomeRecognitionSystem():
         #trouble orienting my body to get gestures detected without doing this.
         #It's pretty embarassing.
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
+
+    def set_open_eye_threshold(self, new_ear_value):
+        self.open_eye_threshold = float(new_ear_value) / 100.0
         
     def on_close(self):
 #Close down OpenCV.
