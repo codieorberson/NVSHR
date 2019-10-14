@@ -133,5 +133,88 @@ class GestureDetector():
     def get_cropped_hand_frame():
        return imutils.resize(frame, width=800)
 
+    def detect_fist_or_palm(self, frame):
+        fist_cascade = cv2.CascadeClassifier('fist.xml')
+        palm_cascade = cv2.CascadeClassifier('palm.xml')
+        self.fist = fist_cascade.detectMultiScale(frame, 1.3, 5)
+        self.palm = palm_cascade.detectMultiScale(frame, 1.3, 5)
+
+        if len(self.fist) > 0:
+            self.has_made_fist = True
+        if len(self.palm) > 0:
+            self.has_made_palm = True
+
+        for (x, y, w, h) in self.fist:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        for (x, y, w, h) in self.palm:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
+
+    def start(self):
+        self.timer.on_time(self.on_tick)
+
+        self.source = VideoStream(src=0).start()
+
+        while True:
+
+            blink_frame = self.source.read()
+            cropped_blink_frame = imutils.resize(self.source.read(), width=800)
+            gray = cv2.cvtColor(cropped_blink_frame, cv2.COLOR_BGR2GRAY)
+
+            # detect faces in the grayscale blink_frame
+            rects = self.detector(gray, 0)
+
+            # loop over the face detections
+            for rect in rects:
+
+                shape = self.predictor(gray, rect)
+                leftEye, rightEye = GestureDetector.convert_facial_landmark(
+                    self, shape, rect, gray)
+                # average the eye aspect ratio together for both eyes
+                GestureDetector.set_ears(
+                    self, leftEye, rightEye)
+                GestureDetector.visualize_eyes(
+                    self, leftEye, rightEye, cropped_blink_frame)
+                GestureDetector.check_eye_aspect_ratio(
+                    self, self.ear, self.ear_thresh, self.ear_consec_frame)
+                GestureDetector.make_frame_labels(self, blink_frame)
+                GestureDetector.set_cropped_face_frame(
+                    self, rects, cropped_blink_frame, gray)
+
+            hand_frame = self.source.read()
+            low_contrast = np.array(GestureDetector.set_frame_contrast(0, 0, 0))
+            high_contrast = np.array(
+                GestureDetector.set_frame_contrast(90, 255, 255))
+
+            gray_frame = GestureDetector.changing_hand_frame(
+                self, hand_frame, low_contrast, high_contrast)
+
+
+            GestureDetector.detect_fist_or_palm(self, gray_frame)
+
+            self.timer.check_time()
+            cv2.imshow("Blink Frame", blink_frame)
+            cv2.imshow('Hand Gesture Frame', gray_frame)
+
+            key = cv2.waitKey(1) & 0xff
+            if key == ord('q'):
+                self.file = open("logfile.txt", "w+")
+                self.file.seek(0)
+                self.file.truncate()
+                self.file.close()
+                break
+
+    def eye_aspect_ratio(self, eye):
+        # compute the euclidean distances between the two sets of
+        # vertical eye landmarks (x, y)-coordinates
+        A = dist.euclidean(eye[1], eye[5])
+        B = dist.euclidean(eye[2], eye[4])
+
+        # compute the euclidean distance between the horizontal
+        # eye landmark (x, y)-coordinates
+        C = dist.euclidean(eye[0], eye[3])
+
+        # compute the eye aspect ratio
+        ear = (A + B) / (2.0 * C)
+
     def get_gray_blink_frame(cropped_blink_frame):
        return cv2.cvtColor(cropped_blink_frame, cv2.COLOR_BGR2GRAY)
