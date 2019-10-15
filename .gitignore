@@ -1,2 +1,4 @@
+data.txt
+logfile.txt
 *.sw[a-p]
-blink-detection/__pycache__/Blink.cpython-37.pyc
+**/__pycache__
