@@ -12,7 +12,7 @@ class HandGestureDetector():
 
     def detect(self, frame, has_made_fist, has_made_palm):
         self.process_manager.add_process(
-            self.fist.detect(frame, has_made_fist))
+                self.fist.detect, (frame, has_made_fist))
         self.process_manager.add_process(
-            self.palm.detect(frame, has_made_palm))
+                self.palm.detect, (frame, has_made_palm))
         self.process_manager.on_done()

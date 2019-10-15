@@ -1,5 +1,26 @@
-from multiprocessing import Process
+from multiprocessing import Process, get_start_method
 
+is_forking = get_start_method() == 'fork'
+
+class SynchronousProcess():
+    def __init__(self, target = None, args = None):
+        if args:
+            target(*args)
+        else:
+            target()
+
+    def start(self):
+        pass
+
+    def join(self):
+        pass
+
+if get_start_method() == "fork":
+    #On Linux, we use multiprocessing.
+    ProcessConstructor = Process
+else:
+    #On Windows, we use the previously defined kludge.
+    ProcessConstructor = SynchronousProcess
 
 class ProcessManager():
     def __init__(self):
@@ -9,9 +30,9 @@ class ProcessManager():
         if arguments:
             if not isinstance(arguments, tuple):
                 arguments = (arguments, )
-            process = Process(target=callback, args=arguments)
+            process = ProcessConstructor(target=callback, args=arguments)
         else:
-            process = Process(target=callback)
+            process = ProcessConstructor(target=callback)
         self.processes.append(process)
         process.start()
 
