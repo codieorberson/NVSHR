@@ -42,16 +42,16 @@ class _App(Tk):
     def __init__(self, *args,**kwargs):
         Tk.__init__(self,*args,**kwargs)
 
-    def set_cap_and_get_debug_tab(self, cap, on_ear_change):
+    def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear):
         self.notebook = ttk.Notebook()
-        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change)
+        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear)
         self.notebook.grid(row=0)
         return self.debug_tab
 
-    def add_content(self, body, cap, on_ear_change):
+    def add_content(self, body, cap, on_ear_change, initial_ear):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
-            tab = Page(self.notebook, self, cap, on_ear_change, page_configuration["elements"])
+            tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, page_configuration["elements"])
             self.notebook.add(tab, text = page_configuration["title"], )
             if tab.is_debug:
                 debug_tab = tab
@@ -62,7 +62,7 @@ class _App(Tk):
 #Note that the current version only has one tab, due to the canvas element
 #showing up on every tab.
 class Page(Frame):
-    def __init__(self, name, window, cap, on_ear_change, elements, *args,**kwargs):
+    def __init__(self, name, window, cap, on_ear_change, initial_ear, elements, *args,**kwargs):
 
         self.event_map = {
                 "on_ear_change" : on_ear_change
@@ -87,7 +87,7 @@ class Page(Frame):
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
                 self.slider = Scale(orient='horizontal', from_=0, to=100, command=self.slider_command)
-                self.slider.set(20)
+                self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
 
@@ -116,9 +116,9 @@ class Page(Frame):
 #should be executed between refresh cycles and before closing down, and moving
 #data to and from the GUI (e.g. when drawing a new frame for the debug screen).
 class GuiManager():
-    def __init__(self, cap, on_ear_change):
+    def __init__(self, cap, on_ear_change, initial_ear):
         self.gui = _App()
-        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change)
+        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear)
 
     def __loop__(self):
         self.loop_callback()

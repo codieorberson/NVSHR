@@ -5,6 +5,7 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
+from dataManager import DataManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
@@ -30,13 +31,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         else:
             self.max_increment = 5
      
-#     The third command line argument determines the EAR at which blinks and winks
-#     are detected.
-        if len(sys.argv) > 3:
-            self.open_eye_threshold = float(sys.argv[3])
-        else:
-            self.open_eye_threshold = 0.2
-     
 #     Add three callbacks to self.gesture_detector. These anonymous functions (also known
 #    as lambdas) take a timestamp and tell self.gesture_lexer to record a gesture at
 #    that time. The particular sort of gesture passed is indicated by a string.
@@ -59,7 +53,9 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    contained in ProcessManager and MultithreadedPerimeter. You'll see a
 #    demonstration of them being used together shortly.
         self.process_manager = ProcessManager()
-        self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold)
+        self.data_manager = DataManager()
+        self.open_eye_threshold = self.data_manager.get_open_eye_threshold()
+        self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold, self.open_eye_threshold)
 #        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)
         self.gui_manager.start(self.main_loop, self.on_close)
      
@@ -151,6 +147,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value) / 100.0
+        self.data_manager.set_open_eye_threshold(self.open_eye_threshold)
         
     def on_close(self):
 #Close down OpenCV.
@@ -159,3 +156,4 @@ class NonVerbalSmartHomeRecognitionSystem():
      
 # Close log file.
         self.logger.close() 
+        self.data_manager.close()
