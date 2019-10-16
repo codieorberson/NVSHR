@@ -29,9 +29,27 @@ _gui_data = {
                 {
                     "format": "text",
                     "body": "Set the EAR:"
+                }
+            ]
+        },
+        "tab2": {"title": "Debug",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": "This is where instructional text goes."
                 },
                 {
                     "format": "video"
+                },
+                {
+                    "format": "slider",
+                    "event_name": "on_ear_change"
+                
+                },
+#Note that the following text appears above the slider, even though it is placed below in the configuration. Is buggy.
+                {
+                    "format": "text",
+                    "body": "Set the EAR:"
                 }
             ]
         }
@@ -80,7 +98,7 @@ class Page(Frame):
                 self.is_debug = True
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-                self.debug_canvas = Canvas(window, width = self.debug_width, height = self.debug_height)
+                self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
