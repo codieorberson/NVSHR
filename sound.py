@@ -1,2 +1,3 @@
 from playsound import playsound
-playsound('confirmationAcceptanceBeep.wav')
+playsound('confirmationApproval.wav')
+playsound('confirmationDenial.wav')
