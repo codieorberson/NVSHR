@@ -1,3 +1,4 @@
 class SmartHomeActivator:
-    def activate(smartHomeAction):
-        print(smartHomeAction)
+    def activate(self, smartHomeAction, device):
+        print('"' + smartHomeAction + '" sent to ' + device + '.')
+        #This needs to actually trigger the hass.io interface.

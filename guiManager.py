@@ -46,7 +46,7 @@ _gui_data = {
                 }
             ]
         },
-        "tab3": {"title": "Log",
+        "tab4": {"title": "Log",
             "elements": [
                 {
                     "format": "text",
