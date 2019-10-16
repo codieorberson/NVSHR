@@ -15,26 +15,49 @@ _gui_data = {
                 {
                     "format": "text",
                     "body": "This is where instructional text goes."
-                },
+                }
+            ]
+        },
+        "tab2": {"title": "Debug",
+            "elements": [
                 {
                     "format": "text",
-                    "body": "The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."
+                    "body": "Debug video:"
                 },
                 {
-                    "format": "slider",
-                    "event_name": "on_ear_change"
-                
+                    "format": "video"
                 },
-#Note that the following text appears above the slider, even though it is placed below in the configuration. Is buggy.
                 {
                     "format": "text",
                     "body": "Set the EAR:"
                 },
                 {
-                    "format": "video"
+                    "format": "slider",
+                    "event_name": "on_ear_change"
+                
                 }
             ]
-        }
+        },
+        "tab3": {"title": "Commands",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": "The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."
+                }
+            ]
+        },
+        "tab3": {"title": "Log",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": "To view the log, open logfile.txt in a text editor."
+                },
+                {
+                    "format": "text",
+                    "body": "We should really display it in the GUI, though."
+                }
+            ]
+        }      
 }
 
 #An instance of this class represents a window with (potentially) multiple tabs.
@@ -80,13 +103,13 @@ class Page(Frame):
                 self.is_debug = True
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-                self.debug_canvas = Canvas(window, width = self.debug_width, height = self.debug_height)
+                self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
-                self.slider = Scale(orient='horizontal', from_=0, to=100, command=self.slider_command)
+                self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
                 self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
