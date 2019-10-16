@@ -15,20 +15,6 @@ _gui_data = {
                 {
                     "format": "text",
                     "body": "This is where instructional text goes."
-                },
-                {
-                    "format": "text",
-                    "body": "The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."
-                },
-                {
-                    "format": "slider",
-                    "event_name": "on_ear_change"
-                
-                },
-#Note that the following text appears above the slider, even though it is placed below in the configuration. Is buggy.
-                {
-                    "format": "text",
-                    "body": "Set the EAR:"
                 }
             ]
         },
@@ -36,23 +22,42 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": "This is where instructional text goes."
+                    "body": "Debug video:"
                 },
                 {
                     "format": "video"
                 },
                 {
+                    "format": "text",
+                    "body": "Set the EAR:"
+                },
+                {
                     "format": "slider",
                     "event_name": "on_ear_change"
                 
-                },
-#Note that the following text appears above the slider, even though it is placed below in the configuration. Is buggy.
-                {
-                    "format": "text",
-                    "body": "Set the EAR:"
                 }
             ]
-        }
+        },
+        "tab3": {"title": "Commands",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": "The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."
+                }
+            ]
+        },
+        "tab3": {"title": "Log",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": "To view the log, open logfile.txt in a text editor."
+                },
+                {
+                    "format": "text",
+                    "body": "We should really display it in the GUI, though."
+                }
+            ]
+        }      
 }
 
 #An instance of this class represents a window with (potentially) multiple tabs.
@@ -104,7 +109,7 @@ class Page(Frame):
             elif element["format"] == "slider":
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
-                self.slider = Scale(orient='horizontal', from_=0, to=100, command=self.slider_command)
+                self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
                 self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
