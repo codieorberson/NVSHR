@@ -132,7 +132,6 @@ class Page(Frame):
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
-                print("Making slider element!")
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
                 self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
