@@ -50,6 +50,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on (not really)', 'Alexa'))
       
         self.cap = cv2.VideoCapture(0)
+                
      
 #    This process manager is what spawns child processes and returns control to the
 #    parent process when they all finish. All of the multithreaded logic is

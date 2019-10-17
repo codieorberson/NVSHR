@@ -14,7 +14,7 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": "This is where instructional text goes."
+                    "body": {"text" : "This is where instructional text goes."}
                 }
             ]
         },
@@ -22,14 +22,40 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": "Debug video:"
+                    "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
+                },
+                {
+                    "format": "text",
+                                                  #Note that FPS is only being 
+                                                  #calculated on initial 
+                                                  #execution, but we should 
+                                                  #really make a hook to update
+                                                  #this value as the program 
+                                                  #executes because FPS will
+                                                  #probably drop as we execute
+                                                  #other code in between frame
+                                                  #capture events:
+                    "body": {"text": "FPS: " + str(cv2.VideoCapture(0).get(cv2.CAP_PROP_FPS)),
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
+                },
+                {
+                    "format": "text",
+                    "body": {"text": "Current Gesture: " + "Want to show current gesture being detected here",
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
                 },
                 {
                     "format": "video"
                 },
                 {
                     "format": "text",
-                    "body": "Set the EAR:"
+                    "body": {"text" : "Set the EAR:"}
                 },
                 {
                     "format": "slider",
@@ -42,7 +68,7 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": "The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."
+                    "body": {"text" :"The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."}
                 }
             ]
         },
@@ -50,11 +76,11 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": "To view the log, open logfile.txt in a text editor."
+                    "body": {"text" : "To view the log, open logfile.txt in a text editor."}
                 },
                 {
                     "format": "text",
-                    "body": "We should really display it in the GUI, though."
+                    "body": {"text" : "We should really display it in the GUI, though."}
                 }
             ]
         }      
@@ -96,7 +122,7 @@ class Page(Frame):
         row_index = 1
         for element in elements:
             if element["format"] == "text":
-                self.label = Label(self, text=element["body"])
+                self.label = Label(self, element["body"])
                 self.label.grid(row=row_index, column=0, padx=10, pady=10)
                 self.name = name
             elif element["format"] == "video":
@@ -113,11 +139,6 @@ class Page(Frame):
                 self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
-
-                
-#scale.pack()
-
-
                 
             row_index += 1
 
@@ -156,13 +177,3 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
-'''
-import Tkinter
-
-def print_value(val):
-    print val
-
-root = Tkinter.Tk()
-
-root.mainloop()
-'''
