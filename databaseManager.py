@@ -33,12 +33,12 @@ class DatabaseManager():
         cursor = connection.cursor()
 
         if not self.__is_initialised__(cursor):
-            self.__initialise__(cursor)
-
-        connection = psycopg2.connect(
-                database = _database_configuration['database'],
-                user = _database_configuration['user'],
-                password = _database_configuration['password'])
+            connection = self.__initialise__(cursor, connection)
+        else:
+            connection = psycopg2.connect(
+                    database = _database_configuration['database'],
+                    user = _database_configuration['user'],
+                    password = _database_configuration['password'])
 
         return connection
 
@@ -47,12 +47,47 @@ class DatabaseManager():
                 + _database_configuration['database'] +"'")
         return cursor.fetchone()
 
-    def __initialise__(self, cursor):
-        print("Database not found, creating a new database.")
+    def __initialise__(self, cursor, connection):
         cursor.execute('CREATE DATABASE ' + _database_configuration['database'])
 
-    def set_open_eye_threshold(self, new_open_eye_threshold):
+        cursor.close()
+        connection.commit()
+
+        connection = psycopg2.connect(
+                database = _database_configuration['database'],
+                user = _database_configuration['user'],
+                password = _database_configuration['password'])
+
+        cursor = connection.cursor()
+
+        cursor.execute('''CREATE TABLE configuration ( 
+                open_eye_ratio FLOAT,
+                minimum_time_increment INTEGER,
+                maximum_time_increment INTEGER,
+                low_contrast INTEGER,
+                high_contrast INTEGER
+                )''')
+
+        cursor.execute('''INSERT INTO configuration(open_eye_ratio) VALUES ('''
+                + str(_default_values['open_eye_ratio']) + 
+                ''');''')
+
+        cursor.close()
+        connection.commit()
+
+        return connection
+
+#        'open_eye_ratio' : 0.2,
+#        'minimum_time_increment' : 2,
+#        'maximum_time_increment' : 5,
+#        'low_contrast' : None,
+#        'high_contrast' : None
+
+    def __set_configuration__(configuration_column_name, value):
         pass
+
+    def set_open_eye_threshold(self, new_open_eye_threshold):
+        self.__set_configuration__('open_eye_threshold', new_open_eye_value)
 
     def get_open_eye_threshold(self):
         pass
