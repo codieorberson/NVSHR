@@ -6,6 +6,7 @@ from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
 from dataManager import DataManager
+from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
@@ -58,6 +59,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    demonstration of them being used together shortly.
         self.process_manager = ProcessManager()
         self.data_manager = DataManager()
+        self.databaseManager = DatabaseManager()
         self.open_eye_threshold = self.data_manager.get_open_eye_threshold()
         self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold, self.open_eye_threshold)
 #        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)

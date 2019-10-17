@@ -1,6 +1,10 @@
 # Non-Verbal Smart Home Recognition (NVSHR) System 
 
-### Environment Set-Up
+### Postgres Setup
+
+Install postgres, grant your current user account access to psql, and create a database named after your user account if your system's user creation process didn't do that for you automagically.
+
+### Further Environment Set-Up
 
  If you are using a Windows machine, please check and make sure you are using the current SDK files.
  You can most likely find these files in your C directory (C:\Program Files (x86)\Microsoft SDKs\Windows Kits) or similar directory.
