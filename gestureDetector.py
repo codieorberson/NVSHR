@@ -1,4 +1,5 @@
 import cv2
+import imutils
 import numpy as np
 from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
@@ -199,7 +200,6 @@ class GestureDetector():
             if key == ord('q'):
                 self.file = open("logfile.txt", "w+")
                 self.file.seek(0)
-                self.file.truncate()
                 self.file.close()
                 break
 

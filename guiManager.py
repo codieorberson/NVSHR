@@ -14,7 +14,27 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": {"text" : "This is where instructional text goes."}
+                    "body":
+                        {
+                            "text": "Welcome to the Non-Verbal Smart Home Recgonition (NVSHR) System!",
+                            "font": ("Times", 30, "bold"),
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "The NVSHR system is a system used to use non-verbal communication to control smart "
+                                    "home devices with the help of hand gestures and blink detection. As a system "
+                                    "administrator there are a few things that need to be initialized before the NVSHR syst"
+                                    "em can be used properly. Please follow the steps below to ensure the user has the best"
+                                    " experience using this system.",
+                            "width": 100,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center"
+                        }
                 }
             ]
         },
@@ -92,7 +112,8 @@ class _App(Tk):
         Tk.__init__(self,*args,**kwargs)
 
     def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear):
-        self.notebook = ttk.Notebook()
+        self.notebook = ttk.Notebook(width=1000, height=800)
+        self.notebook.pack(expand=True)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear)
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -101,7 +122,7 @@ class _App(Tk):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, page_configuration["elements"])
-            self.notebook.add(tab, text = page_configuration["title"], )
+            self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
 
