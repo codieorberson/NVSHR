@@ -14,27 +14,75 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": "This is where instructional text goes."
+                    "body": {"text" : "This is where instructional text goes."}
+                }
+            ]
+        },
+        "tab2": {"title": "Debug",
+            "elements": [
+                {
+                    "format": "video"
                 },
                 {
                     "format": "text",
-                    "body": "The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."
+                    "body": {"text" : "Set the EAR:"}
                 },
                 {
                     "format": "slider",
-                    "event_name": "on_ear_change"
-                
+                    "event_name": "on_ear_change" 
                 },
-#Note that the following text appears above the slider, even though it is placed below in the configuration. Is buggy.
                 {
                     "format": "text",
-                    "body": "Set the EAR:"
+                    "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
                 },
                 {
-                    "format": "video"
+                    "format": "text",
+                                                  #Note that FPS is only being 
+                                                  #calculated on initial 
+                                                  #execution, but we should 
+                                                  #really make a hook to update
+                                                  #this value as the program 
+                                                  #executes because FPS will
+                                                  #probably drop as we execute
+                                                  #other code in between frame
+                                                  #capture events:
+                    "body": {"text": "FPS: " + str(cv2.VideoCapture(0).get(cv2.CAP_PROP_FPS)),
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
+                },
+                {
+                    "format": "text",
+                    "body": {"text": "Current Gesture: " + "Want to show current gesture being detected here",
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
                 }
             ]
-        }
+        },
+        "tab3": {"title": "Commands",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": {"text" :"The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."}
+                }
+            ]
+        },
+        "tab4": {"title": "Log",
+            "elements": [
+                {
+                    "format": "text",
+                    "body": {"text" : "To view the log, open logfile.txt in a text editor."}
+                },
+                {
+                    "format": "text",
+                    "body": {"text" : "We should really display it in the GUI, though."}
+                }
+            ]
+        }      
 }
 
 #An instance of this class represents a window with (potentially) multiple tabs.
@@ -73,28 +121,24 @@ class Page(Frame):
         row_index = 1
         for element in elements:
             if element["format"] == "text":
-                self.label = Label(self, text=element["body"])
+                self.label = Label(self, element["body"])
                 self.label.grid(row=row_index, column=0, padx=10, pady=10)
                 self.name = name
             elif element["format"] == "video":
                 self.is_debug = True
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-                self.debug_canvas = Canvas(window, width = self.debug_width, height = self.debug_height)
+                self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
+                print("Making slider element!")
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
-                self.slider = Scale(orient='horizontal', from_=0, to=100, command=self.slider_command)
+                self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
                 self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
-
-                
-#scale.pack()
-
-
                 
             row_index += 1
 
@@ -133,13 +177,3 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
-'''
-import Tkinter
-
-def print_value(val):
-    print val
-
-root = Tkinter.Tk()
-
-root.mainloop()
-'''
