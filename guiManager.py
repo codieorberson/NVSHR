@@ -44,8 +44,7 @@ _gui_data = {
                     "format": "text",
                     "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
                              "font": "20",
-                             "bg": "White",
-                             "relief": "groove"}
+                             "justify": "left"}
                 },
                 {
                     "format": "text",
@@ -60,15 +59,12 @@ _gui_data = {
                                                   #capture events:
                     "body": {"text": "FPS: " + str(cv2.VideoCapture(0).get(cv2.CAP_PROP_FPS)),
                              "font": "20",
-                             "bg": "White",
-                             "relief": "groove"}
+                             "justify": "left"}
                 },
                 {
                     "format": "text",
                     "body": {"text": "Current Gesture: " + "Want to show current gesture being detected here",
-                             "font": "20",
-                             "bg": "White",
-                             "relief": "groove"}
+                             "font": "20"}
                 },
                 {
                     "format": "video"
@@ -247,7 +243,7 @@ class Page(Frame):
                               element["option5"]]
                 self.option = StringVar()
                 self.option.set(element["option1"])
-                self.optionMenu = OptionMenu(self, FIRST, *OPTIONLIST, command=self.set_value)
+                self.optionMenu = OptionMenu(self, self.option, *OPTIONLIST, command=self.set_value)
                 self.optionMenu.pack()
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
@@ -278,6 +274,7 @@ class Page(Frame):
 class GuiManager():
     def __init__(self, cap, on_ear_change, initial_ear):
         self.gui = _App()
+        self.gui.title("NVSHR")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear)
 
     def __loop__(self):
