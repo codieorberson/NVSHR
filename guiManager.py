@@ -247,7 +247,7 @@ class Page(Frame):
                 self.slider_command = self.event_map[event_name]
                 self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
                 self.slider.set(initial_ear * 100)
-                self.slider.grid(row = row_index, column =0, padx =0, pady = 10)
+                self.slider.grid(row = row_index, column =0, padx =10, pady = 10)
                 self.name = name
             elif element["format"] == "option":
                 OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
