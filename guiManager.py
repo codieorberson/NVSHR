@@ -14,12 +14,43 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": {"text" : "This is where instructional text goes."}
+                    "body":
+                        {
+                            "text": "Welcome to the Non-Verbal Smart Home Recgonition (NVSHR) System!",
+                            "font": ("Helvetica", 25, "bold"),
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "The NVSHR system is a system used to use non-verbal communication to control smart "
+                                    "home devices with the help of hand gestures and blink detection. As a system "
+                                    "administrator there are a few things that need to be initialized before the NVSHR syst"
+                                    "em can be used properly. Please follow the steps below to ensure the user has the best"
+                                    " experience using this system.",
+#                            "width": 100,
+                            "height": 4,
+                            "wraplength": 800,
+                            "justify": "center"
+                        }
                 }
             ]
         },
         "tab2": {"title": "Debug",
             "elements": [
+                {
+                    "format": "video"
+                },
+                {
+                    "format": "text",
+                    "body": {"text" : "Set the EAR:"}
+                },
+                {
+                    "format": "slider",
+                    "event_name": "on_ear_change" 
+                },
                 {
                     "format": "text",
                     "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
@@ -29,6 +60,15 @@ _gui_data = {
                 },
                 {
                     "format": "text",
+                                                  #Note that FPS is only being 
+                                                  #calculated on initial 
+                                                  #execution, but we should 
+                                                  #really make a hook to update
+                                                  #this value as the program 
+                                                  #executes because FPS will
+                                                  #probably drop as we execute
+                                                  #other code in between frame
+                                                  #capture events:
                     "body": {"text": "FPS: " + str(cv2.VideoCapture(0).get(cv2.CAP_PROP_FPS)),
                              "font": "20",
                              "bg": "White",
@@ -40,18 +80,6 @@ _gui_data = {
                              "font": "20",
                              "bg": "White",
                              "relief": "groove"}
-                },
-                {
-                    "format": "video"
-                },
-                {
-                    "format": "text",
-                    "body": {"text" : "Set the EAR:"}
-                },
-                {
-                    "format": "slider",
-                    "event_name": "on_ear_change"
-                
                 }
             ]
         },
@@ -59,7 +87,89 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": {"text" :"The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."}
+                    "body":
+                        {
+                            "text": "Command Menu",
+                            "wraplength": 1000,
+                            "justify": "center",
+                            "font": ("Helvetica", 30, "bold")
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "The following commands can be used to control smart home devices using the NVSHR system"
+                                    ". Please make sure to link the commands with the various devices connected to the system.",
+#                           "width": 100,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command One (Fist, Palm, Blink)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Two (Palm, Fist, Blink)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Three (Fist, Blink, Palm)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Four (Palm, Blink, Fist)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
                 }
             ]
         },
@@ -83,7 +193,7 @@ class _App(Tk):
         Tk.__init__(self,*args,**kwargs)
 
     def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear):
-        self.notebook = ttk.Notebook()
+        self.notebook = ttk.Notebook(width=1000, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear)
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -92,7 +202,7 @@ class _App(Tk):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, page_configuration["elements"])
-            self.notebook.add(tab, text = page_configuration["title"], )
+            self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
 
@@ -130,16 +240,23 @@ class Page(Frame):
                 self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
-
-                
-#scale.pack()
-
-
+            elif element["format"] == "option":
+                OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
+                              element["option5"]]
+                self.option = StringVar()
+                self.option.set(element["option1"])
+                self.optionMenu = OptionMenu(self, FIRST, *OPTIONLIST, command=self.set_value)
+                self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
+                self.optionMenu.config(width=30)
                 
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
+
+    def set_value(self, value):
+        self.option.set(value)
+        print(value)
 
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
@@ -173,13 +290,3 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
-'''
-import Tkinter
-
-def print_value(val):
-    print val
-
-root = Tkinter.Tk()
-
-root.mainloop()
-'''
