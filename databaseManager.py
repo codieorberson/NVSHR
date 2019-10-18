@@ -12,7 +12,7 @@ _database_configuration = {
         }
 
 _default_values = {
-        'open_eye_threshold' : 0.2,
+        'open_eye_ratio' : 0.2,
         'minimum_time_increment' : 2,
         'maximum_time_increment' : 5,
         'low_contrast' : None,
@@ -23,7 +23,7 @@ _default_values = {
 #The order of keys on these dicts is not gauranteed, but it doesn't matter for
 #our purposes.
 _default_value_indexes = {
-        'open_eye_threshold' : 0,
+        'open_eye_ratio' : 0,
         'minimum_time_increment' : 1,
         'maximum_time_increment' : 2,
         'low_contrast' : 3,
@@ -108,9 +108,12 @@ class DatabaseManager():
         return connection
 
     def __set_configuration__(self, configuration_column_name, value):
-        if self.is_connected:
-            #Not actual behavior, just a placeholder:
-            _default_values[configuration_column_name] = value          
+        if self.is_connected:  
+            self.cursor.execute("UPDATE configuration SET "
+                    +  configuration_column_name + " = " + str(value))
+            self.cursor.close()
+            self.connection.commit()
+            self.cursor = self.connection.cursor()
 
         else:
             _default_values[configuration_column_name] = value
@@ -125,11 +128,11 @@ class DatabaseManager():
         else: 
             return _default_values[configuration_column_name]
 
-    def set_open_eye_threshold(self, new_open_eye_threshold):
-        self.__set_configuration__('open_eye_threshold', new_open_eye_threshold)
+    def set_open_eye_threshold(self, new_open_eye_ratio):
+        self.__set_configuration__('open_eye_ratio', new_open_eye_ratio)
 
     def get_open_eye_threshold(self):
-        return float(self.__get_configuration__('open_eye_threshold'))
+        return float(self.__get_configuration__('open_eye_ratio'))
           
     def close(self):
         pass
