@@ -104,8 +104,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 #     for detection, we should apply those filters before this point. Currently
 #     that is done in GestureDetector, and we display the frame as self.captured.)
         self.process_manager.add_process(
-                self.gesture_detector.detect, 
-                (frame, timestamp, self.open_eye_threshold, fist_perimeter, 
+                self.gesture_detector.detect, (frame, timestamp, self.open_eye_threshold, fist_perimeter,
                 palm_perimeter, left_eye_perimeter, right_eye_perimeter))
      
 #     The child processes may or may not have started by now. Calling on_done
