@@ -33,8 +33,83 @@ _gui_data = {
                             "width": 100,
                             "height": 4,
                             "wraplength": 900,
-                            "justify": "center"
+                            "justify": "center",
+                            "anchor": "w",
+                            "font": ("Helevetica", 14, "italic")
                         }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "Before any commands are linked to a specific smart home action, the NVSHR system will "
+                                "be able to recognize these commands, but will not illustrate any changes within the smart "
+                                "home. To link commands with smart home actions:"
+                                "\n\n"
+                                "1. Navigate to the Command tab above."
+                                "\n\n"
+                                "2. Once in the Command tab, you will see a list of all available commands and their"
+                                " descriptions. Please take note of the gesture sequence for each command."
+                                "\n\n"
+                                "3. Choose a smart home device from the drop down menu below each command to link that "
+                                "device with the above command. If you do not wish to use a command, please choose the "
+                                "None option from the drop down menu."
+                                "\n\n"
+                                "Once each command has been linked, navigate to the Debug tab above. Within this menu "
+                                "you will be able to view the live feedback from the connected camera as well as make "
+                                "some changes to that feedback for better processing within the system."
+                                "\n\n"
+                                "1. The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink detection."
+                                "\n\n"
+                                "2. The Frames Per Second (FPS) provides information about the number of frames being processed "
+                                "within the system per second."
+                                "\n\n"
+                                "3. If the connected camera can be reached by the system, the Camera value will be set to true. "
+                                "If there is no feedback or this value is false, the connected camera is not being used properly "
+                                "by the system."
+                                "\n\n"
+                                "4. This page will also display the current gesture being processed. Please use this feature to "
+                                "ensure all gestures can be recognized by the system. This tab can also be used to test the "
+                                "previously linked commands."
+                                "\n\n"
+                                "Once all of the previous steps have been completed, the system will be ready for the user. "
+                                "If at anytime the system is not properly recognizing commands, the Log tab can be used to "
+                                "view previous gestures and commands. Feel free to use this tab to ensure that the linked "
+                                "commands are being recognized properly.",
+                        "width": 100,
+                        "height": 30,
+                        "wraplength": 800,
+                        "justify": "left",
+                        "anchor": "w",
+                        "font": ("Helevetica", 12)
+                    }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "Thank you for using the Non-Verbal Smart Home Recognition (NVSHR) System!",
+                        "width": 100,
+                        "height": 2,
+                        "wraplength": 900,
+                        "justify": "center",
+                        "anchor": "center",
+                        "font": ("Helevetica", 14, "italic")
+                    }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "If there are any issues or bugs within the system please log a ticket "
+                                "at: https://github.com/codieorberson/NVSHR/issues/new",
+                        "width": 100,
+                        "height": 3,
+                        "wraplength": 900,
+                        "justify": "center",
+                        "anchor": "w",
+                        "font": ("Helevetica", 10, "italic")
+                    }
                 }
             ]
         },
