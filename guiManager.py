@@ -30,9 +30,9 @@ _gui_data = {
                                     "administrator there are a few things that need to be initialized before the NVSHR syst"
                                     "em can be used properly. Please follow the steps below to ensure the user has the best"
                                     " experience using this system.",
-                            "width": 100,
+#                            "width": 100,
                             "height": 4,
-                            "wraplength": 900,
+                            "wraplength": 800,
                             "justify": "center"
                         }
                 }
@@ -101,7 +101,7 @@ _gui_data = {
                         {
                             "text": "The following commands can be used to control smart home devices using the NVSHR system"
                                     ". Please make sure to link the commands with the various devices connected to the system.",
-                            "width": 100,
+#                           "width": 100,
                             "height": 4,
                             "wraplength": 900,
                             "justify": "center"
@@ -194,7 +194,6 @@ class _App(Tk):
 
     def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear):
         self.notebook = ttk.Notebook(width=1000, height=800)
-        self.notebook.pack(expand=True)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear)
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -235,7 +234,6 @@ class Page(Frame):
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
-                print("Making slider element!")
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
                 self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
@@ -248,7 +246,6 @@ class Page(Frame):
                 self.option = StringVar()
                 self.option.set(element["option1"])
                 self.optionMenu = OptionMenu(self, FIRST, *OPTIONLIST, command=self.set_value)
-                self.optionMenu.pack()
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
                 
