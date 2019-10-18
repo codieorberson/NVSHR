@@ -157,6 +157,8 @@ class NonVerbalSmartHomeRecognitionSystem():
 #Close down OpenCV.
         self.cap.release()
         cv2.destroyAllWindows()
+
+# Close the GUI
         self.gui_manager.destroy_gui()
      
 # Close log file.
