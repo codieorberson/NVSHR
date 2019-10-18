@@ -19,6 +19,17 @@ _default_values = {
         'high_contrast' : None
         }
 
+#These indexes correspond to the columns in theconfiguration table in postgres.
+#The order of keys on these dicts is not gauranteed, but it doesn't matter for
+#our purposes.
+_default_value_indexes = {
+        'open_eye_threshold' : 0,
+        'minimum_time_increment' : 1,
+        'maximum_time_increment' : 2,
+        'low_contrast' : 3,
+        'high_contrast' : 4
+        }
+
 class DatabaseManager():
     def __init__(self):
         #If table does not exist, default ear is 0.2
@@ -29,10 +40,9 @@ class DatabaseManager():
 
         except:
             print("Warning: NVSHR is not connected to a database and settings" +
-                    " created in this session will not be saved.")
+                    " created in this session will not be saved.\n")
             self.is_connected = False
-            
-    
+
     def __get_connection__(self):
         connection = psycopg2.connect(
                 user = _database_configuration['user'],
@@ -100,14 +110,18 @@ class DatabaseManager():
     def __set_configuration__(self, configuration_column_name, value):
         if self.is_connected:
             #Not actual behavior, just a placeholder:
-            _default_values[configuration_column_name] = value
+            _default_values[configuration_column_name] = value          
+
         else:
             _default_values[configuration_column_name] = value
 
     def __get_configuration__(self, configuration_column_name):
         if self.is_connected:
-            #Not actual behavior, just a placeholder:
-            return _default_values[configuration_column_name]
+            self.cursor.execute("SELECT * FROM configuration")
+            rows = self.cursor.fetchall()
+            configuration = rows[0]
+
+            return configuration[_default_value_indexes[configuration_column_name]]
         else: 
             return _default_values[configuration_column_name]
 
@@ -115,7 +129,7 @@ class DatabaseManager():
         self.__set_configuration__('open_eye_threshold', new_open_eye_threshold)
 
     def get_open_eye_threshold(self):
-        return self.__get_configuration__('open_eye_threshold')
+        return float(self.__get_configuration__('open_eye_threshold'))
           
     def close(self):
         pass
