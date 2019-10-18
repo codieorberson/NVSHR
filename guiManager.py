@@ -41,6 +41,17 @@ _gui_data = {
         "tab2": {"title": "Debug",
             "elements": [
                 {
+                    "format": "video"
+                },
+                {
+                    "format": "text",
+                    "body": {"text" : "Set the EAR:"}
+                },
+                {
+                    "format": "slider",
+                    "event_name": "on_ear_change"
+                },
+                {
                     "format": "text",
                     "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
                              "font": "20",
@@ -64,19 +75,9 @@ _gui_data = {
                 {
                     "format": "text",
                     "body": {"text": "Current Gesture: " + "Want to show current gesture being detected here",
-                             "font": "20"}
-                },
-                {
-                    "format": "video"
-                },
-                {
-                    "format": "text",
-                    "body": {"text" : "Set the EAR:"}
-                },
-                {
-                    "format": "slider",
-                    "event_name": "on_ear_change"
-                
+                             "font": "20",
+                             "bg": "White",
+                             "relief": "groove"}
                 }
             ]
         },
@@ -89,7 +90,7 @@ _gui_data = {
                             "text": "Command Menu",
                             "wraplength": 1000,
                             "justify": "center",
-                            "font": ("Helvetica", 30, "bold")
+                            "font": ("Helvetica", 20, "bold")
                         }
                 },
                 {
@@ -109,7 +110,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command One (Fist, Palm, Blink)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -125,7 +126,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command Two (Palm, Fist, Blink)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -141,7 +142,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command Three (Fist, Blink, Palm)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -157,7 +158,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command Four (Palm, Blink, Fist)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -190,8 +191,7 @@ class _App(Tk):
         Tk.__init__(self,*args,**kwargs)
 
     def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear):
-        self.notebook = ttk.Notebook(width=1000, height=800)
-        self.notebook.pack(expand=True)
+        self.notebook = ttk.Notebook(width=930, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear)
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -218,6 +218,17 @@ class Page(Frame):
 
         Frame.__init__(self,*args,**kwargs)
         self.is_debug = False
+
+        self.option = 1
+        self.option1 = StringVar()
+        self.option1.set("None")
+        self.option2 = StringVar()
+        self.option2.set("None")
+        self.option3 = StringVar()
+        self.option3.set("None")
+        self.option4 = StringVar()
+        self.option4.set("None")
+
         row_index = 1
         for element in elements:
             if element["format"] == "text":
@@ -229,33 +240,51 @@ class Page(Frame):
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
-                self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
+                self.debug_canvas.grid(row = row_index, column =0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
                 self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
                 self.slider.set(initial_ear * 100)
-                self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
+                self.slider.grid(row = row_index, column =0, padx =0, pady = 10)
                 self.name = name
             elif element["format"] == "option":
                 OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
                               element["option5"]]
-                self.option = StringVar()
-                self.option.set(element["option1"])
-                self.optionMenu = OptionMenu(self, self.option, *OPTIONLIST, command=self.set_value)
+                if self.option == 1:
+                    self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
+                elif self.option == 2:
+                    self.optionMenu = OptionMenu(self, self.option2, *OPTIONLIST, command=self.set_value2)
+                elif self.option == 3:
+                    self.optionMenu = OptionMenu(self, self.option3, *OPTIONLIST, command=self.set_value3)
+                elif self.option == 4:
+                    self.optionMenu = OptionMenu(self, self.option4, *OPTIONLIST, command=self.set_value4)
                 self.optionMenu.pack()
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
-                
+                self.option +=1
+
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
-    def set_value(self, value):
-        self.option.set(value)
-        print(value)
+    def set_value1(self, value):
+        self.option1.set(value)
+        print("Command 1: " + value)
+
+    def set_value2(self, value):
+        self.option2.set(value)
+        print("Command 2: " + value)
+
+    def set_value3(self, value):
+        self.option3.set(value)
+        print("Command 3: " + value)
+
+    def set_value4(self, value):
+        self.option4.set(value)
+        print("Command 4: " + value)
 
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))

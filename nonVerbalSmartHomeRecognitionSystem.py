@@ -50,7 +50,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on (not really)', 'Alexa'))
       
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
                 
      
