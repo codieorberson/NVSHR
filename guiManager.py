@@ -293,3 +293,6 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+
+    def destroy_gui(self):
+        self.gui.destroy()
