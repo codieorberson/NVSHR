@@ -5,7 +5,6 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
-from dataManager import DataManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
@@ -58,9 +57,8 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    contained in ProcessManager and MultithreadedPerimeter. You'll see a
 #    demonstration of them being used together shortly.
         self.process_manager = ProcessManager()
-        self.data_manager = DataManager()
-        self.databaseManager = DatabaseManager()
-        self.open_eye_threshold = self.data_manager.get_open_eye_threshold()
+        self.database_manager = DatabaseManager()
+        self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold, self.open_eye_threshold)
 #        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)
         self.gui_manager.start(self.main_loop, self.on_close)
@@ -153,7 +151,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value) / 100.0
-        self.data_manager.set_open_eye_threshold(self.open_eye_threshold)
+        self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
         
     def on_close(self):
 #Close down OpenCV.
@@ -162,4 +160,4 @@ class NonVerbalSmartHomeRecognitionSystem():
      
 # Close log file.
         self.logger.close() 
-        self.data_manager.close()
+        self.database_manager.close()

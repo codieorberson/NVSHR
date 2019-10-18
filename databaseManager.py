@@ -6,12 +6,13 @@ import pwd
 #postgres will need the information in this map:
 _database_configuration = {
         'database' : 'nvshr',
-        'user' : pwd.getpwuid(os.getuid())[0], 
+        'user' : pwd.getpwuid(os.getuid())[0], #<--This is the username of the
+                                               #   user running main.py
         'password' : 'nvshr'
         }
 
 _default_values = {
-        'open_eye_ratio' : 0.2,
+        'open_eye_threshold' : 0.2,
         'minimum_time_increment' : 2,
         'maximum_time_increment' : 5,
         'low_contrast' : None,
@@ -21,8 +22,16 @@ _default_values = {
 class DatabaseManager():
     def __init__(self):
         #If table does not exist, default ear is 0.2
-        self.connection = self.__get_connection__()
-        self.cursor = self.connection.cursor()
+        try:
+            self.connection = self.__get_connection__()
+            self.cursor = self.connection.cursor()
+            self.is_connected = True
+
+        except:
+            print("Warning: NVSHR is not connected to a database and settings" +
+                    " created in this session will not be saved.")
+            self.is_connected = False
+            
     
     def __get_connection__(self):
         connection = psycopg2.connect(
@@ -68,29 +77,45 @@ class DatabaseManager():
                 high_contrast INTEGER
                 )''')
 
-        cursor.execute('''INSERT INTO configuration(open_eye_ratio) VALUES ('''
-                + str(_default_values['open_eye_ratio']) + 
-                ''');''')
+        cursor.execute('''INSERT INTO configuration(
+                open_eye_ratio, 
+                minimum_time_increment, 
+                maximum_time_increment,
+                low_contrast, 
+                high_contrast) 
+
+                VALUES ('''
+                + str(_default_values['open_eye_ratio']) + ", " +
+                + str(_default_values['minimum_time_increment']) + ", " +
+                + str(_default_values['maximum_time_increment']) + ", " +
+                + str(_default_values['low_contrast']) + ", " +
+                + str(_default_values['high_contrast']) +
+                ");")
 
         cursor.close()
         connection.commit()
 
         return connection
 
-#        'open_eye_ratio' : 0.2,
-#        'minimum_time_increment' : 2,
-#        'maximum_time_increment' : 5,
-#        'low_contrast' : None,
-#        'high_contrast' : None
+    def __set_configuration__(self, configuration_column_name, value):
+        if self.is_connected:
+            #Not actual behavior, just a placeholder:
+            _default_values[configuration_column_name] = value
+        else:
+            _default_values[configuration_column_name] = value
 
-    def __set_configuration__(configuration_column_name, value):
-        pass
+    def __get_configuration__(self, configuration_column_name):
+        if self.is_connected:
+            #Not actual behavior, just a placeholder:
+            return _default_values[configuration_column_name]
+        else: 
+            return _default_values[configuration_column_name]
 
     def set_open_eye_threshold(self, new_open_eye_threshold):
-        self.__set_configuration__('open_eye_threshold', new_open_eye_value)
+        self.__set_configuration__('open_eye_threshold', new_open_eye_threshold)
 
     def get_open_eye_threshold(self):
-        pass
+        return self.__get_configuration__('open_eye_threshold')
           
     def close(self):
         pass
