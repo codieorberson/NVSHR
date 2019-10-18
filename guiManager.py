@@ -17,7 +17,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Welcome to the Non-Verbal Smart Home Recgonition (NVSHR) System!",
-                            "font": ("Times", 30, "bold"),
+                            "font": ("Helvetica", 25, "bold"),
                             "justify": "center"
                         }
                 },
@@ -88,7 +88,89 @@ _gui_data = {
             "elements": [
                 {
                     "format": "text",
-                    "body": {"text" :"The only command currently registered is fist-palm-fist, but we should add a GUI interface for making new commands."}
+                    "body":
+                        {
+                            "text": "Command Menu",
+                            "wraplength": 1000,
+                            "justify": "center",
+                            "font": ("Helvetica", 30, "bold")
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "The following commands can be used to control smart home devices using the NVSHR system"
+                                    ". Please make sure to link the commands with the various devices connected to the system.",
+                            "width": 100,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command One (Fist, Palm, Blink)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Two (Palm, Fist, Blink)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Three (Fist, Blink, Palm)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Four (Palm, Blink, Fist)",
+                            "justify": "left"
+                        }
+                },
+                {
+                    "format": "option",
+                    "option1": "None",
+                    "option2": "Lights",
+                    "option3": "Smart Plug",
+                    "option4": "Heater",
+                    "option5": "Air Conditioning"
                 }
             ]
         },
@@ -160,11 +242,24 @@ class Page(Frame):
                 self.slider.set(initial_ear * 100)
                 self.slider.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
+            elif element["format"] == "option":
+                OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
+                              element["option5"]]
+                self.option = StringVar()
+                self.option.set(element["option1"])
+                self.optionMenu = OptionMenu(self, FIRST, *OPTIONLIST, command=self.set_value)
+                self.optionMenu.pack()
+                self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
+                self.optionMenu.config(width=30)
                 
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
+
+    def set_value(self, value):
+        self.option.set(value)
+        print(value)
 
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
