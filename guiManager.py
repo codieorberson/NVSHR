@@ -41,6 +41,17 @@ _gui_data = {
         "tab2": {"title": "Debug",
             "elements": [
                 {
+                    "format": "video"
+                },
+                {
+                    "format": "text",
+                    "body": {"text" : "Set the EAR:"}
+                },
+                {
+                    "format": "slider",
+                    "event_name": "on_ear_change" 
+                },
+                {
                     "format": "text",
                     "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
                              "font": "20",
@@ -69,18 +80,6 @@ _gui_data = {
                              "font": "20",
                              "bg": "White",
                              "relief": "groove"}
-                },
-                {
-                    "format": "video"
-                },
-                {
-                    "format": "text",
-                    "body": {"text" : "Set the EAR:"}
-                },
-                {
-                    "format": "slider",
-                    "event_name": "on_ear_change"
-                
                 }
             ]
         },
@@ -236,6 +235,7 @@ class Page(Frame):
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10)
                 self.name = name
             elif element["format"] == "slider":
+                print("Making slider element!")
                 event_name = element["event_name"]
                 self.slider_command = self.event_map[event_name]
                 self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
