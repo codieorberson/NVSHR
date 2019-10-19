@@ -61,6 +61,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.low_contrast_value = self.database_manager.get_low_contrast()
+        print("Low contrast: " + str(self.low_contrast_value))
         self.high_contrast_value = self.database_manager.get_high_contrast()
         self.min_time_inc = self.database_manager.get_min_time_inc()
         self.max_time_inc = self.database_manager.get_max_time_inc()
@@ -165,16 +166,16 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
         
     def set_low_contrast(self, new_low_contrast):
-            return 0
+        self.database_manager.set_low_contrast(new_low_contrast)
 
     def set_high_contrast(self, new_high_contrast):
-            return 0
+        self.database_manager.set_high_contrast(new_high_contrast)
 
     def set_min_time_inc(self, new_min_time_inc):
-            return 0
+        self.database_manager.set_min_time_inc(new_min_time_inc)
 
     def set_max_time_inc(self, new_max_time_inc):
-            return 0    
+        self.database_manager.set_max_time_inc(new_max_time_inc)
 
     def on_close(self):
 #Close down OpenCV.
