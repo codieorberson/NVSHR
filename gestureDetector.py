@@ -80,7 +80,7 @@ class GestureDetector():
             self.palm_event(timestamp)
         
         if left_eye_perimeter.is_set() and right_eye_perimeter.is_set():
-            if  open_eye_threshold > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio() / 2):
+            if open_eye_threshold > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio() / 2):
                 self.blink_event(timestamp)
 
     ''' This code is NOT being used right now 
