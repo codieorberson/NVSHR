@@ -2,7 +2,7 @@ import os
 
 class Logger():
     def __init__(self):
-        exists =  os.path.exists("logfile.txt")
+        exists = os.path.exists("logfile.txt")
         if not exists:
             self.file = open("logfile.txt", 'w+')
             self.file.write("   Date        Time     Command\n")
@@ -29,6 +29,5 @@ class Logger():
 
     def close(self):
         self.file.seek(0)
-        self.file.truncate()
         self.file.close()
         os.remove("logfile.txt")

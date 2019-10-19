@@ -17,7 +17,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Welcome to the Non-Verbal Smart Home Recognition (NVSHR) System!",
-                            "font": ("Helvetica", 20, "bold"),
+                            "font": ("Helvetica", 16, "bold"),
                             "justify": "center"
                         }
                 },
@@ -30,11 +30,86 @@ _gui_data = {
                                     "administrator there are a few things that need to be initialized before the NVSHR syst"
                                     "em can be used properly. Please follow the steps below to ensure the user has the best"
                                     " experience using this system.",
-#                            "width": 100,
+                            "width": 100,
                             "height": 4,
-                            "wraplength": 800,
-                            "justify": "center"
+                            "wraplength": 900,
+                            "justify": "center",
+                            "anchor": "w",
+                            "font": ("Helevetica", 14, "italic")
                         }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "Before any commands are linked to a specific smart home action, the NVSHR system will "
+                                "be able to recognize these commands, but will not illustrate any changes within the smart "
+                                "home. To link commands with smart home actions:"
+                                "\n\n"
+                                "1. Navigate to the Command tab above."
+                                "\n\n"
+                                "2. Once in the Command tab, you will see a list of all available commands and their"
+                                " descriptions. Please take note of the gesture sequence for each command."
+                                "\n\n"
+                                "3. Choose a smart home device from the drop down menu below each command to link that "
+                                "device with the above command. If you do not wish to use a command, please choose the "
+                                "None option from the drop down menu."
+                                "\n\n"
+                                "Once each command has been linked, navigate to the Debug tab above. Within this menu "
+                                "you will be able to view the live feedback from the connected camera as well as make "
+                                "some changes to that feedback for better processing within the system."
+                                "\n\n"
+                                "1. The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink detection."
+                                "\n\n"
+                                "2. The Frames Per Second (FPS) provides information about the number of frames being processed "
+                                "within the system per second."
+                                "\n\n"
+                                "3. If the connected camera can be reached by the system, the Camera value will be set to true. "
+                                "If there is no feedback or this value is false, the connected camera is not being used properly "
+                                "by the system."
+                                "\n\n"
+                                "4. This page will also display the current gesture being processed. Please use this feature to "
+                                "ensure all gestures can be recognized by the system. This tab can also be used to test the "
+                                "previously linked commands."
+                                "\n\n"
+                                "Once all of the previous steps have been completed, the system will be ready for the user. "
+                                "If at anytime the system is not properly recognizing commands, the Log tab can be used to "
+                                "view previous gestures and commands. Feel free to use this tab to ensure that the linked "
+                                "commands are being recognized properly.",
+                        "width": 100,
+                        "height": 30,
+                        "wraplength": 800,
+                        "justify": "left",
+                        "anchor": "w",
+                        "font": ("Helevetica", 12)
+                    }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "Thank you for using the Non-Verbal Smart Home Recognition (NVSHR) System!",
+                        "width": 100,
+                        "height": 2,
+                        "wraplength": 900,
+                        "justify": "center",
+                        "anchor": "center",
+                        "font": ("Helevetica", 14, "italic")
+                    }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "If there are any issues or bugs within the system please log a ticket "
+                                "at: https://github.com/codieorberson/NVSHR/issues/new",
+                        "width": 100,
+                        "height": 3,
+                        "wraplength": 900,
+                        "justify": "center",
+                        "anchor": "w",
+                        "font": ("Helevetica", 10, "italic")
+                    }
                 }
             ]
         },
@@ -54,15 +129,16 @@ _gui_data = {
                 },
                 {
                     "format": "slider",
+
                     "events": ["on_ear_change", "on_low_contrast", 
                                "on_high_contrast", "on_min_time_inc",  "on_max_time_inc"]
+
                 },
                 {
                     "format": "text",
                     "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
                              "font": "20",
-                             "bg": "White",
-                             "relief": "groove"}
+                             "justify": "left"}
                 },
                 {
                     "format": "text",
@@ -77,8 +153,7 @@ _gui_data = {
                                                   #capture events:
                     "body": {"text": "FPS: " + str(cv2.VideoCapture(0).get(cv2.CAP_PROP_FPS)),
                              "font": "20",
-                             "bg": "White",
-                             "relief": "groove"}
+                             "justify": "left"}
                 },
                 {
                     "format": "text",
@@ -111,7 +186,7 @@ _gui_data = {
                             "text": "Command Menu",
                             "wraplength": 1000,
                             "justify": "center",
-                            "font": ("Helvetica", 30, "bold")
+                            "font": ("Helvetica", 20, "bold")
                         }
                 },
                 {
@@ -120,7 +195,7 @@ _gui_data = {
                         {
                             "text": "The following commands can be used to control smart home devices using the NVSHR system"
                                     ". Please make sure to link the commands with the various devices connected to the system.",
-#                           "width": 100,
+                            "width": 100,
                             "height": 4,
                             "wraplength": 900,
                             "justify": "center"
@@ -131,7 +206,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command One (Fist, Palm, Blink)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -147,7 +222,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command Two (Palm, Fist, Blink)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -163,7 +238,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command Three (Fist, Blink, Palm)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -179,7 +254,7 @@ _gui_data = {
                     "body":
                         {
                             "text": "Command Four (Palm, Blink, Fist)",
-                            "justify": "left"
+                            "justify": "center"
                         }
                 },
                 {
@@ -221,6 +296,7 @@ class _App(Tk):
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
                           on_max_time_inc, initial_max_time_inc)
+
         self.notebook.grid(row=0)
         return self.debug_tab
 
@@ -267,6 +343,17 @@ class Page(Frame):
 
         Frame.__init__(self,*args,**kwargs)
         self.is_debug = False
+
+        self.option = 1
+        self.option1 = StringVar()
+        self.option1.set("None")
+        self.option2 = StringVar()
+        self.option2.set("None")
+        self.option3 = StringVar()
+        self.option3.set("None")
+        self.option4 = StringVar()
+        self.option4.set("None")
+
         row_index = 1
         for element in elements:
             if element["format"] == "text":
@@ -282,6 +369,7 @@ class Page(Frame):
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
+
                 self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10, columnspan = 5)
                 self.name = name
             elif element["format"] == "slider":
@@ -294,22 +382,42 @@ class Page(Frame):
                     self.slider.grid(row = row_index, column = column_index, padx = 10, pady = 10)
                     self.name = name
                     column_index += 1
+
             elif element["format"] == "option":
                 OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
                               element["option5"]]
-                self.option = StringVar()
-                self.option.set(element["option1"])
-                self.optionMenu = OptionMenu(self, FIRST, *OPTIONLIST, command=self.set_value)
+                if self.option == 1:
+                    self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
+                elif self.option == 2:
+                    self.optionMenu = OptionMenu(self, self.option2, *OPTIONLIST, command=self.set_value2)
+                elif self.option == 3:
+                    self.optionMenu = OptionMenu(self, self.option3, *OPTIONLIST, command=self.set_value3)
+                elif self.option == 4:
+                    self.optionMenu = OptionMenu(self, self.option4, *OPTIONLIST, command=self.set_value4)
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
-                
+                self.option +=1
+
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
-    def set_value(self, value):
-        self.option.set(value)
+    def set_value1(self, value):
+        self.option1.set(value)
+        print("Command 1: " + value)
+
+    def set_value2(self, value):
+        self.option2.set(value)
+        print("Command 2: " + value)
+
+    def set_value3(self, value):
+        self.option3.set(value)
+        print("Command 3: " + value)
+
+    def set_value4(self, value):
+        self.option4.set(value)
+        print("Command 4: " + value)
 
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
@@ -332,6 +440,7 @@ class GuiManager():
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc):
         self.gui = _App()
+        self.gui.title("NVSHR")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
                           on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
@@ -351,3 +460,6 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+
+    def destroy_gui(self):
+        self.gui.destroy()

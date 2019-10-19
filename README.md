@@ -22,6 +22,8 @@ Install postgres, grant your current user account access to psql, and create a d
    + `pip install opencv-python`
    + `pip install Cmake`
    + `pip install dlib`
+   + `pip install scipy`
+   + `pip install Pillow`
    
    These libraries are needed for the NVSHR System to properly run on your machine. 
 
@@ -45,6 +47,8 @@ Install postgres, grant your current user account access to psql, and create a d
    + `pip install opencv-python`
    + `pip install Cmake`
    + `pip install dlib`
+   + `pip install scipy`
+   + `pip install Pillow`
    
    These libraries are needed for the NVSHR System to properly run on your machine. 
 
