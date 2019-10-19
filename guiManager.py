@@ -245,7 +245,7 @@ class _App(Tk):
 #Note that the current version only has one tab, due to the canvas element
 #showing up on every tab.
 class Page(Frame):
-    def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, intial_low_contrast,
+    def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc, elements, *args,**kwargs):
 
@@ -255,6 +255,14 @@ class Page(Frame):
                 "on_high_contrast" : on_high_contrast,
                 "on_min_time_inc" : on_min_time_inc, 
                 "on_max_time_inc" : on_max_time_inc
+                }
+
+        self.initial_value_map = {
+                "on_ear_change" : initial_ear,
+                "on_low_contrast" : initial_low_contrast, 
+                "on_high_contrast" : initial_high_contrast,
+                "on_min_time_inc" : initial_min_time_inc, 
+                "on_max_time_inc" : initial_max_time_inc
                 }
 
         Frame.__init__(self,*args,**kwargs)
@@ -282,7 +290,7 @@ class Page(Frame):
                     event_name = event
                     self.slider_command = self.event_map[event_name]
                     self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                    self.slider.set(initial_ear * 100)
+                    self.slider.set(self.initial_value_map[event_name])#initial_ear * 100)
                     self.slider.grid(row = row_index, column = column_index, padx = 10, pady = 10)
                     self.name = name
                     column_index += 1
@@ -302,7 +310,6 @@ class Page(Frame):
 
     def set_value(self, value):
         self.option.set(value)
-        print(value)
 
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))

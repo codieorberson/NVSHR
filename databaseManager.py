@@ -135,24 +135,16 @@ class DatabaseManager():
             return _default_values[configuration_column_name]
 
     def set_open_eye_threshold(self, new_open_eye_ratio):
-        self.__set_configuration__('open_eye_ratio', new_open_eye_ratio)
-        print("setting open_eye_threshold to " + str(new_open_eye_ratio))
+        self.__set_configuration__('open_eye_ratio', new_open_eye_ratio / 100)
 
     def get_open_eye_threshold(self):
-        value =  float(self.__get_configuration__('open_eye_ratio'))
-
-        print('Getting open eye threshold: ' + str(value))
-        return value
-#        return float(self.__get_configuration__('open_eye_ratio'))
+        return  float(self.__get_configuration__('open_eye_ratio')) * 100
 
     def set_low_contrast(self, new_low_contrast):
-        print("Setting low contrast: " + str(new_low_contrast))
         self.__set_configuration__('low_contrast', new_low_contrast)
 
     def get_low_contrast(self):
-        value =  float(self.__get_configuration__('low_contrast'))
-        print('getting low contrast: ' + str(value))       
-#        return float(self.__get_configuration__('low_contrast'))
+        return float(self.__get_configuration__('low_contrast'))
  
     def set_high_contrast(self, new_high_contrast):
         self.__set_configuration__('high_contrast', new_high_contrast)

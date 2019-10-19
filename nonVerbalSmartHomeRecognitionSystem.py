@@ -61,7 +61,6 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.low_contrast_value = self.database_manager.get_low_contrast()
-        print("Low contrast: " + str(self.low_contrast_value))
         self.high_contrast_value = self.database_manager.get_high_contrast()
         self.min_time_inc = self.database_manager.get_min_time_inc()
         self.max_time_inc = self.database_manager.get_max_time_inc()
@@ -72,7 +71,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_time_inc,
                                       self.set_max_time_inc, self.max_time_inc)
-#        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)
+
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
@@ -162,7 +161,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
 
     def set_open_eye_threshold(self, new_ear_value):
-        self.open_eye_threshold = float(new_ear_value) / 100.0
+        self.open_eye_threshold = float(new_ear_value)
         self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
         
     def set_low_contrast(self, new_low_contrast):
