@@ -3,6 +3,8 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import os
 import pwd
 
+import logging
+
 #postgres will need the information in this map:
 _database_configuration = {
         'database' : 'nvshr',
@@ -15,8 +17,10 @@ _default_values = {
         'open_eye_ratio' : 0.2,
         'minimum_time_increment' : 2,
         'maximum_time_increment' : 5,
-        'low_contrast' : None,
-        'high_contrast' : None
+        #I never got the contrast settings to improve detection, so I don't
+        #know if these next two values are reasonable defaults:
+        'low_contrast' : 50,
+        'high_contrast' : 100
         }
 
 #These indexes correspond to the columns in theconfiguration table in postgres.
@@ -38,10 +42,14 @@ class DatabaseManager():
             self.cursor = self.connection.cursor()
             self.is_connected = True
 
-        except:
+        except Exception:
             print("Warning: NVSHR is not connected to a database and settings" +
                     " created in this session will not be saved.\n")
             self.is_connected = False
+
+             #Uncomment this line if you want more details about why you 
+             #failed to connect to postgres:
+#            logging.exception("Failed database details:")
 
     def __get_connection__(self):
         connection = psycopg2.connect(
@@ -68,7 +76,6 @@ class DatabaseManager():
 
     def __initialise__(self, cursor, connection):
         cursor.execute('CREATE DATABASE ' + _database_configuration['database'])
-
         cursor.close()
         connection.commit()
 
@@ -76,7 +83,6 @@ class DatabaseManager():
                 database = _database_configuration['database'],
                 user = _database_configuration['user'],
                 password = _database_configuration['password'])
-
         cursor = connection.cursor()
 
         cursor.execute('''CREATE TABLE configuration ( 
@@ -94,12 +100,12 @@ class DatabaseManager():
                 low_contrast, 
                 high_contrast) 
 
-                VALUES ('''
-                + str(_default_values['open_eye_ratio']) + ", " +
-                + str(_default_values['minimum_time_increment']) + ", " +
-                + str(_default_values['maximum_time_increment']) + ", " +
-                + str(_default_values['low_contrast']) + ", " +
-                + str(_default_values['high_contrast']) +
+                VALUES (''' + 
+                str(_default_values['open_eye_ratio']) + ", " + 
+                str(_default_values['minimum_time_increment']) + ", " + 
+                str(_default_values['maximum_time_increment']) + ", " + 
+                str(_default_values['low_contrast']) +  ", " + 
+                str(_default_values['high_contrast']) + 
                 ");")
 
         cursor.close()
@@ -133,6 +139,30 @@ class DatabaseManager():
 
     def get_open_eye_threshold(self):
         return float(self.__get_configuration__('open_eye_ratio'))
+
+    def set_low_contrast(self, new_low_contrast):
+        self.__set_configuration__('low_contrast', new_low_contrast)
+
+    def get_low_contrast(self):
+        return float(self.__get_configuration__('low_contrast'))
+ 
+    def set_high_contrast(self, new_high_contrast):
+        self.__set_configuration__('high_contrast', new_high_contrast)
+
+    def get_high_contrast(self):
+        return float(self.__get_configuration__('high_contrast'))
+ 
+    def set_min_time_inc(self, new_min_time_inc):
+        self.__set_configuration__('minimum_time_increment', new_min_time_inc)
+
+    def get_min_time_inc(self):
+        return float(self.__get_configuration__('minimum_time_increment'))
+ 
+    def set_max_time_inc(self, new_max_time_inc):
+        self.__set_configuration__('maximum_time_increment', new_max_time_inc)
+
+    def get_max_time_inc(self):
+        return float(self.__get_configuration__('maximum_time_increment'))
           
     def close(self):
         pass
