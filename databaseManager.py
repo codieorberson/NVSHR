@@ -108,6 +108,31 @@ class DatabaseManager():
                 str(_default_values['high_contrast']) + 
                 ");")
 
+        cursor.execute('''CREATE TABLE log ( 
+                id SERIAL,
+                gesture_sequence STRING,
+                timestamp INTEGER,
+                was_recognised BOOLEAN
+                )''')
+
+        cursor.execute('''CREATE TABLE command_head ( 
+                id SERIAL,
+                link_id INTEGER
+                )''')
+
+        cursor.execute('''CREATE TABLE command_segment ( 
+                id SERIAL,
+                gesture STRING,
+                link_id INTEGER,
+                is_linked_to_tail BOOLEAN
+                )''')
+
+        cursor.execute('''CREATE TABLE command_tail ( 
+                id SERIAL,
+                device STRING,
+                command STRING
+                )''')
+
         cursor.close()
         connection.commit()
 
