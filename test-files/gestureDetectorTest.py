@@ -76,21 +76,6 @@ def test_gesture_detector_detect():
     print("test_gesture_detector_detect() passed.")
 
 
-def test_gesture_detector_trigger_events():
-
-    fist_perimeter = MultithreadedPerimeter()
-    palm_perimeter = MultithreadedPerimeter()
-    left_eye_perimeter = MultithreadedPerimeter()
-    right_eye_perimeter = MultithreadedPerimeter()
-    timestamp = datetime.now()
-
-    detector.fist_event = MagicMock()
-
-    detector.trigger_events(timestamp, 4, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
-
-    assert detector.fist_event.called
-
-
 def test_gesture_detector_set_frame_contrast():
     colors = GestureDetector.set_frame_contrast(100, 200, 250)
 
@@ -101,6 +86,71 @@ def test_gesture_detector_set_frame_contrast():
     print("test_gesture_detector_set_frame_contrast() passed.")
 
 
+def test_gesture_detector_trigger_events_fist():
+
+    fist_perimeter = MultithreadedPerimeter()
+    palm_perimeter = MultithreadedPerimeter()
+    left_eye_perimeter = MultithreadedPerimeter()
+    right_eye_perimeter = MultithreadedPerimeter()
+    timestamp = datetime.now()
+
+    fist_perimeter.is_set = MagicMock()
+    fist_perimeter.is_set.return_value = True
+    detector.fist_event = MagicMock()
+
+    detector.trigger_events(timestamp, 4, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
+
+    assert detector.fist_event.called, "detector.trigger_events() did not call the fist callback."
+
+    print("test_gesture_detector_trigger_events_fist() passed.")
+
+
+def test_gesture_detector_trigger_events_palm():
+
+    fist_perimeter = MultithreadedPerimeter()
+    palm_perimeter = MultithreadedPerimeter()
+    left_eye_perimeter = MultithreadedPerimeter()
+    right_eye_perimeter = MultithreadedPerimeter()
+    timestamp = datetime.now()
+
+    palm_perimeter.is_set = MagicMock()
+    palm_perimeter.is_set.return_value = True
+    detector.palm_event = MagicMock()
+
+    detector.trigger_events(timestamp, 4, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
+
+    assert detector.palm_event.called, "detector.trigger_events() did not call the palm callback."
+
+    print("test_gesture_detector_trigger_events_palm() passed.")
+
+
+def test_gesture_detector_trigger_events_blink():
+
+    fist_perimeter = MultithreadedPerimeter()
+    palm_perimeter = MultithreadedPerimeter()
+    left_eye_perimeter = MultithreadedPerimeter()
+    right_eye_perimeter = MultithreadedPerimeter()
+    timestamp = datetime.now()
+
+    left_eye_perimeter.is_set = MagicMock()
+    left_eye_perimeter.is_set.return_value = True
+    left_eye_perimeter.get_ratio = MagicMock()
+    left_eye_perimeter.get_ratio.return_value = 1
+
+    right_eye_perimeter.is_set = MagicMock()
+    right_eye_perimeter.is_set.return_value = True
+    right_eye_perimeter.get_ratio = MagicMock()
+    right_eye_perimeter.get_ratio.return_value = 1
+
+    detector.blink_event = MagicMock()
+
+    detector.trigger_events(timestamp, 4, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
+
+    assert detector.blink_event.called, "detector.trigger_events() did not call the blink callback."
+
+    print("test_gesture_detector_trigger_events_blink() passed.")
+
+
 if __name__ == '__main__':
 
     test_gesture_detector_init()
@@ -108,7 +158,9 @@ if __name__ == '__main__':
     test_gesture_detector_set_palm_callback()
     test_gesture_detector_set_fist_callback()
     test_gesture_detector_detect()
-    #test_gesture_detector_trigger_events()
+    test_gesture_detector_trigger_events_fist()
+    test_gesture_detector_trigger_events_palm()
+    test_gesture_detector_trigger_events_blink()
     #test_gesture_detector_set_frame_contrast()
 
     print("<=========== GestureDetector tests have passed. ===========>")
