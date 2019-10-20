@@ -32,4 +32,4 @@ if __name__ == '__main__':
     test_gesture_set_rgb_tuple()
     test_gesture_set_detection_check()
 
-    print("<============= Gesture tests have passed. ==============>")
+    print("<============== Gesture tests have passed. ================>")
