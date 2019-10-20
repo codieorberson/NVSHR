@@ -1,9 +1,12 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import os
-import pwd
-
 import logging
+
+try:
+    import pwd
+except ImportError:
+    import winpwd as pwd
 
 #postgres will need the information in this map:
 _database_configuration = {
@@ -46,6 +49,8 @@ class DatabaseManager():
             print("Warning: NVSHR is not connected to a database and settings" +
                     " created in this session will not be saved.\n")
             self.is_connected = False
+            self.logs = []
+            self.commands = []
 
             #Uncomment this line if you want more details about why you 
             #failed to connect to postgres:
@@ -177,6 +182,66 @@ class DatabaseManager():
 
     def get_max_time_inc(self):
         return float(self.__get_configuration__('maximum_time_increment'))
+
+
+
+
+
+
+    # !!!!!!!!!Methods past this point are not actually implemented!!!!!!!!!!
+
+
+
+
+
+#    def __set_configuration__(self, configuration_column_name, value):
+#        if self.is_connected:  
+#            self.cursor.execute("UPDATE configuration SET "
+#                    +  configuration_column_name + " = " + str(value))
+#            self.cursor.close()
+#            self.connection.commit()
+#            self.cursor = self.connection.cursor()
+#
+#        else:
+#            _default_values[configuration_column_name] = value
+#
+    def __get_table__(self, table_name):
+        if self.is_connected:
+            self.cursor.execute("SELECT * FROM " + table_name)
+            return self.cursor.fetchall()
+           
+        else: 
+            return _default_values[configuration_column_name]
+
+    def __add_to_table__(self, tablename, value_tuple):
+        pass
+        
+    def add_command(self, gesture_sequence, device, command):
+        if self.is_connected:
+            pass
+        else:
+            pass
+
+    def remove_command(self, geseture_sequence):
+        if self.is_connected:
+            pass
+        else:
+            pass
+
+    def get_commands(self):
+        if self.is_connected:
+            pass
+#            self.
+        else:
+            return self.commands
+#        return []
+
+    def add_log_message(self, gesture_sequence, was_recognised, timestamp):
+        pass
+
+    def get_log_messages(self):
+
+        return []
           
     def close(self):
         pass
