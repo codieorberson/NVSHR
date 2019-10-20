@@ -1,14 +1,10 @@
 from datetime import datetime
-import gestureDetector
 from gestureDetector import GestureDetector
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from handGestureDetector import HandGestureDetector
 from blinkDetector import BlinkDetector
-from unittest import mock
 from unittest.mock import Mock, MagicMock
-import dlib
-import os
 
 detector = GestureDetector()
 
