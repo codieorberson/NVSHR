@@ -9,6 +9,7 @@ from dataManager import DataManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
+from smartHomeActivator import SmartHomeActivator
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
@@ -41,12 +42,17 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
      
+        self.smart_home_activator = SmartHomeActivator()
+
 #    This is a test pattern to find in a gesture sequence. The gesture sequence 
 #    being detected as a pattern must be made up of strings which correspond to the
 #    strings passed into self.gesture_lexer.add in the anonymous lambdas above.
-        self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: print("fist-palm-fist event has fired -- this message is not logged, only printed."))
+        self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on (not really)', 'Alexa'))
       
         self.cap = cv2.VideoCapture(0)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+                
      
 #    This process manager is what spawns child processes and returns control to the
 #    parent process when they all finish. All of the multithreaded logic is
@@ -98,8 +104,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 #     for detection, we should apply those filters before this point. Currently
 #     that is done in GestureDetector, and we display the frame as self.captured.)
         self.process_manager.add_process(
-                self.gesture_detector.detect, 
-                (frame, timestamp, self.open_eye_threshold, fist_perimeter, 
+                self.gesture_detector.detect, (frame, timestamp, self.open_eye_threshold, fist_perimeter,
                 palm_perimeter, left_eye_perimeter, right_eye_perimeter))
      
 #     The child processes may or may not have started by now. Calling on_done
@@ -153,6 +158,9 @@ class NonVerbalSmartHomeRecognitionSystem():
 #Close down OpenCV.
         self.cap.release()
         cv2.destroyAllWindows()
+
+# Close the GUI
+        self.gui_manager.destroy_gui()
      
 # Close log file.
         self.logger.close() 
