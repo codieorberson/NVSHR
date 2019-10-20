@@ -1,10 +1,6 @@
 from datetime import datetime
 from gestureParser import GestureParser
 from logger import Logger
-from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
-from handGestureDetector import HandGestureDetector
-from blinkDetector import BlinkDetector
 from unittest.mock import Mock, MagicMock
 
 
