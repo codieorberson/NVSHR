@@ -47,8 +47,8 @@ class DatabaseManager():
                     " created in this session will not be saved.\n")
             self.is_connected = False
 
-             #Uncomment this line if you want more details about why you 
-             #failed to connect to postgres:
+            #Uncomment this line if you want more details about why you 
+            #failed to connect to postgres:
 #            logging.exception("Failed database details:")
 
     def __get_connection__(self):
@@ -110,27 +110,16 @@ class DatabaseManager():
 
         cursor.execute('''CREATE TABLE log ( 
                 id SERIAL,
-                gesture_sequence STRING,
+                gesture_sequence TEXT,
                 timestamp INTEGER,
                 was_recognised BOOLEAN
                 )''')
 
-        cursor.execute('''CREATE TABLE command_head ( 
+        cursor.execute('''CREATE TABLE command ( 
                 id SERIAL,
-                link_id INTEGER
-                )''')
-
-        cursor.execute('''CREATE TABLE command_segment ( 
-                id SERIAL,
-                gesture STRING,
-                link_id INTEGER,
-                is_linked_to_tail BOOLEAN
-                )''')
-
-        cursor.execute('''CREATE TABLE command_tail ( 
-                id SERIAL,
-                device STRING,
-                command STRING
+                gesture_sequence TEXT,
+                device TEXT,
+                command TEXT
                 )''')
 
         cursor.close()
