@@ -5,7 +5,7 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
-from dataManager import DataManager
+from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
@@ -50,6 +50,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on (not really)', 'Alexa'))
       
         self.cap = cv2.VideoCapture(0)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
                 
      
 #    This process manager is what spawns child processes and returns control to the
@@ -57,18 +59,21 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    contained in ProcessManager and MultithreadedPerimeter. You'll see a
 #    demonstration of them being used together shortly.
         self.process_manager = ProcessManager()
-        self.data_manager = DataManager()
-        self.open_eye_threshold = self.data_manager.get_open_eye_threshold()
-        self.low_contrast_value = self.data_manager.get_low_contrast()
-        self.high_contrast_value = self.data_manager.get_high_contrast()
-        self.min_time_inc = self.data_manager.get_min_time_inc()
-        self.max_time_inc = self.data_manager.get_max_time_inc()
-        self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold, self.open_eye_threshold,
+        self.database_manager = DatabaseManager()
+
+        self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
+        self.low_contrast_value = self.database_manager.get_low_contrast()
+        self.high_contrast_value = self.database_manager.get_high_contrast()
+        self.min_time_inc = self.database_manager.get_min_time_inc()
+        self.max_time_inc = self.database_manager.get_max_time_inc()
+
+        self.gui_manager = GuiManager(self.cap, 
+                                      self.set_open_eye_threshold, self.open_eye_threshold,
                                       self.set_low_contrast, self.low_contrast_value,
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_time_inc,
                                       self.set_max_time_inc, self.max_time_inc)
-#        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)
+
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
@@ -110,8 +115,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 #     for detection, we should apply those filters before this point. Currently
 #     that is done in GestureDetector, and we display the frame as self.captured.)
         self.process_manager.add_process(
-                self.gesture_detector.detect, 
-                (frame, timestamp, self.open_eye_threshold, fist_perimeter, 
+                self.gesture_detector.detect, (frame, timestamp, self.open_eye_threshold, fist_perimeter,
                 palm_perimeter, left_eye_perimeter, right_eye_perimeter))
      
 #     The child processes may or may not have started by now. Calling on_done
@@ -158,27 +162,29 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
 
     def set_open_eye_threshold(self, new_ear_value):
-        self.open_eye_threshold = float(new_ear_value) / 100.0
-        self.data_manager.set_open_eye_threshold(self.open_eye_threshold)
+        self.open_eye_threshold = float(new_ear_value)
+        self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
         
     def set_low_contrast(self, new_low_contrast):
-            return 0
+        self.database_manager.set_low_contrast(new_low_contrast)
 
     def set_high_contrast(self, new_high_contrast):
-            return 0
+        self.database_manager.set_high_contrast(new_high_contrast)
 
     def set_min_time_inc(self, new_min_time_inc):
-            return 0
+        self.database_manager.set_min_time_inc(new_min_time_inc)
 
     def set_max_time_inc(self, new_max_time_inc):
-            return 0    
+        self.database_manager.set_max_time_inc(new_max_time_inc)
 
     def on_close(self):
 #Close down OpenCV.
         self.cap.release()
         cv2.destroyAllWindows()
+
+# Close the GUI
         self.gui_manager.destroy_gui()
      
 # Close log file.
         self.logger.close() 
-        self.data_manager.close()
+        self.database_manager.close()
