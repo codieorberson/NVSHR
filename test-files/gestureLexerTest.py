@@ -14,6 +14,7 @@ import os
 logger = Logger()
 lexer = GestureLexer(logger)
 
+
 def test_gesture_lexer_init():
     assert lexer.logger is logger, "gestureLexer.logger was not initialized correctly."
     assert lexer.gestures is not None, "gestureLexer.gestures was not initialized correctly."
