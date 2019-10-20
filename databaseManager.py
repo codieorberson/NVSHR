@@ -4,10 +4,16 @@ import os
 import logging
 from getpass import getuser
 
+try:
+    _username = getuser()
+except:
+    _username = None
+
+
 #postgres will need the information in this map:
 _database_configuration = {
         'database' : 'nvshr',
-        'user' : getuser(),
+        'user' : _username,
         'password' : 'nvshr'
         }
 
