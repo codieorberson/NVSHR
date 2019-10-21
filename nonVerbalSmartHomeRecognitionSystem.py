@@ -1,6 +1,7 @@
 import sys
 import cv2
 from datetime import datetime
+from datetime import timedelta
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
@@ -13,6 +14,7 @@ from smartHomeActivator import SmartHomeActivator
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
+        self.last_timestamp = datetime.utcnow()
         self.logger = Logger()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger)
@@ -27,6 +29,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
+        self.gesture_detected = self.gesture_detector.gesture_detected
      
         self.smart_home_activator = SmartHomeActivator()
 
@@ -58,13 +61,16 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_low_contrast, self.low_contrast_value,
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
-                                      self.set_max_time_inc, self.max_increment)
+                                      self.set_max_time_inc, self.max_increment,
+                                      self.gesture_detected)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
         ret, frame = self.cap.read()
-        timestamp = datetime.now()
+
+        timestamp = datetime.utcnow()
+        self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
      
 #    These multithreaded perimeters are the only objects which hold values that
 #    are shared between threads. The frame, for example, is copied for each 
@@ -145,7 +151,9 @@ class NonVerbalSmartHomeRecognitionSystem():
         #Display the frame, flipping it to look like a mirror. I have way too much
         #trouble orienting my body to get gestures detected without doing this.
         #It's pretty embarassing.
+        self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
+        self.last_timestamp = timestamp
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)

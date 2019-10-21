@@ -9,7 +9,6 @@ try:
 except:
     _username = None
 
-
 #postgres will need the information in this map:
 _database_configuration = {
         'database' : 'nvshr',
