@@ -16,8 +16,8 @@ _gui_data = {
                     "format": "text",
                     "body":
                         {
-                            "text": "Welcome to the Non-Verbal Smart Home Recgonition (NVSHR) System!",
-                            "font": ("Helvetica", 25, "bold"),
+                            "text": "Welcome to the Non-Verbal Smart Home Recognition (NVSHR) System!",
+                            "font": ("Helvetica", 16, "bold"),
                             "justify": "center"
                         }
                 },
@@ -120,20 +120,25 @@ _gui_data = {
                 },
                 {
                     "format": "text",
-                    "body": {"text" : "Set the EAR:"}
+                    "multicolumn" : "true",
+                    "body": {"text" : "Set the EAR:"},
+                    "body2": {"text" : "Set the low_con:"},
+                    "body3": {"text" : "Set the high_con:"},
+                    "body4": {"text" : "Set the min_time_inc:"},
+                    "body5": {"text" : "Set the max_time_inc:"}
                 },
                 {
                     "format": "slider",
-                    "event_name": "on_ear_change"
+
+                    "events": ["on_ear_change", "on_low_contrast", 
+                               "on_high_contrast", "on_min_time_inc",  "on_max_time_inc"]
+
                 },
                 {
-                    "format": "text",
-                    "body": {"text": "Camera on: " + str(cv2.VideoCapture(0).isOpened()),
-                             "font": "20",
-                             "justify": "left"}
+                    "format": "text-cam-status"
                 },
                 {
-                    "format": "text",
+                    "format": "text-cam-fps",
                                                   #Note that FPS is only being 
                                                   #calculated on initial 
                                                   #execution, but we should 
@@ -143,16 +148,26 @@ _gui_data = {
                                                   #probably drop as we execute
                                                   #other code in between frame
                                                   #capture events:
-                    "body": {"text": "FPS: " + str(cv2.VideoCapture(0).get(cv2.CAP_PROP_FPS)),
-                             "font": "20",
-                             "justify": "left"}
                 },
                 {
                     "format": "text",
-                    "body": {"text": "Current Gesture: " + "Want to show current gesture being detected here",
+                    "multicolumn" : "true",
+                    "body": {"text": "Current Gesture: ",
                              "font": "20",
                              "bg": "White",
-                             "relief": "groove"}
+                             "relief": "groove"},
+                    "body2": {"text": "Blink",
+                              "font": "20",
+                              # the color is hard coded now, but should be determined by the detecotr
+                              "fg": "Blue"},
+                    "body3": {"text": "Fist",
+                              "font": "20",
+                              # the color is hard coded now, but should be determined by the detecotr
+                              "fg" : "Blue"},
+                    "body4": {"text": "Palm",
+                              "font": "20",
+                              # the color is hard coded now, but should be determined by the detecotr
+                              "fg" : "Blue"}
                 }
             ]
         },
@@ -265,34 +280,73 @@ class _App(Tk):
     def __init__(self, *args,**kwargs):
         Tk.__init__(self,*args,**kwargs)
 
-    def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear):
-        self.notebook = ttk.Notebook(width=930, height=800)
-        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear)
+    def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear,
+                                  on_low_contrast, initial_low_contrast,
+                                  on_high_contrast, initial_high_contrast,
+                                  on_min_time_inc, initial_min_time_inc,
+                                  on_max_time_inc, initial_max_time_inc,
+                                  gesture_detected):
+        self.notebook = ttk.Notebook(width=1000, height=800)
+        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
+                          on_high_contrast, initial_high_contrast,
+                          on_min_time_inc, initial_min_time_inc,
+                          on_max_time_inc, initial_max_time_inc,
+                          gesture_detected)
+
         self.notebook.grid(row=0)
         return self.debug_tab
 
-    def add_content(self, body, cap, on_ear_change, initial_ear):
+    def add_content(self, body, cap, on_ear_change, initial_ear,
+                    on_low_contrast, initial_low_contrast,
+                    on_high_contrast, initial_high_contrast,
+                    on_min_time_inc, initial_min_time_inc,
+                    on_max_time_inc, initial_max_time_inc,
+                    gesture_detected):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
-            tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, page_configuration["elements"])
+            tab = Page(self.notebook, self, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
+                          on_high_contrast, initial_high_contrast,
+                          on_min_time_inc, initial_min_time_inc,
+                          on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
+            if tab.is_fps:
+                self.fps_tab = tab
 
         return debug_tab
+
+    def get_fps_tab(self):
+        return self.fps_tab
 
 #An instance of this class represents a tab.
 #Note that the current version only has one tab, due to the canvas element
 #showing up on every tab.
 class Page(Frame):
-    def __init__(self, name, window, cap, on_ear_change, initial_ear, elements, *args,**kwargs):
+    def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
+                 on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args,**kwargs):
 
         self.event_map = {
-                "on_ear_change" : on_ear_change
+                "on_ear_change" : on_ear_change,
+                "on_low_contrast" : on_low_contrast, 
+                "on_high_contrast" : on_high_contrast,
+                "on_min_time_inc" : on_min_time_inc, 
+                "on_max_time_inc" : on_max_time_inc
+                }
+
+        self.initial_value_map = {
+                "on_ear_change" : initial_ear,
+                "on_low_contrast" : initial_low_contrast, 
+                "on_high_contrast" : initial_high_contrast,
+                "on_min_time_inc" : initial_min_time_inc, 
+                "on_max_time_inc" : initial_max_time_inc
                 }
 
         Frame.__init__(self,*args,**kwargs)
+
         self.is_debug = False
+        self.is_fps = False
 
         self.option = 1
         self.option1 = StringVar()
@@ -307,23 +361,48 @@ class Page(Frame):
         row_index = 1
         for element in elements:
             if element["format"] == "text":
-                self.label = Label(self, element["body"])
-                self.label.grid(row=row_index, column=0, padx=10, pady=10)
+                column_index = 0
+                body_index = list(element.keys()).index("body")
+                for body in list(element.keys())[body_index:]:
+                    self.label = Label(self, element.get(body))
+                    self.label.grid(row=row_index, column = column_index, padx=10, pady=10)
+                    self.name = name
+                    column_index += 1
+
+            elif element["format"] == "text-cam-status":
+                text_var = StringVar()
+                self.label = Label(self, textvariable = text_var, font = 20)
+                text_var.set("Camera On: " + str(cap.isOpened()))
+                self.label.grid(row=row_index, column = 0, padx=10, pady=10)
                 self.name = name
+            
+            elif element["format"] == "text-cam-fps":
+                self.fps_container = StringVar()
+                self.label = Label(self, textvariable = self.fps_container, font = 20)
+                self.fps_container.set("FPS:       " + self.get_cam_fps(cap))
+                self.label.grid(row=row_index, column = 0, padx=10, pady=10)
+                self.name = name
+                self.is_fps = True
+
             elif element["format"] == "video":
                 self.is_debug = True
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
-                self.debug_canvas.grid(row = row_index, column =0, padx = 10, pady = 10)
+
+                self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10, columnspan = 5)
                 self.name = name
             elif element["format"] == "slider":
-                event_name = element["event_name"]
-                self.slider_command = self.event_map[event_name]
-                self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                self.slider.set(initial_ear * 100)
-                self.slider.grid(row = row_index, column =0, padx =10, pady = 10)
-                self.name = name
+                column_index = 0
+                for event in element["events"]:
+                    event_name = event
+                    self.slider_command = self.event_map[event_name]
+                    self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
+                    self.slider.set(self.initial_value_map[event_name])#initial_ear * 100)
+                    self.slider.grid(row = row_index, column = column_index, padx = 10, pady = 10)
+                    self.name = name
+                    column_index += 1
+
             elif element["format"] == "option":
                 OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
                               element["option5"]]
@@ -335,7 +414,6 @@ class Page(Frame):
                     self.optionMenu = OptionMenu(self, self.option3, *OPTIONLIST, command=self.set_value3)
                 elif self.option == 4:
                     self.optionMenu = OptionMenu(self, self.option4, *OPTIONLIST, command=self.set_value4)
-                self.optionMenu.pack()
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
                 self.option +=1
@@ -361,6 +439,9 @@ class Page(Frame):
         self.option4.set(value)
         print("Command 4: " + value)
 
+    def set_fps(self, fps):
+        self.fps_container.set("FPS:       " + str(fps))
+
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
 
@@ -370,16 +451,40 @@ class Page(Frame):
            
     def set_debug_frame(self, frame):
         self.__display_image__(self.__frame_to_image__(self.__bgr_to_rgb__(frame)))
+    
+    def get_cam_fps(self, cap):
+        while cap.isOpened():
+            return str(cap.get(cv2.CAP_PROP_FPS))
+
+    def set_gesture_background(self,gesture_detected):
+        if gesture_detected == "fist":
+            print(self.label.name)
+            print("fist")
+        elif gesture_detected == "palm":
+            print("palm")
+        elif gesture_detected == "blink":
+            print("blink")
 
 #This is the only class which is meant to be accessed from other files. It 
 #provides a high level interface for starting the gui, defining what logic
 #should be executed between refresh cycles and before closing down, and moving
 #data to and from the GUI (e.g. when drawing a new frame for the debug screen).
 class GuiManager():
-    def __init__(self, cap, on_ear_change, initial_ear):
+    def __init__(self, cap, on_ear_change, 
+                 initial_ear, on_low_contrast, initial_low_contrast,
+                 on_high_contrast, initial_high_contrast,
+                 on_min_time_inc, initial_min_time_inc,
+                 on_max_time_inc, initial_max_time_inc,
+                 gesture_detected):
         self.gui = _App()
         self.gui.title("NVSHR")
-        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear)
+        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
+                          on_low_contrast, initial_low_contrast,
+                          on_high_contrast, initial_high_contrast,
+                          on_min_time_inc, initial_min_time_inc,
+                          on_max_time_inc, initial_max_time_inc,
+                          gesture_detected)
+        self.fps_tab = self.gui.get_fps_tab()
 
     def __loop__(self):
         self.loop_callback()
@@ -394,6 +499,9 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+
+    def set_fps(self, fps):
+        self.fps_tab.set_fps(fps)
 
     def destroy_gui(self):
         self.gui.destroy()

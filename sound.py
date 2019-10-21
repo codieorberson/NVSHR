@@ -1,3 +1,11 @@
 from playsound import playsound
-playsound('confirmationApproval.wav')
-playsound('confirmationDenial.wav')
+
+
+class Sound:
+    @staticmethod
+    def success():
+        playsound('Success.wav')
+
+    @staticmethod
+    def failure():
+        playsound('Failure.wav')

@@ -1,11 +1,12 @@
 import sys
 import cv2
 from datetime import datetime
+from datetime import timedelta
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
-from dataManager import DataManager
+from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
@@ -13,25 +14,12 @@ from smartHomeActivator import SmartHomeActivator
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
+        self.last_timestamp = datetime.utcnow()
         self.logger = Logger()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger)
         self.gesture_parser = GestureParser(self.logger)
 
-#The first command line argument determines the minimum time needed between
-#     identical gestures for them to be considered separate gestures in a pattern.
-        if len(sys.argv) > 1:
-            self.min_increment = float(sys.argv[1])
-        else:
-            self.min_increment = 2
-     
-#     The second command line argument determines the maximum time that can lapse
-#     without a gesture before gestures are collected into a gesture pattern.
-        if len(sys.argv) > 2:
-            self.max_increment = float(sys.argv[2])
-        else:
-            self.max_increment = 5
-     
 #     Add three callbacks to self.gesture_detector. These anonymous functions (also known
 #    as lambdas) take a timestamp and tell self.gesture_lexer to record a gesture at
 #    that time. The particular sort of gesture passed is indicated by a string.
@@ -41,13 +29,14 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
+        self.gesture_detected = self.gesture_detector.gesture_detected
      
         self.smart_home_activator = SmartHomeActivator()
 
 #    This is a test pattern to find in a gesture sequence. The gesture sequence 
 #    being detected as a pattern must be made up of strings which correspond to the
 #    strings passed into self.gesture_lexer.add in the anonymous lambdas above.
-        self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on (not really)', 'Alexa'))
+        self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
       
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
@@ -59,15 +48,29 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    contained in ProcessManager and MultithreadedPerimeter. You'll see a
 #    demonstration of them being used together shortly.
         self.process_manager = ProcessManager()
-        self.data_manager = DataManager()
-        self.open_eye_threshold = self.data_manager.get_open_eye_threshold()
-        self.gui_manager = GuiManager(self.cap, self.set_open_eye_threshold, self.open_eye_threshold)
-#        self.gui_manager.on_ear_change(lambda x: print(x))#self.set_open_eye_threshold)
+        self.database_manager = DatabaseManager()
+
+        self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
+        self.low_contrast_value = self.database_manager.get_low_contrast()
+        self.high_contrast_value = self.database_manager.get_high_contrast()
+        self.min_increment = self.database_manager.get_min_time_inc()
+        self.max_increment = self.database_manager.get_max_time_inc()
+
+        self.gui_manager = GuiManager(self.cap, 
+                                      self.set_open_eye_threshold, self.open_eye_threshold,
+                                      self.set_low_contrast, self.low_contrast_value,
+                                      self.set_high_contrast, self.high_contrast_value,
+                                      self.set_min_time_inc, self.min_increment,
+                                      self.set_max_time_inc, self.max_increment,
+                                      self.gesture_detected)
+
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
         ret, frame = self.cap.read()
-        timestamp = datetime.now()
+
+        timestamp = datetime.utcnow()
+        self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
      
 #    These multithreaded perimeters are the only objects which hold values that
 #    are shared between threads. The frame, for example, is copied for each 
@@ -148,12 +151,28 @@ class NonVerbalSmartHomeRecognitionSystem():
         #Display the frame, flipping it to look like a mirror. I have way too much
         #trouble orienting my body to get gestures detected without doing this.
         #It's pretty embarassing.
+        self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
+        self.last_timestamp = timestamp
 
     def set_open_eye_threshold(self, new_ear_value):
-        self.open_eye_threshold = float(new_ear_value) / 100.0
-        self.data_manager.set_open_eye_threshold(self.open_eye_threshold)
+        self.open_eye_threshold = float(new_ear_value)
+        self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
         
+    def set_low_contrast(self, new_low_contrast):
+        self.database_manager.set_low_contrast(int(new_low_contrast))
+
+    def set_high_contrast(self, new_high_contrast):
+        self.database_manager.set_high_contrast(int(new_high_contrast))
+
+    def set_min_time_inc(self, new_min_time_inc):
+        self.min_increment = int(new_min_time_inc)
+        self.database_manager.set_min_time_inc(new_min_time_inc)
+
+    def set_max_time_inc(self, new_max_time_inc):
+        self.max_increment = int(new_max_time_inc)
+        self.database_manager.set_max_time_inc(new_max_time_inc)
+
     def on_close(self):
 #Close down OpenCV.
         self.cap.release()
@@ -164,4 +183,4 @@ class NonVerbalSmartHomeRecognitionSystem():
      
 # Close log file.
         self.logger.close() 
-        self.data_manager.close()
+        self.database_manager.close()
