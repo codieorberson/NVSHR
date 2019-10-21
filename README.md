@@ -64,7 +64,6 @@ Install postgres, grant your current user account access to psql, and create a d
 Follow these steps to initialize the NVSHR system on your device: 
 
 1. Run `main.py`. 
-    + The default "tick" time is set at 4 seconds. If you wish to initialize this time interval to a custom time, please pass this time increment in as your second argument. *For example: `python main.py 5`* 
 
 2. After running the previous command, a pop-up window will appear with video feedback from the connected camera. Please ensure the camera is placed properly so that the user is within the camera frame. 
     

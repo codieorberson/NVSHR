@@ -311,8 +311,13 @@ class _App(Tk):
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
+            if tab.is_fps:
+                self.fps_tab = tab
 
         return debug_tab
+
+    def get_fps_tab(self):
+        return self.fps_tab
 
 #An instance of this class represents a tab.
 #Note that the current version only has one tab, due to the canvas element
@@ -339,7 +344,10 @@ class Page(Frame):
                 }
 
         Frame.__init__(self,*args,**kwargs)
+
         self.is_debug = False
+        self.is_fps = False
+
         self.option = 1
         self.option1 = StringVar()
         self.option1.set("None")
@@ -369,11 +377,12 @@ class Page(Frame):
                 self.name = name
             
             elif element["format"] == "text-cam-fps":
-                text_var = StringVar()
-                self.label = Label(self, textvariable = text_var, font = 20)
-                text_var.set("FPS:       " + self.get_cam_fps(cap))
+                self.fps_container = StringVar()
+                self.label = Label(self, textvariable = self.fps_container, font = 20)
+                self.fps_container.set("FPS:       " + self.get_cam_fps(cap))
                 self.label.grid(row=row_index, column = 0, padx=10, pady=10)
                 self.name = name
+                self.is_fps = True
 
             elif element["format"] == "video":
                 self.is_debug = True
@@ -430,6 +439,9 @@ class Page(Frame):
         self.option4.set(value)
         print("Command 4: " + value)
 
+    def set_fps(self, fps):
+        self.fps_container.set("FPS:       " + str(fps))
+
     def __frame_to_image__(self, frame):
         return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
 
@@ -472,6 +484,7 @@ class GuiManager():
                           on_min_time_inc, initial_min_time_inc,
                           on_max_time_inc, initial_max_time_inc,
                           gesture_detected)
+        self.fps_tab = self.gui.get_fps_tab()
 
     def __loop__(self):
         self.loop_callback()
@@ -486,6 +499,9 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+
+    def set_fps(self, fps):
+        self.fps_tab.set_fps(fps)
 
     def destroy_gui(self):
         self.gui.destroy()
