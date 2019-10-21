@@ -36,8 +36,12 @@ class NonVerbalSmartHomeRecognitionSystem():
 #    This is a test pattern to find in a gesture sequence. The gesture sequence 
 #    being detected as a pattern must be made up of strings which correspond to the
 #    strings passed into self.gesture_lexer.add in the anonymous lambdas above.
-        self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
-      
+        self.gesture_parser.add_pattern(['fist', 'palm', 'blink'], lambda: self.smart_home_activator.activate('Lights on/off', 'Alexa'))
+        self.gesture_parser.add_pattern(['palm', 'fist', 'blink'], lambda: self.smart_home_activator.activate('Smart Plug on/off', 'Alexa'))
+        self.gesture_parser.add_pattern(['fist', 'blink', 'palm'], lambda: self.smart_home_activator.activate('Heat on/off', 'Alexa'))
+        self.gesture_parser.add_pattern(['palm', 'blink', 'fist'], lambda: self.smart_home_activator.activate('AC on/off', 'Alexa'))
+        self.gesture_parser.add_pattern(['palm'], lambda: self.smart_home_activator.activate('STOP', 'Alexa'))
+
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
