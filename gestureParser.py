@@ -1,3 +1,5 @@
+from sound import Sound
+
 class GestureParser():
 
     def __init__(self, logger):
@@ -15,6 +17,9 @@ class GestureParser():
 
         if was_recognised:
             self.gesture_pattern_map[joined_gesture_sequence]()
+            Sound.success()
+        else:
+            Sound.failure()
 
     def parse_patterns(self, gesture_patterns, now):
         for gesture_pattern in gesture_patterns:
