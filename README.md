@@ -1,6 +1,10 @@
 # Non-Verbal Smart Home Recognition (NVSHR) System 
 
-### Environment Set-Up
+### Postgres Setup
+
+Install postgres, grant your current user account access to psql, and create a database named after your user account if your system's user creation process didn't do that for you automagically.
+
+### Further Environment Set-Up
 
  If you are using a Windows machine, please check and make sure you are using the current SDK files.
  You can most likely find these files in your C directory (C:\Program Files (x86)\Microsoft SDKs\Windows Kits) or similar directory.
@@ -60,7 +64,6 @@
 Follow these steps to initialize the NVSHR system on your device: 
 
 1. Run `main.py`. 
-    + The default "tick" time is set at 4 seconds. If you wish to initialize this time interval to a custom time, please pass this time increment in as your second argument. *For example: `python main.py 5`* 
 
 2. After running the previous command, a pop-up window will appear with video feedback from the connected camera. Please ensure the camera is placed properly so that the user is within the camera frame. 
     
