@@ -18,6 +18,8 @@
    + `pip install opencv-python`
    + `pip install Cmake`
    + `pip install dlib`
+   + `pip install scipy`
+   + `pip install Pillow`
    
    These libraries are needed for the NVSHR System to properly run on your machine. 
 
@@ -41,6 +43,8 @@
    + `pip install opencv-python`
    + `pip install Cmake`
    + `pip install dlib`
+   + `pip install scipy`
+   + `pip install Pillow`
    
    These libraries are needed for the NVSHR System to properly run on your machine. 
 
