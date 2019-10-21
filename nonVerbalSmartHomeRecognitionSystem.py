@@ -41,6 +41,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
+        self.gesture_detected = self.gesture_detector.gesture_detected
      
         self.smart_home_activator = SmartHomeActivator()
 
@@ -72,7 +73,8 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_low_contrast, self.low_contrast_value,
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_time_inc,
-                                      self.set_max_time_inc, self.max_time_inc)
+                                      self.set_max_time_inc, self.max_time_inc,
+                                      self.gesture_detected)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      

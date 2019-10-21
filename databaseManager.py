@@ -1,15 +1,16 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import os
-import pwd
-
+#import pwd
+import getpass
 import logging
 
 #postgres will need the information in this map:
 _database_configuration = {
         'database' : 'nvshr',
-        'user' : pwd.getpwuid(os.getuid())[0], #<--This is the username of the
+        #'user' : pwd.getpwuid(os.getuid())[0], #<--This is the username of the
                                                #   user running main.py
+        'user' : getpass.getuser(),
         'password' : 'nvshr'
         }
 
