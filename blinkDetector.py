@@ -1,23 +1,18 @@
-from scipy.spatial import distance as dist
-from imutils.video import FileVideoStream
-from imutils.video import VideoStream
-from imutils import face_utils
-import numpy as np
-import imutils
-import time
-import dlib
 import cv2
+import dlib
+from imutils import face_utils
+
 
 class BlinkDetector:
 
-    def __init__(self, ear_thresh = 0.2, ear_consec_frame = 2,ear= None, blinks = None, source=None ):
+    def __init__(self, ear_thresh=0.2, ear_consec_frame=2, ear=None):
         self.detector = dlib.get_frontal_face_detector()
-        self.predictor = dlib.shape_predictor('eye.dat') 
-        self.source = source
+        self.predictor = dlib.shape_predictor('eye.dat')
+        # self.source = source
         self.ear_thresh = ear_thresh
         self.ear_consec_frame = ear_consec_frame
         self.ear = ear
-        self.blinks = blinks
+        # self.blinks = blinks : blinks isn't being used anywhere
 
     def detect(self, frame, left_eye_perimeter, right_eye_perimeter):
         # grab the indexes of the facial landmarks for the left and
@@ -27,7 +22,7 @@ class BlinkDetector:
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            # detect faces in the grayscale frame
+        # detect faces in the grayscala0dwe frame
         rects = self.detector(gray, 0)
 
             # loop over the face detections
