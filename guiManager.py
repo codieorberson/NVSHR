@@ -120,7 +120,6 @@ _gui_data = {
                 },
                 {
                     "format": "text",
-                    "multicolumn" : "true",
                     "body": {"text" : "Set the EAR:"},
                     "body2": {"text" : "Set the low_con:"},
                     "body3": {"text" : "Set the high_con:"},
@@ -150,24 +149,8 @@ _gui_data = {
                                                   #capture events:
                 },
                 {
-                    "format": "text",
-                    "multicolumn" : "true",
-                    "body": {"text": "Current Gesture: ",
-                             "font": "20",
-                             "bg": "White",
-                             "relief": "groove"},
-                    "body2": {"text": "Blink",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg": "Blue"},
-                    "body3": {"text": "Fist",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg" : "Blue"},
-                    "body4": {"text": "Palm",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg" : "Blue"}
+                    "format": "gestures",
+                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
                 }
             ]
         },
@@ -347,6 +330,7 @@ class Page(Frame):
 
         self.is_debug = False
         self.is_fps = False
+        self.gesture_detected = gesture_detected
 
         self.option = 1
         self.option1 = StringVar()
@@ -402,6 +386,20 @@ class Page(Frame):
                     self.slider.grid(row = row_index, column = column_index, padx = 10, pady = 10)
                     self.name = name
                     column_index += 1
+            
+            elif element["format"] == "gestures":
+                self.gesturename = Label(self, text = element["body"][0], font = 20, bg = "White")
+                self.gesturename.grid(row = row_index, column = 0, padx = 10, pady = 10)
+                self.blink_label = Label(self, text = element["body"][1], font = 20, fg = "Blue")
+                self.blink_label.grid(row = row_index, column = 1, padx = 10, pady = 10)
+                
+                self.fist_label = Label(self, text = element["body"][2], font = 20, fg = "Blue")
+                self.fist_label.grid(row = row_index, column = 2, padx = 10, pady = 10)
+                self.blink_label.configure(bg = self.set_gesture_background(gesture_detected))
+                self.palm_label = Label(self, text = element["body"][3], font = 20, fg = "Blue")
+                self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
+                self.blink_label.configure(bg = self.set_gesture_background(gesture_detected))
+                
 
             elif element["format"] == "option":
                 OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
@@ -458,12 +456,15 @@ class Page(Frame):
 
     def set_gesture_background(self,gesture_detected):
         if gesture_detected == "fist":
-            print(self.label.name)
-            print("fist")
+            print("detected fist")
+            self.fist_label.configure(bg = "Black")
         elif gesture_detected == "palm":
-            print("palm")
+            self.palm_label.configure(bg = "Black")
         elif gesture_detected == "blink":
-            print("blink")
+            print("detected bilnk")
+            self.blink_label.configure(bg = "Black")
+
+            
 
 #This is the only class which is meant to be accessed from other files. It 
 #provides a high level interface for starting the gui, defining what logic
@@ -485,6 +486,9 @@ class GuiManager():
                           on_max_time_inc, initial_max_time_inc,
                           gesture_detected)
         self.fps_tab = self.gui.get_fps_tab()
+        
+        self.set_gesture_background(gesture_detected)
+
 
     def __loop__(self):
         self.loop_callback()
@@ -499,6 +503,9 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+    
+    def set_gesture_background(self,gesture_detected):
+        self.debug_tab.set_gesture_background(gesture_detected)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
