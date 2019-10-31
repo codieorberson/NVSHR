@@ -24,18 +24,14 @@ class GestureDetector():
         self.fist_event = None
         self.palm_event = None
         self.blink_event = None
-        self.gesture_detected = None
 
     def on_fist(self, callback):
-        self.gesture_detected = "fist"
         self.fist_event = callback
 
     def on_palm(self, callback):
-        self.gesture_detected = "palm"
         self.palm_event = callback
 
     def on_blink(self, callback):
-        self.gesture_detected = "blink"
         self.blink_event = callback
 
     # Method is to be run in separate thread

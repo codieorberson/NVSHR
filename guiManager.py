@@ -284,14 +284,12 @@ class _App(Tk):
                                   on_low_contrast, initial_low_contrast,
                                   on_high_contrast, initial_high_contrast,
                                   on_min_time_inc, initial_min_time_inc,
-                                  on_max_time_inc, initial_max_time_inc,
-                                  gesture_detected):
+                                  on_max_time_inc, initial_max_time_inc):
         self.notebook = ttk.Notebook(width=1000, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc,
-                          gesture_detected)
+                          on_max_time_inc, initial_max_time_inc)
 
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -300,14 +298,13 @@ class _App(Tk):
                     on_low_contrast, initial_low_contrast,
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
-                    on_max_time_inc, initial_max_time_inc,
-                    gesture_detected):
+                    on_max_time_inc, initial_max_time_inc):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
+                          on_max_time_inc, initial_max_time_inc, page_configuration["elements"])
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
@@ -325,7 +322,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args,**kwargs):
+                 on_max_time_inc, initial_max_time_inc, elements, *args,**kwargs):
 
         self.event_map = {
                 "on_ear_change" : on_ear_change,
@@ -474,16 +471,14 @@ class GuiManager():
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc,
-                 gesture_detected):
+                 on_max_time_inc, initial_max_time_inc):
         self.gui = _App()
         self.gui.title("NVSHR")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
                           on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc,
-                          gesture_detected)
+                          on_max_time_inc, initial_max_time_inc)
         self.fps_tab = self.gui.get_fps_tab()
 
     def __loop__(self):
