@@ -1,5 +1,16 @@
 #import homeassistant
 
+
+import pyttsx3
+#^^^If testing on windows, install both pyttsx3 and pypiwin32; on linux, python-espeak must be installed (through the system package manager or from source, not from pip3).
+
+_text_to_speech_engine = pyttsx3.init()
+
+def _text_to_wav(text):
+    _text_to_speech_engine.say(text)
+    _text_to_speech_engine.runAndWait()
+
+
 def _connect_to_home_assistant():
     try:
     # After installing homeassistant, go to localhost:8123 in your browser, then
@@ -25,10 +36,10 @@ def _connect_to_home_assistant():
         }
         from requests import get
         response = get(url, headers=headers)
-
         if response.text != '{"message": "API running."}':
             raise Exception()
     except:
+        response = None
         print('Warning: Could not connect to homeassistant. No commands will be sent to homeassisant')
 
     if response and response.text == '{"message": "API running."}':
@@ -52,4 +63,4 @@ class SmartHomeActivator():
             #This needs to actually trigger API calls that use TTS middleware.
         else:
             print('"' + smartHomeAction + '" not actually sent to ' + device +
-                    '.')
+                    '.\n')
