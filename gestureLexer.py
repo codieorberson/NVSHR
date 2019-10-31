@@ -12,6 +12,8 @@ class GestureLexer():
         self.logger.log_gesture(gesture_name, now)
         self.gestures.append((gesture_name, now.timestamp()))
 
+    #Iterates over list of gestures in proper order. If a timestamp is less than current time - set max increment,
+    #that gesture sequence is added to list of all sequences.
     def lex(self, now, min_increment, max_increment):
         last_dict = {'fist' : None, 'palm' : None, 'blink' : None, 'left_wink' : None, 'right_wink' : None}
 
