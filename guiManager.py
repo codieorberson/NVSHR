@@ -484,6 +484,10 @@ class Page(Frame):
             self.palm_label.configure(bg = "Black")
         elif gesture_detected == "blink":
             self.blink_label.configure(bg = "Black")
+        else:
+            self.fist_label.configure(bg = "White")
+            self.palm_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
 
             
 

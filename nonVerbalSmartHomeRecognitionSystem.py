@@ -75,7 +75,6 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         timestamp = datetime.utcnow()
         self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
-        self.gesture_detected = self.gesture_detector.gesture_detected
 #    These multithreaded perimeters are the only objects which hold values that
 #    are shared between threads. The frame, for example, is copied for each 
 #    core in the processor, and drawing on a frame inside of a child process
@@ -158,6 +157,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.last_timestamp = timestamp
+        self.gesture_detected = self.gesture_detector.get_gesture_detected()
         self.gui_manager.set_gesture_background(self.gesture_detected)
 
     def set_open_eye_threshold(self, new_ear_value):
