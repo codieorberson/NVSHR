@@ -40,10 +40,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser.add_pattern(['palm', 'fist', 'blink'], lambda: self.smart_home_activator.activate('Smart Plug on/off', 'Alexa'))
         self.gesture_parser.add_pattern(['fist', 'blink', 'palm'], lambda: self.smart_home_activator.activate('Heat on/off', 'Alexa'))
         self.gesture_parser.add_pattern(['palm', 'blink', 'fist'], lambda: self.smart_home_activator.activate('AC on/off', 'Alexa'))
-        self.gesture_parser.add_pattern(['palm'], lambda: self.smart_home_activator.activate('STOP', 'Alexa'))
-
-        self.gesture_parser.add_pattern(['blink', 'blink', 'blink'], lambda: self.smart_home_activator.activate('AC on/off', 'Alexa'))
-        self.gesture_parser.add_pattern(['blink', 'blink'], lambda: self.smart_home_activator.activate('Heat on/off', 'Alexa'))
+        self.gesture_parser.add_pattern(['palm'], lambda: self.smart_home_activator.activate('STOP', 'Alexa')) 
 
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
@@ -161,6 +158,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.last_timestamp = timestamp
+        self.gui_manager.set_gesture_background(self.gesture_detected)
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)

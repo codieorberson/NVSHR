@@ -296,11 +296,27 @@ class _App(Tk):
                 debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
+            if tab.is_blink_label:
+                self.blink_label = tab
+            if tab.is_fist_label:
+                self.fist_label = tab
+            if tab.is_palm_label:
+                self.palm_label = tab
 
         return debug_tab
 
     def get_fps_tab(self):
         return self.fps_tab
+    
+    def get_blink_label(self):
+        return self.blink_label
+    
+    def get_fist_label(self):
+        return self.fist_label
+    
+    def get_palm_label(self):
+        return self.palm_label
+
 
 #An instance of this class represents a tab.
 #Note that the current version only has one tab, due to the canvas element
@@ -330,6 +346,9 @@ class Page(Frame):
 
         self.is_debug = False
         self.is_fps = False
+        self.is_blink_label = False
+        self.is_fist_label = False
+        self.is_palm_label = False
         self.gesture_detected = gesture_detected
 
         self.option = 1
@@ -390,15 +409,19 @@ class Page(Frame):
             elif element["format"] == "gestures":
                 self.gesturename = Label(self, text = element["body"][0], font = 20, bg = "White")
                 self.gesturename.grid(row = row_index, column = 0, padx = 10, pady = 10)
+
+                self.is_blink_label = True
                 self.blink_label = Label(self, text = element["body"][1], font = 20, fg = "Blue")
                 self.blink_label.grid(row = row_index, column = 1, padx = 10, pady = 10)
                 
+                self.is_fist_label = True
                 self.fist_label = Label(self, text = element["body"][2], font = 20, fg = "Blue")
                 self.fist_label.grid(row = row_index, column = 2, padx = 10, pady = 10)
-                self.blink_label.configure(bg = self.set_gesture_background(gesture_detected))
+
+                self.is_palm_label = True
                 self.palm_label = Label(self, text = element["body"][3], font = 20, fg = "Blue")
                 self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
-                self.blink_label.configure(bg = self.set_gesture_background(gesture_detected))
+
                 
 
             elif element["format"] == "option":
@@ -456,12 +479,10 @@ class Page(Frame):
 
     def set_gesture_background(self,gesture_detected):
         if gesture_detected == "fist":
-            print("detected fist")
             self.fist_label.configure(bg = "Black")
         elif gesture_detected == "palm":
             self.palm_label.configure(bg = "Black")
         elif gesture_detected == "blink":
-            print("detected bilnk")
             self.blink_label.configure(bg = "Black")
 
             
@@ -486,9 +507,9 @@ class GuiManager():
                           on_max_time_inc, initial_max_time_inc,
                           gesture_detected)
         self.fps_tab = self.gui.get_fps_tab()
-        
-        self.set_gesture_background(gesture_detected)
-
+        self.blink_label = self.gui.get_blink_label()
+        self.fist_label = self.gui.get_fist_label()
+        self.palm_label = self.gui.get_palm_label()
 
     def __loop__(self):
         self.loop_callback()
@@ -504,8 +525,10 @@ class GuiManager():
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
     
-    def set_gesture_background(self,gesture_detected):
-        self.debug_tab.set_gesture_background(gesture_detected)
+    def set_gesture_background(self, gesture_detected):
+        self.blink_label.set_gesture_background(gesture_detected)
+        self.fist_label.set_gesture_background(gesture_detected)
+        self.palm_label.set_gesture_background(gesture_detected)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
