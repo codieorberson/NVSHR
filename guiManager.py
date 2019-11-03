@@ -333,14 +333,7 @@ class Page(Frame):
         self.optionsManager = AdminCmdManager()
 
         self.option = 1
-        self.option1 = StringVar()
-        self.option1.set(self.optionsManager.action1)
-        self.option2 = StringVar()
-        self.option2.set(self.optionsManager.action2)
-        self.option3 = StringVar()
-        self.option3.set(self.optionsManager.action3)
-        self.option4 = StringVar()
-        self.option4.set(self.optionsManager.action4)
+        self.command_links = {}
 
         row_index = 1
         for element in elements:
@@ -395,15 +388,11 @@ class Page(Frame):
                     column_index += 1
 
             elif element["format"] == "option":
-                OPTIONLIST = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
-                if self.option == 1:
-                    self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
-                elif self.option == 2:
-                    self.optionMenu = OptionMenu(self, self.option2, *OPTIONLIST, command=self.set_value2)
-                elif self.option == 3:
-                    self.optionMenu = OptionMenu(self, self.option3, *OPTIONLIST, command=self.set_value3)
-                elif self.option == 4:
-                    self.optionMenu = OptionMenu(self, self.option4, *OPTIONLIST, command=self.set_value4)
+                self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
+                variable = StringVar()
+                variable.set(self.optionsManager.action[self.option])
+                self.command_links[self.option] = variable
+                self.optionMenu = OptionMenu(self, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
                 self.option += 1
@@ -413,10 +402,10 @@ class Page(Frame):
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
-    def set_value1(self, value):
-        self.option1.set(value)
-        self.optionsManager.write_to_file(1, value)
-        print("Command 1: " + value)
+    def set_value(self, value):
+        for x in range(1, 5):
+            self.optionsManager.write_to_file(x, self.command_links[x].get())
+            print("Command" + str(x) + ": " + self.command_links[x].get())
 
     def set_value2(self, value):
         self.option2.set(value)
