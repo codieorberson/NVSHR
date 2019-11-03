@@ -25,7 +25,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger)
         self.gesture_parser = GestureParser(self.logger)
-        self.AdminSettingsManager = AdminCmdManager()
+        self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
@@ -63,7 +63,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, self.admin)
+                                      self.gesture_detected, self.admin, self.admin_settings_manager)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      

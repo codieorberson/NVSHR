@@ -270,14 +270,14 @@ class _App(Tk):
                                   on_high_contrast, initial_high_contrast,
                                   on_min_time_inc, initial_min_time_inc,
                                   on_max_time_inc, initial_max_time_inc,
-                                  gesture_detected):
+                                  gesture_detected, settings_manager):
         self.notebook = ttk.Notebook(width=1000, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear, on_low_contrast,
                                           initial_low_contrast,
                                           on_high_contrast, initial_high_contrast,
                                           on_min_time_inc, initial_min_time_inc,
                                           on_max_time_inc, initial_max_time_inc,
-                                          gesture_detected)
+                                          gesture_detected, settings_manager)
 
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -287,13 +287,14 @@ class _App(Tk):
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc,
-                    gesture_detected):
+                    gesture_detected, settings_manager):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                        on_high_contrast, initial_high_contrast,
                        on_min_time_inc, initial_min_time_inc,
-                       on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
+                       on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"],
+                       settings_manager)
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
@@ -310,7 +311,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args, **kwargs):
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, settings_manager, *args, **kwargs):
         self.event_map = {
             "on_ear_change": on_ear_change,
             "on_low_contrast": on_low_contrast,
@@ -330,7 +331,7 @@ class Page(Frame):
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
         self.is_fps = False
-        self.optionsManager = AdminCmdManager()
+        self.optionsManager = settings_manager
 
         self.option = 1
         self.command_links = {}
@@ -391,6 +392,7 @@ class Page(Frame):
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 variable = StringVar()
                 variable.set(self.optionsManager.action[self.option])
+                print(variable.get())
                 self.command_links[self.option] = variable
                 self.optionMenu = OptionMenu(self, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
@@ -455,7 +457,7 @@ class GuiManager:
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc,
-                 gesture_detected, is_admin):
+                 gesture_detected, is_admin, settings_manager):
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
@@ -463,7 +465,7 @@ class GuiManager:
                                                             on_high_contrast, initial_high_contrast,
                                                             on_min_time_inc, initial_min_time_inc,
                                                             on_max_time_inc, initial_max_time_inc,
-                                                            gesture_detected)
+                                                            gesture_detected, settings_manager)
         self.fps_tab = self.gui.get_fps_tab()
 
         if is_admin == False:
