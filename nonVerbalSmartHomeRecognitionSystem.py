@@ -42,7 +42,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
-
+        
         self.smart_home_activator = SmartHomeActivator()
 #    This is a test pattern to find in a gesture sequence. The gesture sequence 
 #    being detected as a pattern must be made up of strings which correspond to the

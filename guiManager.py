@@ -348,9 +348,7 @@ class Page(Frame):
         self.is_fist_label = False
         self.is_palm_label = False
         self.gesture_detected = gesture_detected
-
         self.optionsManager = AdminCmdManager()
-
         self.option = 1
         self.option1 = StringVar()
         self.option1.set(self.optionsManager.action1)
@@ -421,9 +419,7 @@ class Page(Frame):
                 self.is_palm_label = True
                 self.palm_label = Label(self, text = element["body"][3], font = 20, fg = "Blue")
                 self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
-
                 
-
             elif element["format"] == "option":
                 OPTIONLIST = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 if self.option == 1:
@@ -500,13 +496,12 @@ class Page(Frame):
             self.palm_label.configure(bg = "White")
             self.blink_label.configure(bg = "White")
 
-
-# This is the only class which is meant to be accessed from other files. It
-# provides a high level interface for starting the gui, defining what logic
-# should be executed between refresh cycles and before closing down, and moving
-# data to and from the GUI (e.g. when drawing a new frame for the debug screen).
-class GuiManager:
-    def __init__(self, cap, on_ear_change,
+#This is the only class which is meant to be accessed from other files. It 
+#provides a high level interface for starting the gui, defining what logic
+#should be executed between refresh cycles and before closing down, and moving
+#data to and from the GUI (e.g. when drawing a new frame for the debug screen).
+class GuiManager():
+    def __init__(self, cap, on_ear_change, 
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
@@ -546,9 +541,6 @@ class GuiManager:
         self.blink_label.set_gesture_background(gesture_detected)
         self.fist_label.set_gesture_background(gesture_detected)
         self.palm_label.set_gesture_background(gesture_detected)
-
-    def set_fps(self, fps):
-        self.fps_tab.set_fps(fps)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
