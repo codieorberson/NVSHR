@@ -28,14 +28,14 @@ class BlinkDetector:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             # detect faces in the grayscale frame
-        rects = self.detector(gray, 0)
+        faces = self.detector(gray, 0)
 
             # loop over the face detections
-        for rect in rects:
+        for face in faces:
                 # determine the facial landmarks for the face region, then
                 # convert the facial landmark (x, y)-coordinates to a NumPy
                 # array
-            shape = self.predictor(gray, rect)
+            shape = self.predictor(gray, face)
             shape = face_utils.shape_to_np(shape)
 
                 # extract the left and right eye coordinates, then use the
