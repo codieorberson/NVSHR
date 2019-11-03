@@ -5,6 +5,7 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
+from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
@@ -15,7 +16,6 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
 
-
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
         self.last_timestamp = datetime.utcnow()
@@ -24,6 +24,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_lexer = GestureLexer(self.logger)
         self.gesture_parser = GestureParser(self.logger)
         self.gesture_detected = None
+        self.AdminSettingsManager = AdminCmdManager()
+        # self.AdminSettingsManager.read_from_file()
 
 #     Add three callbacks to self.gesture_detector. These anonymous functions (also known
 #    as lambdas) take a timestamp and tell self.gesture_lexer to record a gesture at
