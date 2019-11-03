@@ -19,7 +19,7 @@ class AdminCmdManager:
                 self.action = {}
 
                 for x in range(1, 5):
-                    self.action[x] = command_data["Command" + str(x)]
+                    self.action[x] = self.commandJson["Command" + str(x)]
 
                 cmdJson.close()
         else:
@@ -46,7 +46,7 @@ class AdminCmdManager:
 
     def read_from_file(self):
         json.load("command.json")
-        self.action[1] = command_data["Command1"]
-        self.action[2] = command_data["Command2"]
-        self.action[3] = command_data["Command3"]
-        self.action[4] = command_data["Command4"]
+        self.action[1] = self.commandJson["Command1"]
+        self.action[2] = self.commandJson["Command2"]
+        self.action[3] = self.commandJson["Command3"]
+        self.action[4] = self.commandJson["Command4"]

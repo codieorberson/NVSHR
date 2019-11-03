@@ -392,7 +392,6 @@ class Page(Frame):
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 variable = StringVar()
                 variable.set(self.optionsManager.action[self.option])
-                print(variable.get())
                 self.command_links[self.option] = variable
                 self.optionMenu = OptionMenu(self, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
