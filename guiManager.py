@@ -140,9 +140,7 @@ _gui_data = {
                  },
                  {
                      "format": "text-cam-fps",
-                     # Note that FPS is only being
-                     # calculated on initial
-                     # execution, but we should
+                     # Note that FPS is only being calculated on initial execution, but we should
                      # really make a hook to update
                      # this value as the program
                      # executes because FPS will

@@ -1,10 +1,7 @@
 from datetime import datetime
+
 import cv2
-from datetime import timedelta
-from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
-from guiManager import GuiManager
-from logger import Logger
+
 from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
@@ -13,9 +10,10 @@ from gestureParser import GestureParser
 from guiManager import GuiManager
 from logger import Logger
 from multithreadedPerimeter import MultithreadedPerimeter
+from popUp import PopUp
 from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
-from popUp import PopUp
+
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
@@ -26,9 +24,9 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # print("Are you an admin?\n 1. Yes\n 2. No")
         # self.admin = input()
-        #self.pop_up_window = PopUp()
-        #self.admin = self.pop_up_window.send_verification()
-        self.admin = True
+        self.pop_up_window = PopUp()
+        self.admin = self.pop_up_window.send_verification()
+        # self.admin = True
 
         self.last_timestamp = datetime.utcnow()
         self.logger = Logger()

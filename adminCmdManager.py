@@ -1,6 +1,7 @@
 import json
 import os
 
+# json data structure that stores the smart home actions
 command_data = {
     "Command1": "None",
     "Command2": "None",
@@ -15,7 +16,7 @@ class AdminCmdManager:
         if exists:
             with open("command.json", encoding='utf-8', errors='ignore') as cmdJson:
                 self.commandJson = json.load(cmdJson, strict=False)
-                # print(self.commandJson)
+                # Grab the actions from the json file and assign them to variables
                 self.action1 = command_data["Command1"]
                 self.action2 = command_data["Command2"]
                 self.action3 = command_data["Command3"]
@@ -38,7 +39,8 @@ class AdminCmdManager:
 
         with open("command.json", "r+") as write_file:
 
-            write_file.seek(0)  # rewind
+            # Start from the beginning of the file and save the needed data
+            write_file.seek(0)
             json.dump(command_data, write_file)
             write_file.truncate()
             write_file.close()
