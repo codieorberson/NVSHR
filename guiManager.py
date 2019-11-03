@@ -408,21 +408,6 @@ class Page(Frame):
             self.optionsManager.write_to_file(x, self.command_links[x].get())
             print("Command" + str(x) + ": " + self.command_links[x].get())
 
-    def set_value2(self, value):
-        self.option2.set(value)
-        self.optionsManager.write_to_file(2, value)
-        print("Command 2: " + value)
-
-    def set_value3(self, value):
-        self.option3.set(value)
-        self.optionsManager.write_to_file(3, value)
-        print("Command 3: " + value)
-
-    def set_value4(self, value):
-        self.option4.set(value)
-        self.optionsManager.write_to_file(4, value)
-        print("Command 4: " + value)
-
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
