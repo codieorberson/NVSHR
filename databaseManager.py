@@ -17,7 +17,7 @@ _database_configuration = {
         }
 
 _default_values = {
-        'open_eye_ratio' : 0.2,
+        'open_eye_ratio' : 0.05,
         'minimum_time_increment' : 2,
         'maximum_time_increment' : 5,
         #I never got the contrast settings to improve detection, so I don't

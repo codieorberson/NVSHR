@@ -1,6 +1,5 @@
-from multiprocessing import Process, get_start_method
-
-is_forking = get_start_method() == 'fork'
+from multiprocessing import Process
+import platform
 
 class SynchronousProcess():
     def __init__(self, target = None, args = None):
@@ -15,7 +14,8 @@ class SynchronousProcess():
     def join(self):
         pass
 
-if get_start_method() == "fork":
+
+if platform.system() == 'Linux':
     #On Linux, we use multiprocessing.
     ProcessConstructor = Process
 else:

@@ -9,10 +9,7 @@ import cv2
 
 from adminCmdManager import AdminCmdManager
 
-# This data structure defines the elements which are to be laid out on the
-# screen. The logic of the layout is implemented below. I think this data
-# structure probably deserves a separate file, but crudely dumping it here was
-# quick and easy. Feel free to move it.
+# Define the elements to be laid out on each tab
 _gui_data = {
     "tab1": {"title": "Instructions",
              "elements": [
@@ -154,24 +151,8 @@ _gui_data = {
                      # capture events:
                  },
                  {
-                     "format": "text",
-                     "multicolumn": "true",
-                     "body": {"text": "Current Gesture: ",
-                              "font": "20",
-                              "bg": "White",
-                              "relief": "groove"},
-                     "body2": {"text": "Blink",
-                               "font": "20",
-                               # the color is hard coded now, but should be determined by the detecotr
-                               "fg": "Blue"},
-                     "body3": {"text": "Fist",
-                               "font": "20",
-                               # the color is hard coded now, but should be determined by the detecotr
-                               "fg": "Blue"},
-                     "body4": {"text": "Palm",
-                               "font": "20",
-                               # the color is hard coded now, but should be determined by the detecotr
-                               "fg": "Blue"}
+                     "format": "gestures",
+                     "body": ["Current Gesture", "Blink", "Fist", "Palm"]
                  }
              ]
              },
@@ -279,7 +260,6 @@ _gui_data = {
              }
 }
 
-
 # An instance of this class represents a window with (potentially) multiple tabs.
 class _App(Tk):
     def __init__(self, *args, **kwargs):
@@ -319,17 +299,28 @@ class _App(Tk):
                 debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
+            if tab.is_blink_label:
+                self.blink_label = tab
+            if tab.is_fist_label:
+                self.fist_label = tab
+            if tab.is_palm_label:
+                self.palm_label = tab
 
         return debug_tab
 
     def get_fps_tab(self):
         return self.fps_tab
-
+    
+    def get_blink_label(self):
+        return self.blink_label
+    
+    def get_fist_label(self):
+        return self.fist_label
+    
+    def get_palm_label(self):
+        return self.palm_label
 
 # An instance of this class represents a tab.
-# Note that the current version only has one tab, due to the canvas element
-# showing up on every tab.
-
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
@@ -353,8 +344,11 @@ class Page(Frame):
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
         self.is_fps = False
+        self.is_blink_label = False
+        self.is_fist_label = False
+        self.is_palm_label = False
+        self.gesture_detected = gesture_detected
         self.optionsManager = AdminCmdManager()
-
         self.option = 1
         self.option1 = StringVar()
         self.option1.set(self.optionsManager.action1)
@@ -409,10 +403,25 @@ class Page(Frame):
                     self.slider.grid(row=row_index, column=column_index, padx=10, pady=10)
                     self.name = name
                     column_index += 1
+            
+            elif element["format"] == "gestures":
+                self.gesturename = Label(self, text = element["body"][0], font = 20, bg = "White")
+                self.gesturename.grid(row = row_index, column = 0, padx = 10, pady = 10)
 
+                self.is_blink_label = True
+                self.blink_label = Label(self, text = element["body"][1], font = 20, fg = "Blue")
+                self.blink_label.grid(row = row_index, column = 1, padx = 10, pady = 10)
+                
+                self.is_fist_label = True
+                self.fist_label = Label(self, text = element["body"][2], font = 20, fg = "Blue")
+                self.fist_label.grid(row = row_index, column = 2, padx = 10, pady = 10)
+
+                self.is_palm_label = True
+                self.palm_label = Label(self, text = element["body"][3], font = 20, fg = "Blue")
+                self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
+                
             elif element["format"] == "option":
-                OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
-                              element["option5"]]
+                OPTIONLIST = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 if self.option == 1:
                     self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
                 elif self.option == 2:
@@ -467,29 +476,39 @@ class Page(Frame):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
 
+
+    #This code, as written, cannot display two simultaneous gestures.
     def set_gesture_background(self, gesture_detected):
         if gesture_detected == "fist":
-            print(self.label.name)
-            print("fist")
+            self.fist_label.configure(bg = "Black")
+            self.palm_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
         elif gesture_detected == "palm":
-            print("palm")
+            self.palm_label.configure(bg = "Black")
+            self.fist_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
         elif gesture_detected == "blink":
-            print("blink")
+            self.blink_label.configure(bg = "Black")
+            self.fist_label.configure(bg = "White")
+            self.palm_label.configure(bg = "White")
+        else:
+            self.fist_label.configure(bg = "White")
+            self.palm_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
 
-
-# This is the only class which is meant to be accessed from other files. It
-# provides a high level interface for starting the gui, defining what logic
-# should be executed between refresh cycles and before closing down, and moving
-# data to and from the GUI (e.g. when drawing a new frame for the debug screen).
+#This is the only class which is meant to be accessed from other files. It 
+#provides a high level interface for starting the gui, defining what logic
+#should be executed between refresh cycles and before closing down, and moving
+#data to and from the GUI (e.g. when drawing a new frame for the debug screen).
 class GuiManager():
-    def __init__(self, cap, on_ear_change,
+    def __init__(self, cap, on_ear_change, 
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc,
-                 gesture_detected):
+                 gesture_detected, is_admin):
         self.gui = _App()
-        self.gui.title("NVSHR")
+        self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
                                                             on_low_contrast, initial_low_contrast,
                                                             on_high_contrast, initial_high_contrast,
@@ -497,6 +516,12 @@ class GuiManager():
                                                             on_max_time_inc, initial_max_time_inc,
                                                             gesture_detected)
         self.fps_tab = self.gui.get_fps_tab()
+        self.blink_label = self.gui.get_blink_label()
+        self.fist_label = self.gui.get_fist_label()
+        self.palm_label = self.gui.get_palm_label()
+
+        if is_admin == False:
+            self.gui.withdraw()
 
     def __loop__(self):
         self.loop_callback()
@@ -511,6 +536,11 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+    
+    def set_gesture_background(self, gesture_detected):
+        self.blink_label.set_gesture_background(gesture_detected)
+        self.fist_label.set_gesture_background(gesture_detected)
+        self.palm_label.set_gesture_background(gesture_detected)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
