@@ -16,11 +16,12 @@ class AdminCmdManager:
         if exists:
             with open("command.json", encoding='utf-8', errors='ignore') as cmdJson:
                 self.commandJson = json.load(cmdJson, strict=False)
-                # Grab the actions from the json file and assign them to variables
-                self.action1 = command_data["Command1"]
-                self.action2 = command_data["Command2"]
-                self.action3 = command_data["Command3"]
-                self.action4 = command_data["Command4"]
+                # print(self.commandJson)
+                self.action = {}
+
+                for x in range(1, 5):
+                    self.action[x] = self.commandJson["Command" + str(x)]
+
                 cmdJson.close()
         else:
             with open("command.json", "w+") as write_file:
@@ -47,7 +48,7 @@ class AdminCmdManager:
 
     def read_from_file(self):
         json.load("command.json")
-        self.action1 = command_data["Command1"]
-        self.action2 = command_data["Command2"]
-        self.action3 = command_data["Command3"]
-        self.action4 = command_data["Command4"]
+        self.action[1] = self.commandJson["Command1"]
+        self.action[2] = self.commandJson["Command2"]
+        self.action[3] = self.commandJson["Command3"]
+        self.action[4] = self.commandJson["Command4"]

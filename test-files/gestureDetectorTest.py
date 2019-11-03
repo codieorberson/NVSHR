@@ -140,7 +140,7 @@ def test_gesture_detector_trigger_events_blink():
 
     detector.blink_event = MagicMock()
 
-    detector.trigger_events(timestamp, 4, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
+    detector.trigger_events(timestamp, 400, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
 
     assert detector.blink_event.called, "detector.trigger_events() did not call the blink callback."
 
