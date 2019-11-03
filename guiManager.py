@@ -9,10 +9,7 @@ import cv2
 
 from adminCmdManager import AdminCmdManager
 
-# This data structure defines the elements which are to be laid out on the
-# screen. The logic of the layout is implemented below. I think this data
-# structure probably deserves a separate file, but crudely dumping it here was
-# quick and easy. Feel free to move it.
+# Define the elements to be laid out on each tab
 _gui_data = {
     "tab1": {"title": "Instructions",
              "elements": [
@@ -157,27 +154,6 @@ _gui_data = {
                      "format": "gestures",
                      "body": ["Current Gesture", "Blink", "Fist", "Palm"]
                  }
-                
-#                 {
-#                     "format": "text",
-#                     "multicolumn": "true",
-#                     "body": {"text": "Current Gesture: ",
-#                              "font": "20",
-#                              "bg": "White",
-#                              "relief": "groove"},
-#                     "body2": {"text": "Blink",
-#                               "font": "20",
-#                               # the color is hard coded now, but should be determined by the detecotr
-#                               "fg": "Blue"},
-#                     "body3": {"text": "Fist",
-#                               "font": "20",
-#                               # the color is hard coded now, but should be determined by the detecotr
-#                               "fg": "Blue"},
-#                     "body4": {"text": "Palm",
-#                               "font": "20",
-#                               # the color is hard coded now, but should be determined by the detecotr
-#                               "fg": "Blue"}
-#                 }
              ]
              },
     "tab3": {"title": "Commands",
@@ -284,7 +260,6 @@ _gui_data = {
              }
 }
 
-
 # An instance of this class represents a window with (potentially) multiple tabs.
 class _App(Tk):
     def __init__(self, *args, **kwargs):
@@ -345,11 +320,7 @@ class _App(Tk):
     def get_palm_label(self):
         return self.palm_label
 
-
 # An instance of this class represents a tab.
-# Note that the current version only has one tab, due to the canvas element
-# showing up on every tab.
-
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
@@ -454,8 +425,7 @@ class Page(Frame):
                 
 
             elif element["format"] == "option":
-                OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
-                              element["option5"]]
+                OPTIONLIST = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 if self.option == 1:
                     self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
                 elif self.option == 2:
@@ -535,15 +505,15 @@ class Page(Frame):
 # provides a high level interface for starting the gui, defining what logic
 # should be executed between refresh cycles and before closing down, and moving
 # data to and from the GUI (e.g. when drawing a new frame for the debug screen).
-class GuiManager():
+class GuiManager:
     def __init__(self, cap, on_ear_change,
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc,
-                 gesture_detected):
+                 gesture_detected, is_admin):
         self.gui = _App()
-        self.gui.title("NVSHR")
+        self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
                                                             on_low_contrast, initial_low_contrast,
                                                             on_high_contrast, initial_high_contrast,
@@ -554,6 +524,9 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
+
+        if is_admin == False:
+            self.gui.withdraw()
 
     def __loop__(self):
         self.loop_callback()
