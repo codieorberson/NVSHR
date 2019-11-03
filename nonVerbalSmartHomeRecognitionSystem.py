@@ -2,6 +2,7 @@ from datetime import datetime
 
 import cv2
 
+from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
@@ -20,6 +21,9 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger)
         self.gesture_parser = GestureParser(self.logger)
+        self.AdminSettingsManager = AdminCmdManager()
+        # self.AdminSettingsManager.read_from_file()
+
 
 #     Add three callbacks to self.gesture_detector. These anonymous functions (also known
 #    as lambdas) take a timestamp and tell self.gesture_lexer to record a gesture at
