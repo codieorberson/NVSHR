@@ -192,6 +192,50 @@ _gui_data = {
                             "justify": "center"
                         }
                 },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command One (Fist, Palm, Blink)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Two (Palm, Fist, Blink)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Three (Fist, Blink, Palm)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Four (Palm, Blink, Fist)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                }
             ]
         },
         "tab4": {"title": "Log",
