@@ -120,7 +120,6 @@ _gui_data = {
                 },
                 {
                     "format": "text",
-                    "multicolumn" : "true",
                     "body": {"text" : "Set the EAR:"},
                     "body2": {"text" : "Set the low_con:"},
                     "body3": {"text" : "Set the high_con:"},
@@ -150,24 +149,8 @@ _gui_data = {
                                                   #capture events:
                 },
                 {
-                    "format": "text",
-                    "multicolumn" : "true",
-                    "body": {"text": "Current Gesture: ",
-                             "font": "20",
-                             "bg": "White",
-                             "relief": "groove"},
-                    "body2": {"text": "Blink",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg": "Blue"},
-                    "body3": {"text": "Fist",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg" : "Blue"},
-                    "body4": {"text": "Palm",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg" : "Blue"}
+                    "format": "gestures",
+                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
                 }
             ]
         },
@@ -284,12 +267,14 @@ class _App(Tk):
                                   on_low_contrast, initial_low_contrast,
                                   on_high_contrast, initial_high_contrast,
                                   on_min_time_inc, initial_min_time_inc,
-                                  on_max_time_inc, initial_max_time_inc):
+                                  on_max_time_inc, initial_max_time_inc,
+                                  gesture_detected):
         self.notebook = ttk.Notebook(width=1000, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc)
+                          on_max_time_inc, initial_max_time_inc,
+                          gesture_detected)
 
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -298,23 +283,39 @@ class _App(Tk):
                     on_low_contrast, initial_low_contrast,
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
-                    on_max_time_inc, initial_max_time_inc):
+                    on_max_time_inc, initial_max_time_inc,
+                    gesture_detected):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc, page_configuration["elements"])
+                          on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
+            if tab.is_blink_label:
+                self.blink_label = tab
+            if tab.is_fist_label:
+                self.fist_label = tab
+            if tab.is_palm_label:
+                self.palm_label = tab
 
         return debug_tab
 
     def get_fps_tab(self):
         return self.fps_tab
+    
+    def get_blink_label(self):
+        return self.blink_label
+    
+    def get_fist_label(self):
+        return self.fist_label
+    
+    def get_palm_label(self):
+        return self.palm_label
 
 #An instance of this class represents a tab.
 #Note that the current version only has one tab, due to the canvas element
@@ -322,7 +323,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, elements, *args,**kwargs):
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args,**kwargs):
 
         self.event_map = {
                 "on_ear_change" : on_ear_change,
@@ -344,6 +345,10 @@ class Page(Frame):
 
         self.is_debug = False
         self.is_fps = False
+        self.is_blink_label = False
+        self.is_fist_label = False
+        self.is_palm_label = False
+        self.gesture_detected = gesture_detected
 
         self.option = 1
         self.option1 = StringVar()
@@ -399,6 +404,24 @@ class Page(Frame):
                     self.slider.grid(row = row_index, column = column_index, padx = 10, pady = 10)
                     self.name = name
                     column_index += 1
+            
+            elif element["format"] == "gestures":
+                self.gesturename = Label(self, text = element["body"][0], font = 20, bg = "White")
+                self.gesturename.grid(row = row_index, column = 0, padx = 10, pady = 10)
+
+                self.is_blink_label = True
+                self.blink_label = Label(self, text = element["body"][1], font = 20, fg = "Blue")
+                self.blink_label.grid(row = row_index, column = 1, padx = 10, pady = 10)
+                
+                self.is_fist_label = True
+                self.fist_label = Label(self, text = element["body"][2], font = 20, fg = "Blue")
+                self.fist_label.grid(row = row_index, column = 2, padx = 10, pady = 10)
+
+                self.is_palm_label = True
+                self.palm_label = Label(self, text = element["body"][3], font = 20, fg = "Blue")
+                self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
+
+                
 
             elif element["format"] == "option":
                 OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
@@ -453,14 +476,24 @@ class Page(Frame):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
 
+    #This code, as written, cannot display two simultaneous gestures.
     def set_gesture_background(self,gesture_detected):
         if gesture_detected == "fist":
-            print(self.label.name)
-            print("fist")
+            self.fist_label.configure(bg = "Black")
+            self.palm_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
         elif gesture_detected == "palm":
-            print("palm")
+            self.palm_label.configure(bg = "Black")
+            self.fist_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
         elif gesture_detected == "blink":
-            print("blink")
+            self.blink_label.configure(bg = "Black")
+            self.fist_label.configure(bg = "White")
+            self.palm_label.configure(bg = "White")
+        else:
+            self.fist_label.configure(bg = "White")
+            self.palm_label.configure(bg = "White")
+            self.blink_label.configure(bg = "White")
 
 #This is the only class which is meant to be accessed from other files. It 
 #provides a high level interface for starting the gui, defining what logic
@@ -471,15 +504,20 @@ class GuiManager():
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc):
+                 on_max_time_inc, initial_max_time_inc,
+                 gesture_detected):
         self.gui = _App()
         self.gui.title("NVSHR")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
                           on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
                           on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc)
+                          on_max_time_inc, initial_max_time_inc,
+                          gesture_detected)
         self.fps_tab = self.gui.get_fps_tab()
+        self.blink_label = self.gui.get_blink_label()
+        self.fist_label = self.gui.get_fist_label()
+        self.palm_label = self.gui.get_palm_label()
 
     def __loop__(self):
         self.loop_callback()
@@ -494,6 +532,14 @@ class GuiManager():
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+    
+    def set_gesture_background(self, gesture_detected):
+        self.blink_label.set_gesture_background(gesture_detected)
+        self.fist_label.set_gesture_background(gesture_detected)
+        self.palm_label.set_gesture_background(gesture_detected)
+
+    def set_fps(self, fps):
+        self.fps_tab.set_fps(fps)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
