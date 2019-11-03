@@ -269,13 +269,13 @@ _gui_data = {
         },
         "tab4": {"title": "Log",
             "elements": [
+               # {
+                #    "format": "text",
+                 #   "body": {"text" : "To view the log, open logfile.txt in a text editor."}
+                #},
                 {
-                    "format": "text",
-                    "body": {"text" : "To view the log, open logfile.txt in a text editor."}
-                },
-                {
-                    "format": "text",
-                    "body": {"text" : "We should really display it in the GUI, though."}
+                    "format": "scrollbar",
+                    "format": "mylist"
                 }
             ]
         }      
@@ -324,7 +324,6 @@ class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc, elements, *args,**kwargs):
-
         self.event_map = {
                 "on_ear_change" : on_ear_change,
                 "on_low_contrast" : on_low_contrast, 
@@ -353,6 +352,8 @@ class Page(Frame):
         self.option3.set("None")
         self.option4 = StringVar()
         self.option4.set("None")
+
+        self.scrollbar = Scrollbar(self)
 
         row_index = 1
         for element in elements:
@@ -398,7 +399,18 @@ class Page(Frame):
                 self.optionMenu.config(width=30)
                 self.option +=1
 
+            elif element["format"] == "scrollbar":
+                self.scrollbar.pack(side = RIGHT, fill = Y)
+
+            elif element["format"] == "mylist":
+                self.mylist = Listbox(self, yscrollcommand = self.scrollbar.set)
+                self.mylist.insert(END, "ddd")
+                self.mylist.pack(side = LEFT)
+                self.mylist.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
+                self.scrollbar.config(command = self.mylist.yview)
+                
             row_index += 1
+           
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
