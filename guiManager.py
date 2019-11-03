@@ -5,10 +5,7 @@ import tkinter
 import cv2
 import PIL.Image, PIL.ImageTk
 
-#This data structure defines the elements which are to be laid out on the 
-#screen. The logic of the layout is implemented below. I think this data
-#structure probably deserves a separate file, but crudely dumping it here was
-#quick and easy. Feel free to move it.
+# Define the elements to be laid out on each tab
 _gui_data = {
         "tab1": {"title": "Instructions",
             "elements": [
@@ -195,70 +192,6 @@ _gui_data = {
                             "justify": "center"
                         }
                 },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command One (Fist, Palm, Blink)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                    "option1": "None",
-                    "option2": "Lights",
-                    "option3": "Smart Plug",
-                    "option4": "Heater",
-                    "option5": "Air Conditioning"
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command Two (Palm, Fist, Blink)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                    "option1": "None",
-                    "option2": "Lights",
-                    "option3": "Smart Plug",
-                    "option4": "Heater",
-                    "option5": "Air Conditioning"
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command Three (Fist, Blink, Palm)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                    "option1": "None",
-                    "option2": "Lights",
-                    "option3": "Smart Plug",
-                    "option4": "Heater",
-                    "option5": "Air Conditioning"
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command Four (Palm, Blink, Fist)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                    "option1": "None",
-                    "option2": "Lights",
-                    "option3": "Smart Plug",
-                    "option4": "Heater",
-                    "option5": "Air Conditioning"
-                }
             ]
         },
         "tab4": {"title": "Log",
@@ -275,7 +208,8 @@ _gui_data = {
         }      
 }
 
-#An instance of this class represents a window with (potentially) multiple tabs.
+
+# An instance of this class represents a window with (potentially) multiple tabs.
 class _App(Tk):
     def __init__(self, *args,**kwargs):
         Tk.__init__(self,*args,**kwargs)
@@ -319,9 +253,8 @@ class _App(Tk):
     def get_fps_tab(self):
         return self.fps_tab
 
-#An instance of this class represents a tab.
-#Note that the current version only has one tab, due to the canvas element
-#showing up on every tab.
+
+# An instance of this class represents a tab.
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
@@ -404,8 +337,7 @@ class Page(Frame):
                     column_index += 1
 
             elif element["format"] == "option":
-                OPTIONLIST = [element["option1"], element["option2"], element["option3"], element["option4"],
-                              element["option5"]]
+                OPTIONLIST = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 if self.option == 1:
                     self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
                 elif self.option == 2:
@@ -465,19 +397,16 @@ class Page(Frame):
         elif gesture_detected == "blink":
             print("blink")
 
-#This is the only class which is meant to be accessed from other files. It 
-#provides a high level interface for starting the gui, defining what logic
-#should be executed between refresh cycles and before closing down, and moving
-#data to and from the GUI (e.g. when drawing a new frame for the debug screen).
-class GuiManager():
-    def __init__(self, cap, on_ear_change, 
+
+class GuiManager:
+    def __init__(self, cap, on_ear_change,
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc,
-                 gesture_detected):
+                 gesture_detected, is_admin):
         self.gui = _App()
-        self.gui.title("NVSHR")
+        self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
                           on_low_contrast, initial_low_contrast,
                           on_high_contrast, initial_high_contrast,
@@ -485,6 +414,9 @@ class GuiManager():
                           on_max_time_inc, initial_max_time_inc,
                           gesture_detected)
         self.fps_tab = self.gui.get_fps_tab()
+
+        if is_admin == False:
+            self.gui.withdraw()
 
     def __loop__(self):
         self.loop_callback()
