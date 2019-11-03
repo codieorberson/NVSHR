@@ -3,9 +3,15 @@ from tkinter import *
 from tkinter import ttk
 import tkinter
 import cv2
-import PIL.Image, PIL.ImageTk
+import PIL.Image
+import PIL.ImageTk
 
-# Define the elements to be laid out on each tab
+from adminCmdManager import AdminCmdManager
+
+# This data structure defines the elements which are to be laid out on the
+# screen. The logic of the layout is implemented below. I think this data
+# structure probably deserves a separate file, but crudely dumping it here was
+# quick and easy. Feel free to move it.
 _gui_data = {
         "tab1": {"title": "Instructions",
             "elements": [
@@ -119,15 +125,15 @@ _gui_data = {
                     "format": "text",
                     "multicolumn" : "true",
                     "body": {"text" : "Set the EAR:"},
-                    "body2": {"text" : "Set the low_con:"},
-                    "body3": {"text" : "Set the high_con:"},
-                    "body4": {"text" : "Set the min_time_inc:"},
-                    "body5": {"text" : "Set the max_time_inc:"}
+                    "body2": {"text": "Set the Low Contrast:"},
+                    "body3": {"text": "Set the High Contrast:"},
+                    "body4": {"text": "Set the Minimum Time:"},
+                    "body5": {"text": "Set the Maximum Time:"}
                 },
                 {
                     "format": "slider",
 
-                    "events": ["on_ear_change", "on_low_contrast", 
+                    "events": ["on_ear_change", "on_low_contrast",
                                "on_high_contrast", "on_min_time_inc",  "on_max_time_inc"]
 
                 },
@@ -184,9 +190,10 @@ _gui_data = {
                     "format": "text",
                     "body":
                         {
-                            "text": "The following commands can be used to control smart home devices using the NVSHR system"
-                                    ". Please make sure to link the commands with the various devices connected to the system.",
-                            "width": 100,
+                            "text": "The following commands have been created for initial use and are ready to be "
+                                    "used within the system. Before you use them, please link them to the desired "
+                                    "smart home action.",
+                            "width": 120,
                             "height": 4,
                             "wraplength": 900,
                             "justify": "center"
@@ -253,10 +260,10 @@ _gui_data = {
 }
 
 
-# An instance of this class represents a window with (potentially) multiple tabs.
+# An instance of this class represents a window with multiple tabs.
 class _App(Tk):
-    def __init__(self, *args,**kwargs):
-        Tk.__init__(self,*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        Tk.__init__(self, *args, **kwargs)
 
     def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear,
                                   on_low_contrast, initial_low_contrast,
@@ -265,11 +272,12 @@ class _App(Tk):
                                   on_max_time_inc, initial_max_time_inc,
                                   gesture_detected):
         self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
-                          on_high_contrast, initial_high_contrast,
-                          on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc,
-                          gesture_detected)
+        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear, on_low_contrast,
+                                          initial_low_contrast,
+                                          on_high_contrast, initial_high_contrast,
+                                          on_min_time_inc, initial_min_time_inc,
+                                          on_max_time_inc, initial_max_time_inc,
+                                          gesture_detected)
 
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -282,10 +290,10 @@ class _App(Tk):
                     gesture_detected):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
-            tab = Page(self.notebook, self, cap, on_ear_change, initial_ear,on_low_contrast, initial_low_contrast,
-                          on_high_contrast, initial_high_contrast,
-                          on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
+            tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
+                       on_high_contrast, initial_high_contrast,
+                       on_min_time_inc, initial_min_time_inc,
+                       on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
@@ -302,38 +310,37 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args,**kwargs):
-
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args, **kwargs):
         self.event_map = {
-                "on_ear_change" : on_ear_change,
-                "on_low_contrast" : on_low_contrast, 
-                "on_high_contrast" : on_high_contrast,
-                "on_min_time_inc" : on_min_time_inc, 
-                "on_max_time_inc" : on_max_time_inc
-                }
+            "on_ear_change": on_ear_change,
+            "on_low_contrast": on_low_contrast,
+            "on_high_contrast": on_high_contrast,
+            "on_min_time_inc": on_min_time_inc,
+            "on_max_time_inc": on_max_time_inc
+        }
 
         self.initial_value_map = {
-                "on_ear_change" : initial_ear,
-                "on_low_contrast" : initial_low_contrast, 
-                "on_high_contrast" : initial_high_contrast,
-                "on_min_time_inc" : initial_min_time_inc, 
-                "on_max_time_inc" : initial_max_time_inc
-                }
+            "on_ear_change": initial_ear,
+            "on_low_contrast": initial_low_contrast,
+            "on_high_contrast": initial_high_contrast,
+            "on_min_time_inc": initial_min_time_inc,
+            "on_max_time_inc": initial_max_time_inc
+        }
 
-        Frame.__init__(self,*args,**kwargs)
-
+        Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
         self.is_fps = False
+        self.optionsManager = AdminCmdManager()
 
         self.option = 1
         self.option1 = StringVar()
-        self.option1.set("None")
+        self.option1.set(self.optionsManager.action1)
         self.option2 = StringVar()
-        self.option2.set("None")
+        self.option2.set(self.optionsManager.action2)
         self.option3 = StringVar()
-        self.option3.set("None")
+        self.option3.set(self.optionsManager.action3)
         self.option4 = StringVar()
-        self.option4.set("None")
+        self.option4.set(self.optionsManager.action4)
 
         row_index = 1
         for element in elements:
@@ -342,22 +349,22 @@ class Page(Frame):
                 body_index = list(element.keys()).index("body")
                 for body in list(element.keys())[body_index:]:
                     self.label = Label(self, element.get(body))
-                    self.label.grid(row=row_index, column = column_index, padx=10, pady=10)
+                    self.label.grid(row=row_index, column=column_index, padx=10, pady=10)
                     self.name = name
                     column_index += 1
 
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
-                self.label = Label(self, textvariable = text_var, font = 20)
+                self.label = Label(self, textvariable=text_var, font=20)
                 text_var.set("Camera On: " + str(cap.isOpened()))
-                self.label.grid(row=row_index, column = 0, padx=10, pady=10)
+                self.label.grid(row=row_index, column=0, padx=10, pady=10)
                 self.name = name
-            
+
             elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
-                self.label = Label(self, textvariable = self.fps_container, font = 20)
+                self.label = Label(self, textvariable=self.fps_container, font=20)
                 self.fps_container.set("FPS:       " + self.get_cam_fps(cap))
-                self.label.grid(row=row_index, column = 0, padx=10, pady=10)
+                self.label.grid(row=row_index, column=0, padx=10, pady=10)
                 self.name = name
                 self.is_fps = True
 
@@ -365,18 +372,25 @@ class Page(Frame):
                 self.is_debug = True
                 self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-                self.debug_canvas = Canvas(self, width = self.debug_width, height = self.debug_height)
+                self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
-                self.debug_canvas.grid(row = row_index, column = 0, padx = 10, pady = 10, columnspan = 5)
+                self.debug_canvas.grid(row=row_index, column=0, padx=10, pady=10, columnspan=5)
                 self.name = name
+
             elif element["format"] == "slider":
                 column_index = 0
                 for event in element["events"]:
                     event_name = event
                     self.slider_command = self.event_map[event_name]
-                    self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                    self.slider.set(self.initial_value_map[event_name])#initial_ear * 100)
-                    self.slider.grid(row = row_index, column = column_index, padx = 10, pady = 10)
+                    if event_name == "on_ear_change":
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=10, command=self.slider_command)
+                    elif event_name == "on_low_contrast" or event_name == "on_high_contrast":
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
+                    elif event_name == "on_min_time_inc" or "on_max_time_inc":
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
+
+                    self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100
+                    self.slider.grid(row=row_index, column=column_index, padx=10, pady=10)
                     self.name = name
                     column_index += 1
 
@@ -392,7 +406,7 @@ class Page(Frame):
                     self.optionMenu = OptionMenu(self, self.option4, *OPTIONLIST, command=self.set_value4)
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
-                self.option +=1
+                self.option += 1
 
             row_index += 1
 
@@ -401,38 +415,42 @@ class Page(Frame):
 
     def set_value1(self, value):
         self.option1.set(value)
+        self.optionsManager.write_to_file(1, value)
         print("Command 1: " + value)
 
     def set_value2(self, value):
         self.option2.set(value)
+        self.optionsManager.write_to_file(2, value)
         print("Command 2: " + value)
 
     def set_value3(self, value):
         self.option3.set(value)
+        self.optionsManager.write_to_file(3, value)
         print("Command 3: " + value)
 
     def set_value4(self, value):
         self.option4.set(value)
+        self.optionsManager.write_to_file(4, value)
         print("Command 4: " + value)
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
     def __frame_to_image__(self, frame):
-        return PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+        return PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
 
     def __display_image__(self, image):
         self.image = image
-        self.debug_canvas.create_image(0, 0, image = self.image, anchor = tkinter.NW)
-           
+        self.debug_canvas.create_image(0, 0, image=self.image, anchor=tkinter.NW)
+
     def set_debug_frame(self, frame):
         self.__display_image__(self.__frame_to_image__(self.__bgr_to_rgb__(frame)))
-    
+
     def get_cam_fps(self, cap):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
 
-    def set_gesture_background(self,gesture_detected):
+    def set_gesture_background(self, gesture_detected):
         if gesture_detected == "fist":
             print(self.label.name)
             print("fist")
@@ -452,11 +470,11 @@ class GuiManager:
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
-                          on_low_contrast, initial_low_contrast,
-                          on_high_contrast, initial_high_contrast,
-                          on_min_time_inc, initial_min_time_inc,
-                          on_max_time_inc, initial_max_time_inc,
-                          gesture_detected)
+                                                            on_low_contrast, initial_low_contrast,
+                                                            on_high_contrast, initial_high_contrast,
+                                                            on_min_time_inc, initial_min_time_inc,
+                                                            on_max_time_inc, initial_max_time_inc,
+                                                            gesture_detected)
         self.fps_tab = self.gui.get_fps_tab()
 
         if is_admin == False:

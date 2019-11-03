@@ -1,22 +1,21 @@
 import sys
 import cv2
 from datetime import datetime
-from datetime import timedelta
-from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
-from guiManager import GuiManager
-from logger import Logger
+from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
 from gestureParser import GestureParser
+from guiManager import GuiManager
+from logger import Logger
+from multithreadedPerimeter import MultithreadedPerimeter
+from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
 from popUp import PopUp
 
+
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
-        # print("Are you an admin?\n 1. Yes\n 2. No")
-        # self.admin = input()
         self.pop_up_window = PopUp()
 
         self.admin = self.pop_up_window.send_verification()
@@ -26,6 +25,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger)
         self.gesture_parser = GestureParser(self.logger)
+        self.AdminSettingsManager = AdminCmdManager()
+        # self.AdminSettingsManager.read_from_file()
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
@@ -34,8 +35,15 @@ class NonVerbalSmartHomeRecognitionSystem():
      
         self.smart_home_activator = SmartHomeActivator()
 
-        self.gesture_parser.add_pattern(['fist', 'palm', 'fist'], lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
-      
+        self.gesture_parser.add_pattern(['fist', 'palm', 'blink'],
+                                        lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
+        self.gesture_parser.add_pattern(['palm', 'fist', 'blink'],
+                                        lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
+        self.gesture_parser.add_pattern(['fist', 'blink', 'palm'],
+                                        lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
+        self.gesture_parser.add_pattern(['palm', 'blink', 'fist'],
+                                        lambda: self.smart_home_activator.activate('lights on', 'Alexa'))
+
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
