@@ -2,7 +2,13 @@ from fileManager import FileManager
 
 _default_log_values = ["   Date        Time     Command\n"]
 
-_default_command_values = []
+_default_command_values = [
+        "fist-palm-blink, Lights on/off, Alexa\n",
+        "palm-fist-blink, Smart Plug on/off, Alexa\n",
+        "fist-blink-palm, Heat on/off, Nest\n",
+        "palm-blink-fist, AC on/off, Nest\n",
+        "palm, STOP, Alexa\n"
+        ]
 
 _default_configuration_values = ["0.05\n",
         "2\n",
@@ -41,18 +47,20 @@ class DatabaseManager():
         return self.log_manager.get_lines()
 
     def set_command(self, gesture_sequence, command_text, device_name):
-        gesture_sequence = '-'.join(gesture_sequence)
         commands = self.get_commands()
         is_registered = False
         line_index = 0
 
         for command in commands:
+            print("current sequence: " + str(gesture_sequence))
+            print("comparing with: " + str(command["gesture_sequence"]))
             if command["gesture_sequence"] == gesture_sequence:
                 is_registered = True
                 break
             else:
                 line_index += 1
-                
+
+        gesture_sequence = '-'.join(gesture_sequence)               
         line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
 
         if is_registered:
@@ -67,8 +75,8 @@ class DatabaseManager():
             line = line.split(', ')
             commands.append({
                     "gesture_sequence" : line[0].split('-'),
-                    "command" : line[1],
-                    "device" : line[2]
+                    "command_text" : line[1],
+                    "device_name" : line[2][:-1]#strip newline
                 })
         return commands
 
