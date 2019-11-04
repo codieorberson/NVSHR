@@ -242,6 +242,22 @@ _gui_data = {
                 },
                 {
                     "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "To create a new command, fill out all the fields below and press the Add button "
+                                    "to add it the list above. Once it is added, make sure to link it to a smart "
+                                    "home device.",
+                            "width": 120,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "new"
                 }
             ]
         },
@@ -331,10 +347,13 @@ class Page(Frame):
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
         self.is_fps = False
-        self.optionsManager = settings_manager
 
+        self.optionsManager = settings_manager
         self.option = 1
+        self.command_index = 0
+
         self.command_links = {}
+        self.new_command = {}
 
         row_index = 1
         for element in elements:
@@ -398,6 +417,20 @@ class Page(Frame):
                 self.optionMenu.config(width=30)
                 self.option += 1
 
+            elif element["format"] == "new":
+                small_frame = LabelFrame(self, width=1000, height=100, bd=0)
+                small_frame.grid(row=row_index, column=0, padx=10, pady=10)
+                for x in range(1, 4):
+                    self.gesture_list = ["Fist", "Palm", "Blink"]
+                    variable = StringVar()
+                    variable.set("")
+                    self.new_command[self.command_index] = variable
+                    gesture = OptionMenu(small_frame, variable, *self.gesture_list)
+                    gesture.grid(row=row_index, column=self.command_index, pady=10)
+                    self.command_index += 1
+                add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
+                add_button.grid(row=row_index, column=self.command_index + 1, pady=10)
+
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
@@ -407,6 +440,9 @@ class Page(Frame):
         for x in range(1, 5):
             self.optionsManager.write_to_file(x, self.command_links[x].get())
             print("Command" + str(x) + ": " + self.command_links[x].get())
+
+    def add_new_command(self):
+        print("hey girl")
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
