@@ -65,7 +65,7 @@ class BlinkDetector:
                 y = y - height
                 right_eye_perimeter.set((x, y, width, height))
 
-        except Exception:
+        except:
             #Sometimes we're getting out of range errors when trying to access
             #the six points on the eyes, particularly when they move off
             #screen. This should make our program not barf when that happens.
