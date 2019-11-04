@@ -20,15 +20,8 @@ from popUp import PopUp
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
 
-        # I'm not sure that we need the following code, but it isn't working on
-        # muh Linux box so I'm commenting it out right now and just setting the
-        # admin value to True.
-
-        # print("Are you an admin?\n 1. Yes\n 2. No")
-        # self.admin = input()
-        #self.pop_up_window = PopUp()
-        #self.admin = self.pop_up_window.send_verification()
-        self.admin = True
+        self.pop_up_window = PopUp()
+        self.admin = self.pop_up_window.send_verification()
 
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()

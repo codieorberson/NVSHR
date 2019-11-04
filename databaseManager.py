@@ -40,8 +40,25 @@ class DatabaseManager():
     def get_gestures(self):
         return self.log_manager.get_lines()
 
-    def set_command(self, command_text, device_name):
-        self.command_manager.append(command_text + ', ' + device_name + '\n')
+    def set_command(self, gesture_sequence, command_text, device_name):
+        gesture_sequence = gesture_sequence.join('-')
+        commands = self.get_commands()
+        is_registered = False
+        line_index = 0
+
+        for command in commands:
+            if command["gesture_sequence"] == gesture_sequence:
+                is_registered = True
+                break
+            else:
+                line_index += 1
+                
+        line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name
+
+        if is_registered:
+            self.command_manager.set_line(line_index, line_contents)
+        else: 
+            self.command_manager.append(line_contents)
 
     def get_commands(self):
         lines = self.command_manager.get_lines()
@@ -49,8 +66,9 @@ class DatabaseManager():
         for line in lines:
             line = split(line)
             commands.append({
-                    "command" : line[0],
-                    "device" : line[1]
+                    "gesture_sequence" : line[0].split('-'),
+                    "command" : line[1],
+                    "device" : line[2]
                 })
         return commands
 
