@@ -33,6 +33,27 @@ class DatabaseManager():
         self.configuration_manager = FileManager("configuration.csv", 
                 _default_configuration_values)
 
+    def set_log_message(self, message):
+        self.log_manager.append_line(message)
+
+    def get_log_messages(self):
+        return self.log_manager.get_lines()[1:]
+        #^^^the first line just shows column names, so we strip it.
+
+    def set_command(self, command_text, device_name):
+        self.command_manager.append(command_text + ', ' + device_name + '\n')
+
+    def get_commands(self):
+        lines = self.command_manager.get_lines()
+        commands = []
+        for line in lines:
+            line = split(line)
+            commands.append({
+                    "command" : line[0],
+                    "device" : line[1]
+                })
+        return commands
+
     def __set_configuration__(self, column_name, value):
         self.configuration_manager.set_line(
                 _get_configuration_index(column_name), str(value) + "\n")
@@ -70,40 +91,3 @@ class DatabaseManager():
 
     def get_max_time_inc(self):
         return float(self.__get_configuration__('maximum_time_increment'))
-
-
-
-
-
-
-    # !!!!!!!!!Methods past this point are not actually implemented!!!!!!!!!!
-
-
-
-
-    def add_command(self, gesture_sequence, device, command):
-        if self.is_connected:
-            pass
-        else:
-            pass
-
-    def remove_command(self, geseture_sequence):
-        if self.is_connected:
-            pass
-        else:
-            pass
-
-    def get_commands(self):
-        if self.is_connected:
-            pass
-#            self.
-        else:
-            return self.commands
-#        return []
-
-    def add_log_message(self, gesture_sequence, was_recognised, timestamp):
-        pass
-
-    def get_log_messages(self):
-
-        return []
