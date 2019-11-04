@@ -41,7 +41,7 @@ class DatabaseManager():
         return self.log_manager.get_lines()
 
     def set_command(self, gesture_sequence, command_text, device_name):
-        gesture_sequence = gesture_sequence.join('-')
+        gesture_sequence = '-'.join(gesture_sequence)
         commands = self.get_commands()
         is_registered = False
         line_index = 0
@@ -53,18 +53,18 @@ class DatabaseManager():
             else:
                 line_index += 1
                 
-        line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name
+        line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
 
         if is_registered:
             self.command_manager.set_line(line_index, line_contents)
         else: 
-            self.command_manager.append(line_contents)
+            self.command_manager.append_line(line_contents)
 
     def get_commands(self):
         lines = self.command_manager.get_lines()
         commands = []
         for line in lines:
-            line = split(line)
+            line = line.split(', ')
             commands.append({
                     "gesture_sequence" : line[0].split('-'),
                     "command" : line[1],

@@ -25,7 +25,7 @@ class FileManager():
             file.write(line_contents)
         self._cached_lines.append(line_contents)
 
-    def get_lines():
+    def get_lines(self):
         return self._cached_lines
 
     def get_line(self, line_number):
