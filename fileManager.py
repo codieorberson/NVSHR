@@ -20,7 +20,7 @@ class FileManager():
             file.writelines(lines)
         self._cached_lines[line_number] = line_contents
 
-    def append(self, line_contents):
+    def append_line(self, line_contents):
         with open(self._file_name, "a") as file:
             file.write(line_contents)
         self._cached_lines.append(line_contents)

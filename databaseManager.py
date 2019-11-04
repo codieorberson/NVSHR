@@ -33,12 +33,12 @@ class DatabaseManager():
         self.configuration_manager = FileManager("configuration.csv", 
                 _default_configuration_values)
 
-    def set_log_message(self, message):
-        self.log_manager.append_line(message)
+    def set_gesture(self, gesture_name, now):
+        self.log_manager.append_line(''.join((now.isoformat()[:10], "    ", 
+                now.isoformat()[12:19], "    ", gesture_name ," \n")))
 
-    def get_log_messages(self):
-        return self.log_manager.get_lines()[1:]
-        #^^^the first line just shows column names, so we strip it.
+    def get_gestures(self):
+        return self.log_manager.get_lines()
 
     def set_command(self, command_text, device_name):
         self.command_manager.append(command_text + ', ' + device_name + '\n')

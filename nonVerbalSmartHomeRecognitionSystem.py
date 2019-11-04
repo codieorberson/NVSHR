@@ -31,10 +31,11 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.admin = True
 
         self.last_timestamp = datetime.utcnow()
+        self.database_manager = DatabaseManager()
         self.logger = Logger()
         self.gesture_detector = GestureDetector()
-        self.gesture_lexer = GestureLexer(self.logger)
-        self.gesture_parser = GestureParser(self.logger)
+        self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
+        self.gesture_parser = GestureParser(self.logger)#, self.database_manager)
         self.gesture_detected = None
         self.AdminSettingsManager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
@@ -67,7 +68,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
 
         self.process_manager = ProcessManager()
-        self.database_manager = DatabaseManager()
 
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.low_contrast_value = self.database_manager.get_low_contrast()
