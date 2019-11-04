@@ -52,8 +52,6 @@ class DatabaseManager():
         line_index = 0
 
         for command in commands:
-            print("current sequence: " + str(gesture_sequence))
-            print("comparing with: " + str(command["gesture_sequence"]))
             if command["gesture_sequence"] == gesture_sequence:
                 is_registered = True
                 break
