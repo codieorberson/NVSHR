@@ -1,17 +1,15 @@
 #!/usr/local/bin/python3
+import tkinter
 from tkinter import *
 from tkinter import ttk
-import tkinter
-import cv2
+
 import PIL.Image
 import PIL.ImageTk
+import cv2
 
 from adminCmdManager import AdminCmdManager
 
-# This data structure defines the elements which are to be laid out on the
-# screen. The logic of the layout is implemented below. I think this data
-# structure probably deserves a separate file, but crudely dumping it here was
-# quick and easy. Feel free to move it.
+# Define the elements to be laid out on each tab
 _gui_data = {
         "tab1": {"title": "Instructions",
             "elements": [
@@ -142,39 +140,23 @@ _gui_data = {
                 },
                 {
                     "format": "text-cam-fps",
-                                                  #Note that FPS is only being 
-                                                  #calculated on initial 
-                                                  #execution, but we should 
-                                                  #really make a hook to update
-                                                  #this value as the program 
-                                                  #executes because FPS will
-                                                  #probably drop as we execute
-                                                  #other code in between frame
-                                                  #capture events:
+                    # Note that FPS is only being
+                    # calculated on initial
+                    # execution, but we should
+                    # really make a hook to update
+                    # this value as the program
+                    # executes because FPS will
+                    # probably drop as we execute
+                    # other code in between frame
+                    # capture events:
                 },
                 {
-                    "format": "text",
-                    "multicolumn" : "true",
-                    "body": {"text": "Current Gesture: ",
-                             "font": "20",
-                             "bg": "White",
-                             "relief": "groove"},
-                    "body2": {"text": "Blink",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg": "Blue"},
-                    "body3": {"text": "Fist",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg" : "Blue"},
-                    "body4": {"text": "Palm",
-                              "font": "20",
-                              # the color is hard coded now, but should be determined by the detecotr
-                              "fg" : "Blue"}
+                    "format": "gestures",
+                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
                 }
             ]
-        },
-        "tab3": {"title": "Commands",
+                 },
+    "tab3": {"title": "Commands",
             "elements": [
                 {
                     "format": "text",
@@ -261,18 +243,18 @@ _gui_data = {
                 }
             ]
         },
-        "tab4": {"title": "Log",
-            "elements": [
-                {
-                    "format": "text",
-                    "body": {"text" : "To view the log, open logfile.txt in a text editor."}
-                },
-                {
-                    "format": "text",
-                    "body": {"text" : "We should really display it in the GUI, though."}
-                }
-            ]
-        }      
+    "tab4": {"title": "Log",
+             "elements": [
+                 {
+                     "format": "text",
+                     "body": {"text": "To view the log, open logfile.txt in a text editor."}
+                 },
+                 {
+                     "format": "text",
+                     "body": {"text": "We should really display it in the GUI, though."}
+                 }
+             ]
+             }
 }
 
 
@@ -316,12 +298,26 @@ class _App(Tk):
                 debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
+            if tab.is_blink_label:
+                self.blink_label = tab
+            if tab.is_fist_label:
+                self.fist_label = tab
+            if tab.is_palm_label:
+                self.palm_label = tab
 
         return debug_tab
 
     def get_fps_tab(self):
         return self.fps_tab
 
+    def get_blink_label(self):
+        return self.blink_label
+
+    def get_fist_label(self):
+        return self.fist_label
+
+    def get_palm_label(self):
+        return self.palm_label
 
 # An instance of this class represents a tab.
 class Page(Frame):
@@ -347,8 +343,11 @@ class Page(Frame):
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
         self.is_fps = False
-
-        self.optionsManager = settings_manager
+        self.is_blink_label = False
+        self.is_fist_label = False
+        self.is_palm_label = False
+        self.gesture_detected = gesture_detected
+        self.optionsManager = AdminCmdManager()
         self.option = 1
         self.command_index = 0
 
@@ -407,6 +406,22 @@ class Page(Frame):
                     self.name = name
                     column_index += 1
 
+            elif element["format"] == "gestures":
+                self.gesturename = Label(self, text=element["body"][0], font=20, bg="White")
+                self.gesturename.grid(row=row_index, column=0, padx=10, pady=10)
+
+                self.is_blink_label = True
+                self.blink_label = Label(self, text=element["body"][1], font=20, fg="Blue")
+                self.blink_label.grid(row=row_index, column=1, padx=10, pady=10)
+
+                self.is_fist_label = True
+                self.fist_label = Label(self, text=element["body"][2], font=20, fg="Blue")
+                self.fist_label.grid(row=row_index, column=2, padx=10, pady=10)
+
+                self.is_palm_label = True
+                self.palm_label = Label(self, text=element["body"][3], font=20, fg="Blue")
+                self.palm_label.grid(row=row_index, column=3, padx=10, pady=10)
+
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 variable = StringVar()
@@ -461,17 +476,27 @@ class Page(Frame):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
 
+    # This code, as written, cannot display two simultaneous gestures.
     def set_gesture_background(self, gesture_detected):
         if gesture_detected == "fist":
-            print(self.label.name)
-            print("fist")
+            self.fist_label.configure(bg="Black")
+            self.palm_label.configure(bg="White")
+            self.blink_label.configure(bg="White")
         elif gesture_detected == "palm":
-            print("palm")
+            self.palm_label.configure(bg="Black")
+            self.fist_label.configure(bg="White")
+            self.blink_label.configure(bg="White")
         elif gesture_detected == "blink":
-            print("blink")
+            self.blink_label.configure(bg="Black")
+            self.fist_label.configure(bg="White")
+            self.palm_label.configure(bg="White")
+        else:
+            self.fist_label.configure(bg="White")
+            self.palm_label.configure(bg="White")
+            self.blink_label.configure(bg="White")
 
 
-class GuiManager:
+class GuiManager():
     def __init__(self, cap, on_ear_change,
                  initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast,
@@ -487,6 +512,9 @@ class GuiManager:
                                                             on_max_time_inc, initial_max_time_inc,
                                                             gesture_detected, settings_manager)
         self.fps_tab = self.gui.get_fps_tab()
+        self.blink_label = self.gui.get_blink_label()
+        self.fist_label = self.gui.get_fist_label()
+        self.palm_label = self.gui.get_palm_label()
 
         if is_admin == False:
             self.gui.withdraw()
@@ -504,6 +532,11 @@ class GuiManager:
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
+
+    def set_gesture_background(self, gesture_detected):
+        self.blink_label.set_gesture_background(gesture_detected)
+        self.fist_label.set_gesture_background(gesture_detected)
+        self.palm_label.set_gesture_background(gesture_detected)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)

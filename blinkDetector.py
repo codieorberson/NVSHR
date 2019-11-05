@@ -23,44 +23,51 @@ class BlinkDetector:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # detect faces in the grayscala0dwe frame
-        rects = self.detector(gray, 0)
-
+        faces = self.detector(gray, 0)
+        try:
             # loop over the face detections
-        for rect in rects:
+            for face in faces:
                 # determine the facial landmarks for the face region, then
                 # convert the facial landmark (x, y)-coordinates to a NumPy
                 # array
-            shape = self.predictor(gray, rect)
-            shape = face_utils.shape_to_np(shape)
+                shape = self.predictor(gray, face)
+                shape = face_utils.shape_to_np(shape)
 
                 # extract the left and right eye coordinates, then use the
                 # coordinates to compute the eye aspect ratio for both eyes
-            leftEye = shape[lStart:lEnd]
-            rightEye = shape[rStart:rEnd]
+                leftEye = shape[lStart:lEnd]
+                rightEye = shape[rStart:rEnd]
 
-            leftEyeHull = cv2.convexHull(leftEye)
-            rightEyeHull = cv2.convexHull(rightEye)
+                leftEyeHull = cv2.convexHull(leftEye)
+                rightEyeHull = cv2.convexHull(rightEye)
 
-            x = int(leftEyeHull[3][0][0])
-            width = int(leftEyeHull[0][0][0]) - x
-            y = int((leftEyeHull[1][0][1] + leftEyeHull[2][0][1]) / 2)
+                x = int(leftEyeHull[3][0][0])
+                width = int(leftEyeHull[0][0][0]) - x
+                y = int((leftEyeHull[1][0][1] + leftEyeHull[2][0][1]) / 2)
 
-            if len(leftEyeHull) > 5:
-                height = y - int((leftEyeHull[4][0][1] + leftEyeHull[5][0][1]) / 2)
-            else:
-                height = 0
-                
-            y = y - height
-            left_eye_perimeter.set((x, y, width, height))
-                
-            x = int(rightEyeHull[3][0][0])
-            width = int(rightEyeHull[0][0][0]) - x
-            y = int((rightEyeHull[1][0][1] + rightEyeHull[2][0][1]) / 2)
+                if len(leftEyeHull) > 5:
+                    height = y - int((leftEyeHull[4][0][1] + leftEyeHull[5][0][1]) / 2)
+                else:
+                    height = 0
 
-            if len(rightEyeHull) > 5:
-                height = y - int((rightEyeHull[4][0][1] + rightEyeHull[5][0][1]) / 2)
-            else:
-                height = 0
- 
-            y = y - height
-            right_eye_perimeter.set((x, y, width, height))
+                y = y - height
+                left_eye_perimeter.set((x, y, width, height))
+
+                x = int(rightEyeHull[3][0][0])
+                width = int(rightEyeHull[0][0][0]) - x
+                y = int((rightEyeHull[1][0][1] + rightEyeHull[2][0][1]) / 2)
+
+                if len(rightEyeHull) > 5:
+                    height = y - int((rightEyeHull[4][0][1] + rightEyeHull[5][0][1]) / 2)
+                else:
+                    height = 0
+
+                y = y - height
+                right_eye_perimeter.set((x, y, width, height))
+
+        except:
+            # Sometimes we're getting out of range errors when trying to access
+            # the six points on the eyes, particularly when they move off
+            # screen. This should make our program not barf when that happens.
+            left_eye_perimeter.set((0, 0, 0, 0))
+            right_eye_perimeter.set((0, 0, 0, 0))
