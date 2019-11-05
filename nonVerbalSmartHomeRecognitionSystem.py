@@ -20,9 +20,6 @@ from popUp import PopUp
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
 
-        self.pop_up_window = PopUp()
-        self.admin = self.pop_up_window.send_verification()
-
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
@@ -56,14 +53,20 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.min_increment = self.database_manager.get_min_time_inc()
         self.max_increment = self.database_manager.get_max_time_inc()
 
+
         self.gui_manager = GuiManager(self.cap,
                                       self.set_open_eye_threshold, self.open_eye_threshold,
                                       self.set_low_contrast, self.low_contrast_value,
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, self.admin)
+                                      self.gesture_detected, False)
 
+        self.pop_up_window = PopUp(self.main_loop, self.change_admin_status, self.on_close)
+        self.pop_up_window.start()
+#        self.gui_manager.start(self.main_loop, self.on_close)
+
+    def change_admin_status(self):
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
