@@ -24,20 +24,20 @@ class GestureDetector():
         self.fist_event = None
         self.palm_event = None
         self.blink_event = None
-        self.gesture_detected = None
+        self.gestrure_detected = None
 
     def on_fist(self, callback):
-        self.gesture_detected = "fist"
         self.fist_event = callback
 
     def on_palm(self, callback):
-        self.gesture_detected = "palm"
         self.palm_event = callback
 
     def on_blink(self, callback):
-        self.gesture_detected = "blink"
         self.blink_event = callback
-
+    
+    def get_gesture_detected(self):
+        return self.gestrure_detected
+    
     # Method is to be run in separate thread
     def detect(self, frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
 
@@ -77,16 +77,19 @@ class GestureDetector():
 
     def trigger_events(self, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
 
+        self.gestrure_detected = None
         if fist_perimeter.is_set():
+            self.gestrure_detected = "fist"
             self.fist_event(timestamp)
 
         if palm_perimeter.is_set():
+            self.gestrure_detected = "palm"
             self.palm_event(timestamp)
         
         if left_eye_perimeter.is_set() and right_eye_perimeter.is_set():
-            if  open_eye_threshold / 100 > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio()) / 2:
-                self.blink_event(timestamp)
 
+            if  open_eye_threshold / 100 > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio()) / 2:
+                self.gestrure_detected = "blink"
                 self.blink_event(timestamp)
 
     ''' This code is NOT being used right now 
