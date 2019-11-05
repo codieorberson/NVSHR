@@ -1,12 +1,10 @@
 #!/usr/local/bin/python3
-import tkinter
 from tkinter import *
 from tkinter import ttk
-
+import tkinter
+import cv2
 import PIL.Image
 import PIL.ImageTk
-import cv2
-
 from adminCmdManager import AdminCmdManager
 
 # Define the elements to be laid out on each tab
@@ -157,95 +155,92 @@ _gui_data = {
              ]
              },
     "tab3": {"title": "Commands",
-             "elements": [
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Command Menu",
-                             "wraplength": 1000,
-                             "justify": "center",
-                             "font": ("Helvetica", 20, "bold")
-                         }
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "The following commands can be used to control smart home devices using the NVSHR system"
-                                     ". Please make sure to link the commands with the various devices connected to the system.",
-                             "width": 100,
-                             "height": 4,
-                             "wraplength": 900,
-                             "justify": "center"
-                         }
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Command One (Fist, Palm, Blink)",
-                             "justify": "center"
-                         }
-                 },
-                 {
-                     "format": "option",
-                     "option1": "None",
-                     "option2": "Lights",
-                     "option3": "Smart Plug",
-                     "option4": "Heater",
-                     "option5": "Air Conditioning"
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Command Two (Palm, Fist, Blink)",
-                             "justify": "center"
-                         }
-                 },
-                 {
-                     "format": "option",
-                     "option1": "None",
-                     "option2": "Lights",
-                     "option3": "Smart Plug",
-                     "option4": "Heater",
-                     "option5": "Air Conditioning"
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Command Three (Fist, Blink, Palm)",
-                             "justify": "center"
-                         }
-                 },
-                 {
-                     "format": "option",
-                     "option1": "None",
-                     "option2": "Lights",
-                     "option3": "Smart Plug",
-                     "option4": "Heater",
-                     "option5": "Air Conditioning"
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Command Four (Palm, Blink, Fist)",
-                             "justify": "center"
-                         }
-                 },
-                 {
-                     "format": "option",
-                     "option1": "None",
-                     "option2": "Lights",
-                     "option3": "Smart Plug",
-                     "option4": "Heater",
-                     "option5": "Air Conditioning"
-                 }
-             ]
-             },
+            "elements": [
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Menu",
+                            "wraplength": 1000,
+                            "justify": "center",
+                            "font": ("Helvetica", 20, "bold")
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "The following commands have been created for initial use and are ready to be "
+                                    "used within the system. Before you use them, please link them to the desired "
+                                    "smart home action.",
+                            "width": 120,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command One (Fist, Palm, Blink)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Two (Palm, Fist, Blink)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Three (Fist, Blink, Palm)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Command Four (Palm, Blink, Fist)",
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "option",
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "To create a new command, fill out all the fields below and press the Add button "
+                                    "to add it the list above. Once it is added, make sure to link it to a smart "
+                                    "home device.",
+                            "width": 120,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "new"
+                }
+            ]
+        },
     "tab4": {"title": "Log",
              "elements": [
                  {
@@ -260,7 +255,7 @@ _gui_data = {
              }
 }
 
-# An instance of this class represents a window with (potentially) multiple tabs.
+# An instance of this class represents a window with multiple tabs.
 class _App(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
@@ -270,14 +265,14 @@ class _App(Tk):
                                   on_high_contrast, initial_high_contrast,
                                   on_min_time_inc, initial_min_time_inc,
                                   on_max_time_inc, initial_max_time_inc,
-                                  gesture_detected):
+                                  gesture_detected, settings_manager):
         self.notebook = ttk.Notebook(width=1000, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear, on_low_contrast,
                                           initial_low_contrast,
                                           on_high_contrast, initial_high_contrast,
                                           on_min_time_inc, initial_min_time_inc,
                                           on_max_time_inc, initial_max_time_inc,
-                                          gesture_detected)
+                                          gesture_detected, settings_manager)
 
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -287,13 +282,14 @@ class _App(Tk):
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc,
-                    gesture_detected):
+                    gesture_detected, settings_manager):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                        on_high_contrast, initial_high_contrast,
                        on_min_time_inc, initial_min_time_inc,
-                       on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"])
+                       on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"],
+                       settings_manager)
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
@@ -324,7 +320,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, *args, **kwargs):
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, settings_manager, *args, **kwargs):
         self.event_map = {
             "on_ear_change": on_ear_change,
             "on_low_contrast": on_low_contrast,
@@ -348,16 +344,13 @@ class Page(Frame):
         self.is_fist_label = False
         self.is_palm_label = False
         self.gesture_detected = gesture_detected
-        self.optionsManager = AdminCmdManager()
+
+        self.optionsManager = settings_manager
         self.option = 1
-        self.option1 = StringVar()
-        self.option1.set(self.optionsManager.action1)
-        self.option2 = StringVar()
-        self.option2.set(self.optionsManager.action2)
-        self.option3 = StringVar()
-        self.option3.set(self.optionsManager.action3)
-        self.option4 = StringVar()
-        self.option4.set(self.optionsManager.action4)
+        self.command_index = 0
+
+        self.command_links = {}
+        self.new_command = {}
 
         row_index = 1
         for element in elements:
@@ -393,13 +386,20 @@ class Page(Frame):
 
                 self.debug_canvas.grid(row=row_index, column=0, padx=10, pady=10, columnspan=5)
                 self.name = name
+
             elif element["format"] == "slider":
                 column_index = 0
                 for event in element["events"]:
                     event_name = event
                     self.slider_command = self.event_map[event_name]
-                    self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                    self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100)
+                    if event_name == "on_ear_change":
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=10, command=self.slider_command)
+                    elif event_name == "on_low_contrast" or event_name == "on_high_contrast":
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
+                    elif event_name == "on_min_time_inc" or "on_max_time_inc":
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
+
+                    self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100
                     self.slider.grid(row=row_index, column=column_index, padx=10, pady=10)
                     self.name = name
                     column_index += 1
@@ -421,43 +421,41 @@ class Page(Frame):
                 self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
                 
             elif element["format"] == "option":
-                OPTIONLIST = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
-                if self.option == 1:
-                    self.optionMenu = OptionMenu(self, self.option1, *OPTIONLIST, command=self.set_value1)
-                elif self.option == 2:
-                    self.optionMenu = OptionMenu(self, self.option2, *OPTIONLIST, command=self.set_value2)
-                elif self.option == 3:
-                    self.optionMenu = OptionMenu(self, self.option3, *OPTIONLIST, command=self.set_value3)
-                elif self.option == 4:
-                    self.optionMenu = OptionMenu(self, self.option4, *OPTIONLIST, command=self.set_value4)
+                self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
+                variable = StringVar()
+                variable.set(self.optionsManager.action[self.option])
+                self.command_links[self.option] = variable
+                self.optionMenu = OptionMenu(self, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
                 self.option += 1
+
+            elif element["format"] == "new":
+                small_frame = LabelFrame(self, width=1000, height=100, bd=0)
+                small_frame.grid(row=row_index, column=0, padx=10, pady=10)
+                for x in range(1, 4):
+                    self.gesture_list = ["Fist", "Palm", "Blink"]
+                    variable = StringVar()
+                    variable.set("")
+                    self.new_command[self.command_index] = variable
+                    gesture = OptionMenu(small_frame, variable, *self.gesture_list)
+                    gesture.grid(row=row_index, column=self.command_index, pady=10)
+                    self.command_index += 1
+                add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
+                add_button.grid(row=row_index, column=self.command_index + 1, pady=10)
 
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
-    def set_value1(self, value):
-        self.option1.set(value)
-        self.optionsManager.write_to_file(1, value)
-        print("Command 1: " + value)
+    def set_value(self, value):
+        for x in range(1, 5):
+            self.optionsManager.write_to_file(x, self.command_links[x].get())
+            print("Command" + str(x) + ": " + self.command_links[x].get())
 
-    def set_value2(self, value):
-        self.option2.set(value)
-        self.optionsManager.write_to_file(2, value)
-        print("Command 2: " + value)
-
-    def set_value3(self, value):
-        self.option3.set(value)
-        self.optionsManager.write_to_file(3, value)
-        print("Command 3: " + value)
-
-    def set_value4(self, value):
-        self.option4.set(value)
-        self.optionsManager.write_to_file(4, value)
-        print("Command 4: " + value)
+    def add_new_command(self):
+        print("hey girl")
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
@@ -506,7 +504,7 @@ class GuiManager():
                on_high_contrast, initial_high_contrast,
                on_min_time_inc, initial_min_time_inc,
                on_max_time_inc, initial_max_time_inc,
-               gesture_detected, is_admin):
+               gesture_detected, is_admin, settings_manager):
 
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
@@ -516,8 +514,8 @@ class GuiManager():
                 on_high_contrast, initial_high_contrast,
                 on_min_time_inc, initial_min_time_inc,
                 on_max_time_inc, initial_max_time_inc,
-                gesture_detected)
-
+                gesture_detected, settings_manager)
+  
         self.fps_tab = self.gui.get_fps_tab()
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()

@@ -18,7 +18,7 @@ class PopUp:
         self.close_callback = close_callback
 
         # Window needs to be centered within the screen and should have a title saying Welcome!
-        self.center(400, 200, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
+        self.center(400, 300, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
 
         self.popup.geometry("400x250+%d+%d" % (self.x, self.y))
         self.popup.wm_title("Welcome!")
@@ -67,7 +67,6 @@ class PopUp:
 
     # Method called when the user presses the "X" before answering
     def close(self):
-        print(self.is_admin)
         if self.is_admin:
             self.popup.withdraw()
             self.close_pop_up()
