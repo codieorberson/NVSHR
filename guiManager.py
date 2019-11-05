@@ -355,9 +355,6 @@ class Page(Frame):
         self.option4 = StringVar()
         self.option4.set(self.optionsManager.action4)
 
-        self.is_button_clicked = False
-
-
         row_index = 1
         for element in elements:
             if element["format"] == "text":
@@ -434,7 +431,6 @@ class Page(Frame):
                 self.option += 1
 
             elif element["format"] == "button":
-                self.is_button_clicked = True
                 self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
                 
             row_index += 1
