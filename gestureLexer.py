@@ -3,15 +3,19 @@ import datetime
 import os
 
 class GestureLexer():
-    def __init__(self, logger):
+    def __init__(self, logger, database_manager):
         self.logger = logger
+        self.database_manager = database_manager
         self.gestures = []
         self.gesture_patterns = []
 
     def add(self, gesture_name, now):
         self.logger.log_gesture(gesture_name, now)
+        self.database_manager.set_gesture(gesture_name, now)
         self.gestures.append((gesture_name, now.timestamp()))
 
+    #Iterates over list of gestures in proper order. If a timestamp is less than current time - set max increment,
+    #that gesture sequence is added to list of all sequences.
     def lex(self, now, min_increment, max_increment):
         last_dict = {'fist' : None, 'palm' : None, 'blink' : None, 'left_wink' : None, 'right_wink' : None}
 
