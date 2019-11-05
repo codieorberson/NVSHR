@@ -20,7 +20,7 @@ class PopUp:
         # Window needs to be centered within the screen and should have a title saying Welcome!
         self.center(400, 200, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
 
-        self.popup.geometry("400x200+%d+%d" % (self.x, self.y))
+        self.popup.geometry("400x250+%d+%d" % (self.x, self.y))
         self.popup.wm_title("Welcome!")
         self.popup.protocol("WM_DELETE_WINDOW", self.close)
 
