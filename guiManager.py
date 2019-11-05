@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 from tkinter import *
 from tkinter import ttk
-
+import tkinter
 import PIL.Image
 import PIL.ImageTk
 import cv2
