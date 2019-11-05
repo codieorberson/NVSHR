@@ -2,7 +2,13 @@ from fileManager import FileManager
 
 _default_log_values = ["   Date        Time     Command\n"]
 
-_default_command_values = []
+_default_command_values = [
+    "fist-palm-blink, Lights on/off, Alexa\n",
+    "palm-fist-blink, Smart Plug on/off, Alexa\n",
+    "fist-blink-palm, Heat on/off, Nest\n",
+    "palm-blink-fist, AC on/off, Nest\n",
+    "palm, STOP, Alexa\n"
+]
 
 _default_configuration_values = ["0.05\n",
                                  "2\n",
@@ -18,7 +24,6 @@ _configuration_index_map = {
         'low_contrast' : 3,
         'high_contrast' : 4
         }
-
 
 def _get_configuration_index(configuration_column_name):
     return _configuration_index_map[configuration_column_name]
@@ -40,7 +45,6 @@ class DatabaseManager():
         return self.log_manager.get_lines()
 
     def set_command(self, gesture_sequence, command_text, device_name):
-        gesture_sequence = gesture_sequence.join('-')
         commands = self.get_commands()
         is_registered = False
         line_index = 0
@@ -52,22 +56,23 @@ class DatabaseManager():
             else:
                 line_index += 1
 
-        line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name
+        gesture_sequence = '-'.join(gesture_sequence)
+        line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
 
         if is_registered:
             self.command_manager.set_line(line_index, line_contents)
         else:
-            self.command_manager.append(line_contents)
+            self.command_manager.append_line(line_contents)
 
     def get_commands(self):
         lines = self.command_manager.get_lines()
         commands = []
         for line in lines:
-            line = split(line)
+            line = line.split(', ')
             commands.append({
                 "gesture_sequence": line[0].split('-'),
-                "command": line[1],
-                "device": line[2]
+                "command_text": line[1],
+                "device_name": line[2][:-1]
             })
         return commands
 

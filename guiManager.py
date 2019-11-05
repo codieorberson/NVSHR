@@ -1,5 +1,4 @@
 #!/usr/local/bin/python3
-import tkinter
 from tkinter import *
 from tkinter import ttk
 
@@ -347,7 +346,8 @@ class Page(Frame):
         self.is_fist_label = False
         self.is_palm_label = False
         self.gesture_detected = gesture_detected
-        self.optionsManager = AdminCmdManager()
+
+        self.optionsManager = settings_manager
         self.option = 1
         self.command_index = 0
 

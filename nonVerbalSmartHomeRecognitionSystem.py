@@ -24,7 +24,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.logger = Logger()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
-        self.gesture_parser = GestureParser(self.logger)  # , self.database_manager)
+        self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
         self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
@@ -35,15 +35,10 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.smart_home_activator = SmartHomeActivator()
 
-        self.gesture_parser.add_pattern(['fist', 'palm', 'blink'],
-                                        lambda: self.smart_home_activator.activate('Lights on/off', 'Alexa'))
-        self.gesture_parser.add_pattern(['palm', 'fist', 'blink'],
-                                        lambda: self.smart_home_activator.activate('Smart Plug on/off', 'Alexa'))
-        self.gesture_parser.add_pattern(['fist', 'blink', 'palm'],
-                                        lambda: self.smart_home_activator.activate('Heat on/off', 'Alexa'))
-        self.gesture_parser.add_pattern(['palm', 'blink', 'fist'],
-                                        lambda: self.smart_home_activator.activate('AC on/off', 'Alexa'))
-        self.gesture_parser.add_pattern(['palm'], lambda: self.smart_home_activator.activate('STOP', 'Alexa'))
+        for command_map in self.database_manager.get_commands():
+            self.add_command(command_map['gesture_sequence'],
+                             command_map['command_text'],
+                             command_map['device_name'])
 
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
@@ -125,6 +120,11 @@ class NonVerbalSmartHomeRecognitionSystem():
     def set_max_time_inc(self, new_max_time_inc):
         self.max_increment = int(new_max_time_inc)
         self.database_manager.set_max_time_inc(new_max_time_inc)
+
+    def add_command(self, gesture_sequence, command_text, device_name):
+        self.gesture_parser.add_pattern(gesture_sequence,
+                                        lambda: self.smart_home_activator.activate(command_text, device_name))
+        self.database_manager.set_command(gesture_sequence, command_text, device_name)
 
     def on_close(self):
         # Close down OpenCV
