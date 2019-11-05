@@ -1,15 +1,16 @@
 #!/usr/local/bin/python3
 import tkinter as tkinter
 
-def _swallow_exception(exception, value, traceback):
-    #This is an EXCEPTIONALLY bad practice, but I'm not sure how else to avoid
-    #barfing up errors to the console when we switch windows.
-    pass
+def _catch_transition_exception(exception, value, traceback):
+    if str(exception) == "<class 'NameError'>":
+        pass
+    else:
+        raise exception
 
 class PopUp:
     def __init__(self, loop_callback, admin_callback, close_callback):
         self.popup = tkinter.Tk()
-        self.popup.report_callback_exception = _swallow_exception
+        self.popup.report_callback_exception = _catch_transition_exception
 
         self.is_admin = None
 
