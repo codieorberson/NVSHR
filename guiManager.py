@@ -5,6 +5,7 @@ from tkinter import ttk
 import PIL.Image
 import PIL.ImageTk
 import cv2
+import os
 
 # Define the elements to be laid out on each tab
 _gui_data = {
@@ -243,12 +244,7 @@ _gui_data = {
     "tab4": {"title": "Log",
              "elements": [
                  {
-                     "format": "text",
-                     "body": {"text": "To view the log, open logfile.txt in a text editor."}
-                 },
-                 {
-                     "format": "text",
-                     "body": {"text": "We should really display it in the GUI, though."}
+                     "format": "button",
                  }
              ]
              }
@@ -430,6 +426,10 @@ class Page(Frame):
                 self.optionMenu.config(width=30)
                 self.option += 1
 
+            elif element["format"] == "button":
+                self.log_button = Button(self, text='Click to see contents of the logfile',
+                                         command=self.open_log_file).pack()
+
             elif element["format"] == "new":
                 small_frame = LabelFrame(self, width=1000, height=100, bd=0)
                 small_frame.grid(row=row_index, column=0, padx=10, pady=10)
@@ -456,6 +456,10 @@ class Page(Frame):
 
     def add_new_command(self):
         print("hey girl")
+
+    def open_log_file(self):
+        file = "notepad.exe logfile.txt"
+        os.system(file)
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
