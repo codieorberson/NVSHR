@@ -1,18 +1,28 @@
 #!/usr/local/bin/python3
-import tkinter
+import tkinter as tkinter
 
+def _swallow_exception(exception, value, traceback):
+    #This is an EXCEPTIONALLY bad practice, but I'm not sure how else to avoid
+    #barfing up errors to the console when we switch windows.
+    pass
 
 class PopUp:
-    def __init__(self):
+    def __init__(self, loop_callback, admin_callback, close_callback):
         self.popup = tkinter.Tk()
+        self.popup.report_callback_exception = _swallow_exception
+
         self.is_admin = None
 
-        # Window needs to be centered within the screen and should have a title saying Welcome!
-        self.center(400, 200, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
+        self.loop_callback = loop_callback
+        self.admin_callback = admin_callback
+        self.close_callback = close_callback
 
-        self.popup.geometry("400x400+%d+%d" % (self.x, self.y))
+        # Window needs to be centered within the screen and should have a title saying Welcome!
+        self.center(400, 300, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
+
+        self.popup.geometry("400x250+%d+%d" % (self.x, self.y))
         self.popup.wm_title("Welcome!")
-        self.popup.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.popup.protocol("WM_DELETE_WINDOW", self.close)
 
         # Window needs labels asking for administrator info from the user
         label = tkinter.Label(self.popup, text="Welcome to the Non-Verbal Smart Home Recgotintion (NVSHR) Sytem!",
@@ -25,15 +35,21 @@ class PopUp:
         self.value = tkinter.IntVar()
         self.value.set(0)
 
-        choice1 = tkinter.Radiobutton(self.popup, text="Yes, I am an administrator.", variable=self.value, value=1)
-        choice1.pack()
-        choice2 = tkinter.Radiobutton(self.popup, text="No, I am not an administrator.", variable=self.value, value=2)
-        choice2.pack()
-
-        save_button = tkinter.Button(self.popup, text="Enter", command=self.enter_button)
+        save_button = tkinter.Button(self.popup, text="Display Admin Settings", command=self.enter_button)
         save_button.pack()
 
-        self.popup.mainloop()
+        self.popup.after(1, self.__loop__)
+
+    def start(self):
+         self.popup.mainloop()       
+
+    def __loop__(self):
+        if not self.is_admin:
+            self.loop_callback()
+            self.popup.after(1, self.__loop__)
+            self.popup.mainloop()
+        else:
+            self.admin_callback()
 
     # Method to calculate the x and y coordinates for the window
     def center(self, width, height, scr_width, scr_hei):
@@ -42,18 +58,27 @@ class PopUp:
 
     # Method called to set the current value from the radio button
     def enter_button(self):
-        if self.value.get() == 1:
-            self.is_admin = True
-        else:
-            self.is_admin = False
-
-        self.popup.destroy()
+        self.is_admin = True
+        self.close()
 
     # Method called to send the information to the guiManager
     def send_verification(self):
         return self.is_admin
 
     # Method called when the user presses the "X" before answering
-    def on_close(self):
+    def close(self):
+        if self.is_admin:
+            self.popup.withdraw()
+            self.close_pop_up()
+        else:
+            self.close_system()
+
+    def close_pop_up(self):
+        with RedirectStdStreams(stdout=devnull, stderr=devnull):
+            self.popup.destroy()
+            self.admin_callback()
+
+    def close_system(self):
+        self.close_callback()
         self.popup.destroy()
         exit(0)

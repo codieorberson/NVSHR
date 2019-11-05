@@ -5,6 +5,9 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from guiManager import GuiManager
 from logger import Logger
+import sys
+import cv2
+from datetime import datetime
 from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
@@ -19,10 +22,6 @@ from popUp import PopUp
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
-
-        self.pop_up_window = PopUp()
-        self.admin = self.pop_up_window.send_verification()
-
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
@@ -30,8 +29,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
-        self.AdminSettingsManager = AdminCmdManager()
-        # self.AdminSettingsManager.read_from_file()
+        self.admin_settings_manager = AdminCmdManager()
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
@@ -56,14 +54,19 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.min_increment = self.database_manager.get_min_time_inc()
         self.max_increment = self.database_manager.get_max_time_inc()
 
+
         self.gui_manager = GuiManager(self.cap,
                                       self.set_open_eye_threshold, self.open_eye_threshold,
                                       self.set_low_contrast, self.low_contrast_value,
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, self.admin)
+                                      self.gesture_detected, False, self.admin_settings_manager)
 
+        self.pop_up_window = PopUp(self.main_loop, self.change_admin_status, self.on_close)
+        self.pop_up_window.start()
+
+    def change_admin_status(self):
         self.gui_manager.start(self.main_loop, self.on_close)
      
     def main_loop(self):
