@@ -6,6 +6,7 @@ from tkinter import ttk
 import PIL.Image
 import PIL.ImageTk
 import cv2
+import os
 
 from adminCmdManager import AdminCmdManager
 
@@ -249,12 +250,7 @@ _gui_data = {
     "tab4": {"title": "Log",
              "elements": [
                  {
-                     "format": "text",
-                     "body": {"text": "To view the log, open logfile.txt in a text editor."}
-                 },
-                 {
-                     "format": "text",
-                     "body": {"text": "We should really display it in the GUI, though."}
+                     "format": "button",
                  }
              ]
              }
@@ -359,6 +355,9 @@ class Page(Frame):
         self.option4 = StringVar()
         self.option4.set(self.optionsManager.action4)
 
+        self.is_button_clicked = False
+
+
         row_index = 1
         for element in elements:
             if element["format"] == "text":
@@ -434,6 +433,10 @@ class Page(Frame):
                 self.optionMenu.config(width=30)
                 self.option += 1
 
+            elif element["format"] == "button":
+                self.is_button_clicked = True
+                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
+                
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
@@ -458,6 +461,10 @@ class Page(Frame):
         self.option4.set(value)
         self.optionsManager.write_to_file(4, value)
         print("Command 4: " + value)
+
+    def open_log_file(self):
+        file = "notepad.exe logfile.txt"  
+        os.system(file)
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
