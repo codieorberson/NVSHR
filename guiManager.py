@@ -7,6 +7,7 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import os
+import platform
 
 from adminCmdManager import AdminCmdManager
 
@@ -459,7 +460,12 @@ class Page(Frame):
         print("Command 4: " + value)
 
     def open_log_file(self):
-        file = "notepad.exe logfile.txt"  
+        if platform.system() == 'darwin':
+            file = "textedit.exe logfile.txt"
+        elif platform.system() == 'linux':
+            file = "cat.exe logfile.txt"
+        else:
+            file = "notepad.exe logfile.txt"  
         os.system(file)
 
     def set_fps(self, fps):
