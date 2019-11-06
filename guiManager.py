@@ -8,6 +8,8 @@ import PIL.ImageTk
 import cv2
 import os
 import platform
+import subprocess
+from fpdf import FPDF
 
 from adminCmdManager import AdminCmdManager
 
@@ -433,7 +435,7 @@ class Page(Frame):
 
             elif element["format"] == "button":
                 self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
-                
+                self.delete_log_file()
             row_index += 1
 
     def __bgr_to_rgb__(self, frame):
@@ -460,14 +462,23 @@ class Page(Frame):
         print("Command 4: " + value)
 
     def open_log_file(self):
-        if platform.system() == 'darwin':
-            file = "textedit.exe logfile.txt"
-        elif platform.system() == 'linux':
-            file = "cat.exe logfile.txt"
-        else:
-            file = "notepad.exe logfile.txt"  
-        os.system(file)
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 10)
+        count =1
+        file = open('logfile.txt')
+        for line in file:
+            pdf.cell(200, 10, txt = line, ln = count, align = "Left")
+            count +=1
+        file.close()
+        pdf.output("logfile.pdf")
+        subprocess.Popen(["logfile.pdf"], shell = True)
+        
 
+    def delete_log_file(self):
+        if os.path.exists("logfile.pdf"):
+            os.remove("logfile.pdf")
+  
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
