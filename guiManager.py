@@ -6,6 +6,8 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import os
+import platform
+import subprocess
 
 # Define the elements to be laid out on each tab
 _gui_data = {
@@ -458,8 +460,14 @@ class Page(Frame):
         print("hey girl")
 
     def open_log_file(self):
-        file = "notepad.exe logfile.txt"
-        os.system(file)
+        if platform.system() == 'Windows':
+            file = "notepad.exe logfile.txt"
+            os.system(file)
+        elif platform.system() == 'Linux':
+            file = "cat.exe logfile.txt"
+            os.system(file)
+        else:
+            subprocess.call(['open', '-a', 'TextEdit', 'logfile.txt'])
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
