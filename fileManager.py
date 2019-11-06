@@ -1,5 +1,6 @@
 import os
 
+
 class FileManager():
     def __init__(self, file_name, default_lines):
         self._file_name = file_name

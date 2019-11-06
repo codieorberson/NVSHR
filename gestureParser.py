@@ -7,7 +7,7 @@ class GestureParser():
         self.gesture_pattern_map = {}
 
     def add_pattern(self, gestures, event):
-#        self.
+        #        self.
         self.gesture_pattern_map["".join(gestures)] = event
 
     #Takes in a list of lists of gestures and matches them to any patterns under add_pattern

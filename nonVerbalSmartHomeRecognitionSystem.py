@@ -1,10 +1,5 @@
-from datetime import datetime
 import cv2
-from datetime import timedelta
-from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
-from guiManager import GuiManager
-from logger import Logger
+from datetime import datetime
 from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
@@ -16,6 +11,7 @@ from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
 from popUp import PopUp
+
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
@@ -30,19 +26,19 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
-        self.AdminSettingsManager = AdminCmdManager()
+        self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
-        
+
         self.smart_home_activator = SmartHomeActivator()
 
         for command_map in self.database_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
-                    command_map['command_text'],
-                    command_map['device_name'])
+                             command_map['command_text'],
+                             command_map['device_name'])
 
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
@@ -62,7 +58,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, self.admin)
+                                      self.gesture_detected, self.admin, self.admin_settings_manager)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      
@@ -72,13 +68,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         timestamp = datetime.utcnow()
         self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
 
-#    These multithreaded perimeters are the only objects which hold values that
-#    are shared between threads. The frame, for example, is copied for each 
-#    core in the processor, and drawing on a frame inside of a child process
-#    will not affect the original frame in the parent process. Checking for
-#    changes in the values held by multithreaded perimeters is the only way
-#    that the code currently communicates from a child process to a parent
-#    process (besides returning control via ProcessManager).
         fist_perimeter = MultithreadedPerimeter()
         palm_perimeter = MultithreadedPerimeter()
         left_eye_perimeter = MultithreadedPerimeter()
@@ -134,7 +123,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def add_command(self, gesture_sequence, command_text, device_name):
         self.gesture_parser.add_pattern(gesture_sequence,
-                lambda: self.smart_home_activator.activate(command_text, device_name))
+                                        lambda: self.smart_home_activator.activate(command_text, device_name))
         self.database_manager.set_command(gesture_sequence, command_text, device_name)
 
     def on_close(self):
