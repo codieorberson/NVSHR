@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 import tkinter
 import PIL.Image
 import PIL.ImageTk
@@ -159,6 +160,12 @@ _gui_data = {
     "tab3": {"title": "Commands",
             "elements": [
                 {
+                    "format": "commands"
+                },
+                {
+                    "format": "listbox"
+                },
+                {
                     "format": "text",
                     "body":
                         {
@@ -174,64 +181,12 @@ _gui_data = {
                         {
                             "text": "The following commands have been created for initial use and are ready to be "
                                     "used within the system. Before you use them, please link them to the desired "
-                                    "smart home action.",
-                            "width": 120,
-                            "height": 4,
-                            "wraplength": 900,
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command One (Fist, Palm, Blink)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command Two (Palm, Fist, Blink)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command Three (Fist, Blink, Palm)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "Command Four (Palm, Blink, Fist)",
-                            "justify": "center"
-                        }
-                },
-                {
-                    "format": "option",
-                },
-                {
-                    "format": "text",
-                    "body":
-                        {
-                            "text": "To create a new command, fill out all the fields below and press the Add button "
-                                    "to add it the list above. Once it is added, make sure to link it to a smart "
-                                    "home device.",
+                                    "smart home action. To create a new command, fill out all the fields below "
+                                    "and press the ADD button "
+                                    "to add it to the list below. Commands may not have the one gesture followed "
+                                    "immediately by that same gesture (i.e. FIST, FIST, BLINK is not a valid command). "
+                                    "Once it is added, make sure it is linked to the "
+                                    "correct smart home device.",
                             "width": 120,
                             "height": 4,
                             "wraplength": 900,
@@ -240,6 +195,9 @@ _gui_data = {
                 },
                 {
                     "format": "new"
+                },
+                {
+                    "format": "option"
                 }
             ]
         },
@@ -341,38 +299,46 @@ class Page(Frame):
         self.is_blink_label = False
         self.is_fist_label = False
         self.is_palm_label = False
+        self.is_command_menu = False
         self.gesture_detected = gesture_detected
 
         self.optionsManager = settings_manager
         self.option = 1
         self.command_index = 0
+        self.is_full = 0
 
         self.command_links = {}
         self.new_command = {}
 
-        row_index = 1
+        self.row_index = 1
         for element in elements:
             if element["format"] == "text":
                 column_index = 0
                 body_index = list(element.keys()).index("body")
                 for body in list(element.keys())[body_index:]:
-                    self.label = Label(self, element.get(body))
-                    self.label.grid(row=row_index, column=column_index, padx=10, pady=10)
-                    self.name = name
-                    column_index += 1
+                    if self.is_command_menu:
+                        self.label = Label(self.command_listbox, element.get(body))
+                        self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                        self.name = name
+                        column_index += 1
+                    else:
+                        self.label = Label(self, element.get(body))
+                        self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                        self.name = name
+                        column_index += 1
 
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
                 self.label = Label(self, textvariable=text_var, font=20)
                 text_var.set("Camera On: " + str(cap.isOpened()))
-                self.label.grid(row=row_index, column=0, padx=10, pady=10)
+                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 self.name = name
 
             elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
                 self.label = Label(self, textvariable=self.fps_container, font=20)
                 self.fps_container.set("FPS:       " + self.get_cam_fps(cap))
-                self.label.grid(row=row_index, column=0, padx=10, pady=10)
+                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 self.name = name
                 self.is_fps = True
 
@@ -382,7 +348,7 @@ class Page(Frame):
                 self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
-                self.debug_canvas.grid(row=row_index, column=0, padx=10, pady=10, columnspan=5)
+                self.debug_canvas.grid(row=self.row_index, column=0, padx=10, pady=10, columnspan=5)
                 self.name = name
 
             elif element["format"] == "slider":
@@ -398,66 +364,116 @@ class Page(Frame):
                         self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
 
                     self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100
-                    self.slider.grid(row=row_index, column=column_index, padx=10, pady=10)
+                    self.slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
                     self.name = name
                     column_index += 1
 
             elif element["format"] == "gestures":
                 self.gesturename = Label(self, text=element["body"][0], font=20, bg="White")
-                self.gesturename.grid(row=row_index, column=0, padx=10, pady=10)
+                self.gesturename.grid(row=self.row_index, column=0, padx=10, pady=10)
 
                 self.is_blink_label = True
                 self.blink_label = Label(self, text=element["body"][1], font=20, fg="Blue")
-                self.blink_label.grid(row=row_index, column=1, padx=10, pady=10)
+                self.blink_label.grid(row=self.row_index, column=1, padx=10, pady=10)
 
                 self.is_fist_label = True
                 self.fist_label = Label(self, text=element["body"][2], font=20, fg="Blue")
-                self.fist_label.grid(row=row_index, column=2, padx=10, pady=10)
+                self.fist_label.grid(row=self.row_index, column=2, padx=10, pady=10)
 
                 self.is_palm_label = True
                 self.palm_label = Label(self, text=element["body"][3], font=20, fg="Blue")
-                self.palm_label.grid(row=row_index, column=3, padx=10, pady=10)
+                self.palm_label.grid(row=self.row_index, column=3, padx=10, pady=10)
 
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
-                variable = StringVar()
-                variable.set(self.optionsManager.action[self.option])
-                self.command_links[self.option] = variable
-                self.optionMenu = OptionMenu(self, variable, *self.option_list, command=self.set_value)
-                self.optionMenu.grid(row=row_index, column=0, padx=10, pady=10, columnspan=100)
-                self.optionMenu.config(width=30)
-                self.option += 1
+                row = self.row_index
+                for option in self.optionsManager.action:
+                    small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+                    small_frame.grid(row=row, column=0, padx=10, pady=10)
+                    text = {"text": "Command " + str(self.option)}
+                    self.label = Label(small_frame, text)
+                    self.label.grid(row=row, column=0, padx=10, pady=10)
+                    self.name = name
+                    variable = StringVar()
+                    variable.set(self.optionsManager.action[self.option])
+                    self.command_links[self.option] = variable
+                    self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
+                    self.optionMenu.grid(row=row, column=1, padx=10, pady=10, columnspan=100)
+                    self.optionMenu.config(width=30)
+                    self.option += 1
+                    row += 1
+                self.row_index = row
 
             elif element["format"] == "button":
                 self.log_button = Button(self, text='Click to see contents of the logfile',
                                          command=self.open_log_file).pack()
 
             elif element["format"] == "new":
-                small_frame = LabelFrame(self, width=1000, height=100, bd=0)
-                small_frame.grid(row=row_index, column=0, padx=10, pady=10)
+                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+                small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 for x in range(1, 4):
                     self.gesture_list = ["Fist", "Palm", "Blink"]
                     variable = StringVar()
-                    variable.set("")
+                    variable.set(" ")
                     self.new_command[self.command_index] = variable
-                    gesture = OptionMenu(small_frame, variable, *self.gesture_list)
-                    gesture.grid(row=row_index, column=self.command_index, pady=10)
+                    gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
+                    gesture.grid(row=self.row_index, column=self.command_index, pady=10)
                     self.command_index += 1
                 add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
-                add_button.grid(row=row_index, column=self.command_index + 1, pady=10)
+                add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
 
-            row_index += 1
+            elif element["format"] == "listbox":
+                if self.is_command_menu:
+                    self.command_listbox = Listbox(self, bd=0, height=60, width=150)
+                    self.command_listbox.grid(row=self.row_index, column=0, pady=10)
+
+            elif element["format"] == "commands":
+                self.is_command_menu = True
+
+            self.row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
     def set_value(self, value):
         for x in range(1, 5):
+            if value == self.optionsManager.action[x] and value != "None":
+                messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
+                                                                 "another command. Please chose a different device "
+                                                                 "for this command.")
+                return
+        for x in range(1, 5):
             self.optionsManager.write_to_file(x, self.command_links[x].get())
             print("Command" + str(x) + ": " + self.command_links[x].get())
 
+    def is_full_command(self, value):
+        self.is_full += 1
+
     def add_new_command(self):
-        print("hey girl")
+        if self.is_full >= 3:
+            if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != self.new_command[
+                2].get():
+                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+                small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
+                text = {"text": "Command " + str(self.option) + " (" + self.new_command[0].get() + ", " +
+                                self.new_command[1].get() + ", " + self.new_command[2].get() + ")"}
+                self.label = Label(small_frame, text)
+                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+                variable = StringVar()
+                variable.set("None")
+                self.command_links[self.option] = variable
+                self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
+                self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
+                self.optionMenu.config(width=30)
+                self.option += 1
+                self.row_index += 1
+            else:
+                messagebox.showerror("Incorrect Command",
+                                     "Commands may not have identical gestures in a successive order.")
+        else:
+            messagebox.showerror("No Command Created", "Please chose three gestures to create a full command.")
+
+        self.is_full = 0
 
     def open_log_file(self):
         if platform.system() == 'Windows':
