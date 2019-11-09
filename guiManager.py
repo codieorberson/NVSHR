@@ -15,11 +15,17 @@ _gui_data = {
         "tab1": {"title": "Instructions",
             "elements": [
                 {
+                    "format": "listbox"
+                },
+                {
+                    "format": "logo"
+                },
+                {
                     "format": "text",
                     "body":
                         {
                             "text": "Welcome to the Non-Verbal Smart Home Recognition (NVSHR) System!",
-                            "font": ("Helvetica", 16, "bold"),
+                            "font": ("Helvetica", 14, "bold"),
                             "justify": "center"
                         }
                 },
@@ -27,41 +33,55 @@ _gui_data = {
                     "format": "text",
                     "body":
                         {
-                            "text": "The NVSHR system is a system used to use non-verbal communication to control smart "
+                            "text": "The NVSHR system is a system created with the purpose of using "
+                                    "non-verbal communication to control smart "
                                     "home devices with the help of hand gestures and blink detection. As a system "
-                                    "administrator there are a few things that need to be initialized before the NVSHR syst"
-                                    "em can be used properly. Please follow the steps below to ensure the user has the best"
+                                    "administrator there are a few things that need to be initialized before the "
+                                    "NVSHR system can be used properly. Please follow the steps below to ensure the "
+                                    "user has the best"
                                     " experience using this system.",
                             "width": 100,
                             "height": 4,
                             "wraplength": 900,
                             "justify": "center",
                             "anchor": "w",
-                            "font": ("Helevetica", 14, "italic")
+                            "font": ("Helevetica", 12, "italic")
                         }
                 },
                 {
                     "format": "text",
                     "body":
                     {
-                        "text": "Before any commands are linked to a specific smart home action, the NVSHR system will "
-                                "be able to recognize these commands, but will not illustrate any changes within the smart "
-                                "home. To link commands with smart home actions:"
+                        "text": "Before any commands are linked to a specific smart home action, the NVSHR system "
+                                "will not "
+                                "be able to make any state changes to the users smart home."
+                                "However, it will be able to recognize these commands. \nTo link commands with smart "
+                                "home actions:"
                                 "\n\n"
                                 "1. Navigate to the Command tab above."
                                 "\n\n"
                                 "2. Once in the Command tab, you will see a list of all available commands and their"
-                                " descriptions. Please take note of the gesture sequence for each command."
+                                " descriptions (Please take note of the gesture sequence for each command). You are "
+                                "also able to create new commands from this same tab. Instructions for creating these "
+                                "new commands is housed within this tab."
                                 "\n\n"
                                 "3. Choose a smart home device from the drop down menu below each command to link that "
                                 "device with the above command. If you do not wish to use a command, please choose the "
-                                "None option from the drop down menu."
+                                "None option from the drop down menu. Each smart home device is only able to linked to "
+                                "one unique command, so be sure to chose command linking wisely."
                                 "\n\n"
-                                "Once each command has been linked, navigate to the Debug tab above. Within this menu "
+                                "Once each command you wish to use has been linked, navigate to the Debug tab above. "
+                                "Within this tab "
                                 "you will be able to view the live feedback from the connected camera as well as make "
                                 "some changes to that feedback for better processing within the system."
                                 "\n\n"
-                                "1. The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink detection."
+                                "1. Each of the sliders lets you configure the system to the right specifications. "
+                                "The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink "
+                                "detection. The Low and High Contrast sliders allow you to change the contrast on "
+                                "the frame to improve the systems ability to recognize hand gestures if you aren't "
+                                "getting the results you expect. You also able to set how long the system should "
+                                "wait to register a command and what the shortest amount of time between unique "
+                                "gestures should be."
                                 "\n\n"
                                 "2. The Frames Per Second (FPS) provides information about the number of frames being processed "
                                 "within the system per second."
@@ -77,9 +97,9 @@ _gui_data = {
                                 "Once all of the previous steps have been completed, the system will be ready for the user. "
                                 "If at anytime the system is not properly recognizing commands, the Log tab can be used to "
                                 "view previous gestures and commands. Feel free to use this tab to ensure that the linked "
-                                "commands are being recognized properly.",
+                                "commands are being recognized properly as well.",
                         "width": 100,
-                        "height": 30,
+                        "height": 34,
                         "wraplength": 800,
                         "justify": "left",
                         "anchor": "w",
@@ -97,20 +117,6 @@ _gui_data = {
                         "justify": "center",
                         "anchor": "center",
                         "font": ("Helevetica", 14, "italic")
-                    }
-                },
-                {
-                    "format": "text",
-                    "body":
-                    {
-                        "text": "If there are any issues or bugs within the system please log a ticket "
-                                "at: https://github.com/codieorberson/NVSHR/issues/new",
-                        "width": 100,
-                        "height": 3,
-                        "wraplength": 900,
-                        "justify": "center",
-                        "anchor": "w",
-                        "font": ("Helevetica", 10, "italic")
                     }
                 }
             ]
@@ -300,6 +306,7 @@ class Page(Frame):
         self.is_fist_label = False
         self.is_palm_label = False
         self.is_command_menu = False
+        self.has_list_box = False
         self.gesture_detected = gesture_detected
 
         self.optionsManager = settings_manager
@@ -319,6 +326,11 @@ class Page(Frame):
                     if self.is_command_menu:
                         self.label = Label(self.command_listbox, element.get(body))
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                        self.name = name
+                        column_index += 1
+                    elif self.has_list_box:
+                        self.label = Label(self.list_box, element.get(body))
+                        self.label.grid(row=self.row_index, column=column_index, padx=10, pady=0)
                         self.name = name
                         column_index += 1
                     else:
@@ -426,9 +438,19 @@ class Page(Frame):
                 if self.is_command_menu:
                     self.command_listbox = Listbox(self, bd=0, height=60, width=150)
                     self.command_listbox.grid(row=self.row_index, column=0, pady=10)
+                else:
+                    self.list_box = Listbox(self, bd=0, height=60, width=150)
+                    self.list_box.grid(row=self.row_index, column=0, pady=10)
+                    self.has_list_box = True
 
             elif element["format"] == "commands":
                 self.is_command_menu = True
+
+            elif element["format"] == "logo":
+                self.canvas = Canvas(self.list_box, width=100, height=66)
+                self.canvas.grid(row=self.row_index, column=0, pady=10)
+                image = PIL.ImageTk.PhotoImage(PIL.Image.open("NVSHRLogo.png"))
+                self.canvas.create_image(100, 66, anchor="nw", image=image)
 
             self.row_index += 1
 
