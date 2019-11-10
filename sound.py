@@ -1,18 +1,6 @@
 # Sound Effects by Eric Matyas,  www.soundimage.org
-
-from builtins import staticmethod
-
 from playsound import playsound
+from sys import argv
 
-
-class Sound:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def success():
-        playsound('Success.wav')
-
-    @staticmethod
-    def failure():
-        playsound('Failure.wav')
+sound_file = argv[1]
+playsound(argv[1])

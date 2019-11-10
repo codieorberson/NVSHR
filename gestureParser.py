@@ -1,9 +1,10 @@
-from sound import Sound
+from subprocessExecutor import SubprocessExecutor
 
 class GestureParser():
     def __init__(self, logger, database_manager):
         self.logger = logger
         self.database_manager = database_manager
+        self.subprocess_executor = SubprocessExecutor()
         self.gesture_pattern_map = {}
 
     def add_pattern(self, gestures, event):
@@ -19,10 +20,10 @@ class GestureParser():
 
         # Then sends confirm or failure noise, and logs the sequence in logger.
         if was_recognised:
+            self.subprocess_executor.execute('sound.py', 'success.wav')
             self.gesture_pattern_map[joined_gesture_sequence]()
-            Sound.success()
         else:
-            Sound.failure()
+            self.subprocess_executor.execute('sound.py', 'failure.wav')
 
     def parse_patterns(self, gesture_patterns, now):
         for gesture_pattern in gesture_patterns:

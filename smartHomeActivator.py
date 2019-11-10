@@ -1,15 +1,5 @@
 #import homeassistant
-
-
-import pyttsx3
-#^^^If testing on windows, install both pyttsx3 and pypiwin32; on linux, python-espeak must be installed (through the system package manager or from source, not from pip3).
-
-_text_to_speech_engine = pyttsx3.init()
-
-def _text_to_wav(text):
-    _text_to_speech_engine.say(text)
-    _text_to_speech_engine.runAndWait()
-
+from speaker import Speaker
 
 def _connect_to_home_assistant():
     try:
@@ -54,8 +44,11 @@ class SmartHomeActivator():
 
        self.connection = _connect_to_home_assistant()
        self.is_connected = bool(self.connection)
+       self.speaker = Speaker()
 
     def activate(self, smartHomeAction, device):
+        self.speaker.speak(smartHomeAction)
+
         if self.is_connected:
             print('"' + smartHomeAction + '" sent to ' + device + '. ' +
                     "<--(This is a lie, but you are connected to " +
