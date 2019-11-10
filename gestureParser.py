@@ -1,10 +1,12 @@
 from sound import Sound
+from TPLink import TPLinkDevice
 
 class GestureParser():
     def __init__(self, logger, database_manager):
         self.logger = logger
         self.database_manager = database_manager
         self.gesture_pattern_map = {}
+        self.Tp_Link_Devices = TPLinkDevice()
 
     def add_pattern(self, gestures, event):
         #        self.
@@ -19,6 +21,7 @@ class GestureParser():
         self.logger.log_gesture_sequence(gesture_sequence, now, was_recognised)
 
         if was_recognised:
+            self.Tp_Link_Devices.turn_on_off(gesture_sequence)
             self.gesture_pattern_map[joined_gesture_sequence]()
             Sound.success()
         else:
