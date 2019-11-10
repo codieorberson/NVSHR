@@ -15,7 +15,7 @@ def test_init():
     assert detector.ear_thresh == 0.2, "blinkDetector.ear_thresh was not initialized correctly"
     assert detector.detector is not None, "blinkDetector.detector was not initialized correctly"
     assert detector.predictor is not None, "blinkDetector.predictor was not initialized correctly"
-    print("test_init() passed.")
+    print("<=========== test_init() passed. ===========>")
 
 
 # def test_detect(self=None, frame=None, left_eye_perimeter=None, right_eye_perimeter=None):

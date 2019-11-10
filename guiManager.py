@@ -9,6 +9,8 @@ import cv2
 import os
 import platform
 import subprocess
+from fpdf import FPDF
+from adminCmdManager import AdminCmdManager
 
 # Define the elements to be laid out on each tab
 _gui_data = {
@@ -417,8 +419,9 @@ class Page(Frame):
                 self.row_index = row
 
             elif element["format"] == "button":
-                self.log_button = Button(self, text='Click to see contents of the logfile',
-                                         command=self.open_log_file).pack()
+                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
+                self.delete_log_file()
+
 
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
@@ -498,15 +501,22 @@ class Page(Frame):
         self.is_full = 0
 
     def open_log_file(self):
-        if platform.system() == 'Windows':
-            file = "notepad.exe logfile.txt"
-            os.system(file)
-        elif platform.system() == 'Linux':
-            file = "cat.exe logfile.txt"
-            os.system(file)
-        else:
-            subprocess.call(['open', '-a', 'TextEdit', 'logfile.txt'])
-
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 10)
+        count =1
+        file = open('logfile.txt')
+        for line in file:
+            pdf.cell(200, 10, txt = line, ln = count, align = "Left")
+            count +=1
+        file.close()
+        pdf.output("logfile.pdf")
+        subprocess.Popen(["logfile.pdf"], shell = True)
+        
+    def delete_log_file(self):
+        if os.path.exists("logfile.pdf"):
+            os.remove("logfile.pdf")
+  
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
