@@ -10,12 +10,13 @@ _default_command_values = [
     "palm, STOP, Alexa\n"
 ]
 
-_default_configuration_values = ["0.05\n",
-                                 "2\n",
-                                 "5\n",
-                                 "50\n",
-                                 "100\n"
-                                 ]
+_default_configuration_values = [
+        "0.05\n",
+        "2\n",
+        "5\n",
+        "50\n",
+        "100\n"
+        ]
 
 _configuration_index_map = {
         'open_eye_ratio' : 0,
@@ -30,12 +31,11 @@ def _get_configuration_index(configuration_column_name):
 
 class DatabaseManager():
     def __init__(self):
-        self.log_manager = FileManager("log.csv",
-                                       _default_log_values)
-        self.command_manager = FileManager("commands.csv",
-                                           _default_command_values)
+        self.log_manager = FileManager("log.csv", _default_log_values)
+        self.command_manager = FileManager("commands.csv", 
+                _default_command_values)
         self.configuration_manager = FileManager("configuration.csv",
-                                                 _default_configuration_values)
+                _default_configuration_values)
 
     def set_gesture(self, gesture_name, now):
         self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
