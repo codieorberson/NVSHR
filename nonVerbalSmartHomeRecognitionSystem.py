@@ -1,10 +1,3 @@
-from datetime import datetime
-import cv2
-from datetime import timedelta
-from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
-from guiManager import GuiManager
-from logger import Logger
 import sys
 import cv2
 from datetime import datetime
@@ -20,12 +13,14 @@ from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
 from popUp import PopUp
 
+
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
         self.gesture_detector = GestureDetector()
+
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
@@ -34,7 +29,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
-        
+        self.gesture_detected = self.gesture_detector.gesture_detected
+     
         self.smart_home_activator = SmartHomeActivator()
 
         for command_map in self.database_manager.get_commands():
@@ -75,13 +71,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         timestamp = datetime.utcnow()
         self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
 
-#    These multithreaded perimeters are the only objects which hold values that
-#    are shared between threads. The frame, for example, is copied for each 
-#    core in the processor, and drawing on a frame inside of a child process
-#    will not affect the original frame in the parent process. Checking for
-#    changes in the values held by multithreaded perimeters is the only way
-#    that the code currently communicates from a child process to a parent
-#    process (besides returning control via ProcessManager).
         fist_perimeter = MultithreadedPerimeter()
         palm_perimeter = MultithreadedPerimeter()
         left_eye_perimeter = MultithreadedPerimeter()
@@ -114,8 +103,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.last_timestamp = timestamp
-        self.gesture_detected = self.gesture_detector.get_gesture_detected()
-        self.gui_manager.set_gesture_background(self.gesture_detected)
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)

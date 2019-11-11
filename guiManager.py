@@ -259,12 +259,6 @@ class _App(Tk):
                 debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
-            if tab.is_blink_label:
-                self.blink_label = tab
-            if tab.is_fist_label:
-                self.fist_label = tab
-            if tab.is_palm_label:
-                self.palm_label = tab
 
         return debug_tab
 
@@ -422,7 +416,6 @@ class Page(Frame):
                 self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
                 self.delete_log_file()
 
-
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
@@ -553,6 +546,14 @@ class Page(Frame):
             self.palm_label.configure(bg="White")
             self.blink_label.configure(bg="White")
 
+    def set_gesture_background(self, gesture_detected):
+        if gesture_detected == "fist":
+            print(self.label.name)
+            print("fist")
+        elif gesture_detected == "palm":
+            print("palm")
+        elif gesture_detected == "blink":
+            print("blink")
 
 class GuiManager():
     def __init__(self, cap, on_ear_change,
@@ -570,9 +571,6 @@ class GuiManager():
                                                             on_max_time_inc, initial_max_time_inc,
                                                             gesture_detected, settings_manager)
         self.fps_tab = self.gui.get_fps_tab()
-        self.blink_label = self.gui.get_blink_label()
-        self.fist_label = self.gui.get_fist_label()
-        self.palm_label = self.gui.get_palm_label()
 
         if is_admin == False:
             self.gui.withdraw()
