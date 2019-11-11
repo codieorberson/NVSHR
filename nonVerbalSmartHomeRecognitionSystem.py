@@ -16,59 +16,13 @@ from popUp import PopUp
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
-        self.last_timestamp = datetime.utcnow()
-        self.database_manager = DatabaseManager()
-        self.logger = Logger()
-        self.gesture_detector = GestureDetector()
-
-        self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
-        self.gesture_parser = GestureParser(self.logger, self.database_manager)
-        self.gesture_detected = None
-        self.admin_settings_manager = AdminCmdManager()
-
-        self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
-        self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
-        self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
-        self.gesture_detected = self.gesture_detector.gesture_detected
-     
-        self.smart_home_activator = SmartHomeActivator()
-
-        for command_map in self.database_manager.get_commands():
-            self.add_command(command_map['gesture_sequence'],
-                    command_map['command_text'],
-                    command_map['device_name'])
-
-        self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
-
-        self.process_manager = ProcessManager()
-
-        self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
-        self.low_contrast_value = self.database_manager.get_low_contrast()
-        self.high_contrast_value = self.database_manager.get_high_contrast()
-        self.min_increment = self.database_manager.get_min_time_inc()
-        self.max_increment = self.database_manager.get_max_time_inc()
-
-
-        self.gui_manager = GuiManager(self.cap, self.admin_settings_manager)
-
-        self.gui_manager.set_initial_ear(self.open_eye_threshold)
-        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
-        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
-        self.gui_manager.set_initial_minimum_time_increment(self.min_increment)
-        self.gui_manager.set_initial_maximum_time_increment(self.max_increment)
- 
-        self.gui_manager.on_ear_change(self.set_open_eye_threshold)
-        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
-        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
-        self.gui_manager.on_minimum_time_increment_change(self.set_min_time_inc)
-        self.gui_manager.on_maximum_time_increment_change(self.set_max_time_inc)
-
-        self.gui_manager.start_background_process()
-
-        self.pop_up_window = PopUp(self.main_loop, self.change_admin_status, self.on_close)
-        self.pop_up_window.start()
+        self.__set_up_helpers__()
+        self.__set_up_gestures__()
+        self.__set_up_commands__()    
+        self.__set_up_camera__()
+        self.__set_up_configuration__()
+        self.__set_up_admin_gui__()
+        self.__set_up_pop_up__()
 
     def change_admin_status(self):
         self.gui_manager.start_foreground_process(self.main_loop, self.on_close)
@@ -146,3 +100,60 @@ class NonVerbalSmartHomeRecognitionSystem():
         # Close log file
         self.logger.close() 
         self.database_manager.close()
+
+    def __set_up_helpers__(self):
+        self.process_manager = ProcessManager()
+        self.last_timestamp = datetime.utcnow()
+        self.database_manager = DatabaseManager()
+        self.logger = Logger()
+        self.gesture_detector = GestureDetector()
+        self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
+        self.gesture_parser = GestureParser(self.logger, self.database_manager)
+        self.gesture_detected = None
+        self.admin_settings_manager = AdminCmdManager()
+        self.smart_home_activator = SmartHomeActivator()
+
+    def __set_up_gestures__(self):
+        self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
+        self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
+        self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
+        self.gesture_detected = self.gesture_detector.gesture_detected
+ 
+    def __set_up_commands__(self):
+        for command_map in self.database_manager.get_commands():
+            self.add_command(command_map['gesture_sequence'],
+                    command_map['command_text'],
+                    command_map['device_name'])
+
+    def __set_up_camera__(self):
+        self.cap = cv2.VideoCapture(0)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+
+    def __set_up_configuration__(self):
+        self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
+        self.low_contrast_value = self.database_manager.get_low_contrast()
+        self.high_contrast_value = self.database_manager.get_high_contrast()
+        self.min_increment = self.database_manager.get_min_time_inc()
+        self.max_increment = self.database_manager.get_max_time_inc()
+
+    def __set_up_admin_gui__(self):
+        self.gui_manager = GuiManager(self.cap, self.admin_settings_manager)
+
+        self.gui_manager.set_initial_ear(self.open_eye_threshold)
+        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
+        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
+        self.gui_manager.set_initial_minimum_time_increment(self.min_increment)
+        self.gui_manager.set_initial_maximum_time_increment(self.max_increment)
+ 
+        self.gui_manager.on_ear_change(self.set_open_eye_threshold)
+        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
+        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
+        self.gui_manager.on_minimum_time_increment_change(self.set_min_time_inc)
+        self.gui_manager.on_maximum_time_increment_change(self.set_max_time_inc)
+
+        self.gui_manager.start_background_process()
+   
+    def __set_up_pop_up__(self):
+        self.pop_up_window = PopUp(self.main_loop, self.change_admin_status, self.on_close)
+        self.pop_up_window.start()
