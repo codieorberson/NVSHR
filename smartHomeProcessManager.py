@@ -1,5 +1,4 @@
 import multiprocessing
-from multiprocessing import Process
 import platform
 
 class SynchronousProcess():
@@ -31,17 +30,25 @@ class ProcessManager():
         if arguments:
             if not isinstance(arguments, tuple):
                 arguments = (arguments, )
-            self.process = ProcessConstructor(target=callback, args=arguments)
+            self.process = multiprocessing.Process(target=callback, args=arguments)
         else:
-            self.process = ProcessConstructor(target=callback)
+            self.process = multiprocessing.Process(target=callback)
             
         self.processes.append(self.process)
         self.process.start()
+        if self.process.is_alive():
+            self.process.terminate()
+        self.process.terminate()
         
-
-    def on_done(self, callback=None):
+    def on_done(self):
         for self.process in self.processes:
             self.process.join()
+        self.process.join(.2)
         self.processes = []
-        if callback:
-            callback()
+        if self.process.is_alive():
+            self.process.terminate()
+        self.process.terminate()
+        
+        
+
+

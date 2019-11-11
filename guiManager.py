@@ -2,159 +2,162 @@
 from tkinter import *
 from tkinter import ttk
 import tkinter
-import cv2
 import PIL.Image
 import PIL.ImageTk
+import cv2
 import os
+import platform
+import subprocess
+from fpdf import FPDF
 from adminCmdManager import AdminCmdManager
 
 # Define the elements to be laid out on each tab
 _gui_data = {
-    "tab1": {"title": "Instructions",
-             "elements": [
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Welcome to the Non-Verbal Smart Home Recognition (NVSHR) System!",
-                             "font": ("Helvetica", 16, "bold"),
-                             "justify": "center"
-                         }
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "The NVSHR system is a system used to use non-verbal communication to control smart "
-                                     "home devices with the help of hand gestures and blink detection. As a system "
-                                     "administrator there are a few things that need to be initialized before the NVSHR syst"
-                                     "em can be used properly. Please follow the steps below to ensure the user has the best"
-                                     " experience using this system.",
-                             "width": 100,
-                             "height": 4,
-                             "wraplength": 900,
-                             "justify": "center",
-                             "anchor": "w",
-                             "font": ("Helevetica", 14, "italic")
-                         }
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Before any commands are linked to a specific smart home action, the NVSHR system will "
-                                     "be able to recognize these commands, but will not illustrate any changes within the smart "
-                                     "home. To link commands with smart home actions:"
-                                     "\n\n"
-                                     "1. Navigate to the Command tab above."
-                                     "\n\n"
-                                     "2. Once in the Command tab, you will see a list of all available commands and their"
-                                     " descriptions. Please take note of the gesture sequence for each command."
-                                     "\n\n"
-                                     "3. Choose a smart home device from the drop down menu below each command to link that "
-                                     "device with the above command. If you do not wish to use a command, please choose the "
-                                     "None option from the drop down menu."
-                                     "\n\n"
-                                     "Once each command has been linked, navigate to the Debug tab above. Within this menu "
-                                     "you will be able to view the live feedback from the connected camera as well as make "
-                                     "some changes to that feedback for better processing within the system."
-                                     "\n\n"
-                                     "1. The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink detection."
-                                     "\n\n"
-                                     "2. The Frames Per Second (FPS) provides information about the number of frames being processed "
-                                     "within the system per second."
-                                     "\n\n"
-                                     "3. If the connected camera can be reached by the system, the Camera value will be set to true. "
-                                     "If there is no feedback or this value is false, the connected camera is not being used properly "
-                                     "by the system."
-                                     "\n\n"
-                                     "4. This page will also display the current gesture being processed. Please use this feature to "
-                                     "ensure all gestures can be recognized by the system. This tab can also be used to test the "
-                                     "previously linked commands."
-                                     "\n\n"
-                                     "Once all of the previous steps have been completed, the system will be ready for the user. "
-                                     "If at anytime the system is not properly recognizing commands, the Log tab can be used to "
-                                     "view previous gestures and commands. Feel free to use this tab to ensure that the linked "
-                                     "commands are being recognized properly.",
-                             "width": 100,
-                             "height": 30,
-                             "wraplength": 800,
-                             "justify": "left",
-                             "anchor": "w",
-                             "font": ("Helevetica", 12)
-                         }
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "Thank you for using the Non-Verbal Smart Home Recognition (NVSHR) System!",
-                             "width": 100,
-                             "height": 2,
-                             "wraplength": 900,
-                             "justify": "center",
-                             "anchor": "center",
-                             "font": ("Helevetica", 14, "italic")
-                         }
-                 },
-                 {
-                     "format": "text",
-                     "body":
-                         {
-                             "text": "If there are any issues or bugs within the system please log a ticket "
-                                     "at: https://github.com/codieorberson/NVSHR/issues/new",
-                             "width": 100,
-                             "height": 3,
-                             "wraplength": 900,
-                             "justify": "center",
-                             "anchor": "w",
-                             "font": ("Helevetica", 10, "italic")
-                         }
-                 }
-             ]
-             },
-    "tab2": {"title": "Debug",
-             "elements": [
-                 {
-                     "format": "video"
-                 },
-                 {
-                     "format": "text",
-                     "multicolumn": "true",
-                     "body": {"text": "Set the EAR:"},
-                     "body2": {"text": "Set the low_con:"},
-                     "body3": {"text": "Set the high_con:"},
-                     "body4": {"text": "Set the min_time_inc:"},
-                     "body5": {"text": "Set the max_time_inc:"}
-                 },
-                 {
-                     "format": "slider",
+        "tab1": {"title": "Instructions",
+            "elements": [
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "Welcome to the Non-Verbal Smart Home Recognition (NVSHR) System!",
+                            "font": ("Helvetica", 16, "bold"),
+                            "justify": "center"
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                        {
+                            "text": "The NVSHR system is a system used to use non-verbal communication to control smart "
+                                    "home devices with the help of hand gestures and blink detection. As a system "
+                                    "administrator there are a few things that need to be initialized before the NVSHR syst"
+                                    "em can be used properly. Please follow the steps below to ensure the user has the best"
+                                    " experience using this system.",
+                            "width": 100,
+                            "height": 4,
+                            "wraplength": 900,
+                            "justify": "center",
+                            "anchor": "w",
+                            "font": ("Helevetica", 14, "italic")
+                        }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "Before any commands are linked to a specific smart home action, the NVSHR system will "
+                                "be able to recognize these commands, but will not illustrate any changes within the smart "
+                                "home. To link commands with smart home actions:"
+                                "\n\n"
+                                "1. Navigate to the Command tab above."
+                                "\n\n"
+                                "2. Once in the Command tab, you will see a list of all available commands and their"
+                                " descriptions. Please take note of the gesture sequence for each command."
+                                "\n\n"
+                                "3. Choose a smart home device from the drop down menu below each command to link that "
+                                "device with the above command. If you do not wish to use a command, please choose the "
+                                "None option from the drop down menu."
+                                "\n\n"
+                                "Once each command has been linked, navigate to the Debug tab above. Within this menu "
+                                "you will be able to view the live feedback from the connected camera as well as make "
+                                "some changes to that feedback for better processing within the system."
+                                "\n\n"
+                                "1. The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink detection."
+                                "\n\n"
+                                "2. The Frames Per Second (FPS) provides information about the number of frames being processed "
+                                "within the system per second."
+                                "\n\n"
+                                "3. If the connected camera can be reached by the system, the Camera value will be set to true. "
+                                "If there is no feedback or this value is false, the connected camera is not being used properly "
+                                "by the system."
+                                "\n\n"
+                                "4. This page will also display the current gesture being processed. Please use this feature to "
+                                "ensure all gestures can be recognized by the system. This tab can also be used to test the "
+                                "previously linked commands."
+                                "\n\n"
+                                "Once all of the previous steps have been completed, the system will be ready for the user. "
+                                "If at anytime the system is not properly recognizing commands, the Log tab can be used to "
+                                "view previous gestures and commands. Feel free to use this tab to ensure that the linked "
+                                "commands are being recognized properly.",
+                        "width": 100,
+                        "height": 30,
+                        "wraplength": 800,
+                        "justify": "left",
+                        "anchor": "w",
+                        "font": ("Helevetica", 12)
+                    }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "Thank you for using the Non-Verbal Smart Home Recognition (NVSHR) System!",
+                        "width": 100,
+                        "height": 2,
+                        "wraplength": 900,
+                        "justify": "center",
+                        "anchor": "center",
+                        "font": ("Helevetica", 14, "italic")
+                    }
+                },
+                {
+                    "format": "text",
+                    "body":
+                    {
+                        "text": "If there are any issues or bugs within the system please log a ticket "
+                                "at: https://github.com/codieorberson/NVSHR/issues/new",
+                        "width": 100,
+                        "height": 3,
+                        "wraplength": 900,
+                        "justify": "center",
+                        "anchor": "w",
+                        "font": ("Helevetica", 10, "italic")
+                    }
+                }
+            ]
+        },
+        "tab2": {"title": "Debug",
+            "elements": [
+                {
+                    "format": "video"
+                },
+                {
+                    "format": "text",
+                    "multicolumn" : "true",
+                    "body": {"text" : "Set the EAR:"},
+                    "body2": {"text": "Set the Low Contrast:"},
+                    "body3": {"text": "Set the High Contrast:"},
+                    "body4": {"text": "Set the Minimum Time:"},
+                    "body5": {"text": "Set the Maximum Time:"}
+                },
+                {
+                    "format": "slider",
 
-                     "events": ["on_ear_change", "on_low_contrast",
-                                "on_high_contrast", "on_min_time_inc", "on_max_time_inc"]
+                    "events": ["on_ear_change", "on_low_contrast",
+                               "on_high_contrast", "on_min_time_inc",  "on_max_time_inc"]
 
+                },
+                {
+                    "format": "text-cam-status"
+                },
+                {
+                    "format": "text-cam-fps",
+                    # Note that FPS is only being
+                    # calculated on initial
+                    # execution, but we should
+                    # really make a hook to update
+                    # this value as the program
+                    # executes because FPS will
+                    # probably drop as we execute
+                    # other code in between frame
+                    # capture events:
+                },
+                {
+                    "format": "gestures",
+                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
+                }
+            ]
                  },
-                 {
-                     "format": "text-cam-status"
-                 },
-                 {
-                     "format": "text-cam-fps",
-                     # Note that FPS is only being
-                     # calculated on initial
-                     # execution, but we should
-                     # really make a hook to update
-                     # this value as the program
-                     # executes because FPS will
-                     # probably drop as we execute
-                     # other code in between frame
-                     # capture events:
-                 },
-                 {
-                     "format": "gestures",
-                     "body": ["Current Gesture", "Blink", "Fist", "Palm"]
-                 }
-             ]
-             },
     "tab3": {"title": "Commands",
             "elements": [
                 {
@@ -251,6 +254,7 @@ _gui_data = {
              }
 }
 
+
 # An instance of this class represents a window with multiple tabs.
 class _App(Tk):
     def __init__(self, *args, **kwargs):
@@ -302,13 +306,13 @@ class _App(Tk):
 
     def get_fps_tab(self):
         return self.fps_tab
-    
+
     def get_blink_label(self):
         return self.blink_label
-    
+
     def get_fist_label(self):
         return self.fist_label
-    
+
     def get_palm_label(self):
         return self.palm_label
 
@@ -399,23 +403,23 @@ class Page(Frame):
                     self.slider.grid(row=row_index, column=column_index, padx=10, pady=10)
                     self.name = name
                     column_index += 1
-            
+
             elif element["format"] == "gestures":
-                self.gesturename = Label(self, text = element["body"][0], font = 20, bg = "White")
-                self.gesturename.grid(row = row_index, column = 0, padx = 10, pady = 10)
+                self.gesturename = Label(self, text=element["body"][0], font=20, bg="White")
+                self.gesturename.grid(row=row_index, column=0, padx=10, pady=10)
 
                 self.is_blink_label = True
-                self.blink_label = Label(self, text = element["body"][1], font = 20, fg = "Blue")
-                self.blink_label.grid(row = row_index, column = 1, padx = 10, pady = 10)
-                
+                self.blink_label = Label(self, text=element["body"][1], font=20, fg="Blue")
+                self.blink_label.grid(row=row_index, column=1, padx=10, pady=10)
+
                 self.is_fist_label = True
-                self.fist_label = Label(self, text = element["body"][2], font = 20, fg = "Blue")
-                self.fist_label.grid(row = row_index, column = 2, padx = 10, pady = 10)
+                self.fist_label = Label(self, text=element["body"][2], font=20, fg="Blue")
+                self.fist_label.grid(row=row_index, column=2, padx=10, pady=10)
 
                 self.is_palm_label = True
-                self.palm_label = Label(self, text = element["body"][3], font = 20, fg = "Blue")
-                self.palm_label.grid(row = row_index, column = 3, padx = 10, pady = 10)
-                
+                self.palm_label = Label(self, text=element["body"][3], font=20, fg="Blue")
+                self.palm_label.grid(row=row_index, column=3, padx=10, pady=10)
+
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 variable = StringVar()
@@ -428,6 +432,8 @@ class Page(Frame):
 
             elif element["format"] == "button":
                 self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
+                self.delete_log_file()
+
 
             elif element["format"] == "new":
                 small_frame = LabelFrame(self, width=1000, height=100, bd=0)
@@ -457,14 +463,22 @@ class Page(Frame):
         print("hey girl")
 
     def open_log_file(self):
-        if platform.system() == 'darwin':
-            file = "textedit.exe logfile.txt"
-        elif platform.system() == 'linux':
-            file = "cat.exe logfile.txt"
-        else:
-            file = "notepad.exe logfile.txt"  
-        os.system(file)
-
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 10)
+        count =1
+        file = open('logfile.txt')
+        for line in file:
+            pdf.cell(200, 10, txt = line, ln = count, align = "Left")
+            count +=1
+        file.close()
+        pdf.output("logfile.pdf")
+        subprocess.Popen(["logfile.pdf"], shell = True)
+        
+    def delete_log_file(self):
+        if os.path.exists("logfile.pdf"):
+            os.remove("logfile.pdf")
+  
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
@@ -482,53 +496,48 @@ class Page(Frame):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
 
-
-    #This code, as written, cannot display two simultaneous gestures.
+    # This code, as written, cannot display two simultaneous gestures.
     def set_gesture_background(self, gesture_detected):
         if gesture_detected == "fist":
-            self.fist_label.configure(bg = "Black")
-            self.palm_label.configure(bg = "White")
-            self.blink_label.configure(bg = "White")
+            self.fist_label.configure(bg="Black")
+            self.palm_label.configure(bg="White")
+            self.blink_label.configure(bg="White")
         elif gesture_detected == "palm":
-            self.palm_label.configure(bg = "Black")
-            self.fist_label.configure(bg = "White")
-            self.blink_label.configure(bg = "White")
+            self.palm_label.configure(bg="Black")
+            self.fist_label.configure(bg="White")
+            self.blink_label.configure(bg="White")
         elif gesture_detected == "blink":
-            self.blink_label.configure(bg = "Black")
-            self.fist_label.configure(bg = "White")
-            self.palm_label.configure(bg = "White")
+            self.blink_label.configure(bg="Black")
+            self.fist_label.configure(bg="White")
+            self.palm_label.configure(bg="White")
         else:
-            self.fist_label.configure(bg = "White")
-            self.palm_label.configure(bg = "White")
-            self.blink_label.configure(bg = "White")
+            self.fist_label.configure(bg="White")
+            self.palm_label.configure(bg="White")
+            self.blink_label.configure(bg="White")
 
-#This is the only class which is meant to be accessed from other files. It 
-#provides a high level interface for starting the gui, defining what logic
-#should be executed between refresh cycles and before closing down, and moving
-#data to and from the GUI (e.g. when drawing a new frame for the debug screen).
+
 class GuiManager():
-    def __init__(self, cap, on_ear_change, 
-               initial_ear, on_low_contrast, initial_low_contrast,
-               on_high_contrast, initial_high_contrast,
-               on_min_time_inc, initial_min_time_inc,
-               on_max_time_inc, initial_max_time_inc,
-               gesture_detected, is_admin, settings_manager):
-
+    def __init__(self, cap, on_ear_change,
+                 initial_ear, on_low_contrast, initial_low_contrast,
+                 on_high_contrast, initial_high_contrast,
+                 on_min_time_inc, initial_min_time_inc,
+                 on_max_time_inc, initial_max_time_inc,
+                 gesture_detected, is_admin, settings_manager):
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
-        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, 
-                on_ear_change, initial_ear,
-                on_low_contrast, initial_low_contrast,
-                on_high_contrast, initial_high_contrast,
-                on_min_time_inc, initial_min_time_inc,
-                on_max_time_inc, initial_max_time_inc,
-                gesture_detected, settings_manager)
-  
+        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
+                                                            on_low_contrast, initial_low_contrast,
+                                                            on_high_contrast, initial_high_contrast,
+                                                            on_min_time_inc, initial_min_time_inc,
+                                                            on_max_time_inc, initial_max_time_inc,
+                                                            gesture_detected, settings_manager)
         self.fps_tab = self.gui.get_fps_tab()
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
-        self.gui.withdraw()
+
+        if is_admin == False:
+            self.gui.withdraw()
 
     def __loop__(self):
         self.loop_callback()
@@ -538,13 +547,12 @@ class GuiManager():
         self.loop_callback = loop_callback
         self.close_callback = close_callback
         self.gui.protocol("WM_DELETE_WINDOW", close_callback)
-        self.gui.deiconify()
         self.gui.after(1, self.__loop__)
         self.gui.mainloop()
 
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
-    
+
     def set_gesture_background(self, gesture_detected):
         self.blink_label.set_gesture_background(gesture_detected)
         self.fist_label.set_gesture_background(gesture_detected)

@@ -1,4 +1,5 @@
 from subprocessExecutor import SubprocessExecutor
+from TPLink import TPLinkDevice
 
 class GestureParser():
     def __init__(self, logger, database_manager):
@@ -6,21 +7,23 @@ class GestureParser():
         self.database_manager = database_manager
         self.subprocess_executor = SubprocessExecutor()
         self.gesture_pattern_map = {}
+        self.Tp_Link_Devices = TPLinkDevice()
 
     def add_pattern(self, gestures, event):
-#        self.
+        #        self.
         self.gesture_pattern_map["".join(gestures)] = event
 
-    # Takes in a list of lists of gestures and matches them to any patterns under add_pattern
+    #Takes in a list of lists of gestures and matches them to any patterns under add_pattern
+    #Then sends confirm or failure noise, and logs the sequence in logger.
     def parse_pattern(self, gesture_sequence, now):
         joined_gesture_sequence = "".join(gesture_sequence)
         was_recognised = bool(
             joined_gesture_sequence in self.gesture_pattern_map)
         self.logger.log_gesture_sequence(gesture_sequence, now, was_recognised)
 
-        # Then sends confirm or failure noise, and logs the sequence in logger.
         if was_recognised:
             self.subprocess_executor.execute('sound.py', 'success.wav')
+            self.Tp_Link_Devices.turn_on_off(gesture_sequence)
             self.gesture_pattern_map[joined_gesture_sequence]()
         else:
             self.subprocess_executor.execute('sound.py', 'failure.wav')
