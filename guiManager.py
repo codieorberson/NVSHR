@@ -259,6 +259,12 @@ class _App(Tk):
                 debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
+            if tab.is_fist_label:
+                self.fist_label = tab
+            if tab.is_palm_label:
+                self.palm_label = tab
+            if tab.is_blink_label:
+                self.blink_label = tab
 
         return debug_tab
 
@@ -546,15 +552,6 @@ class Page(Frame):
             self.palm_label.configure(bg="White")
             self.blink_label.configure(bg="White")
 
-    def set_gesture_background(self, gesture_detected):
-        if gesture_detected == "fist":
-            print(self.label.name)
-            print("fist")
-        elif gesture_detected == "palm":
-            print("palm")
-        elif gesture_detected == "blink":
-            print("blink")
-
 class GuiManager():
     def __init__(self, cap, on_ear_change,
                  initial_ear, on_low_contrast, initial_low_contrast,
@@ -571,15 +568,18 @@ class GuiManager():
                                                             on_max_time_inc, initial_max_time_inc,
                                                             gesture_detected, settings_manager)
         self.fps_tab = self.gui.get_fps_tab()
-
-        if is_admin == False:
-            self.gui.withdraw()
+        self.is_admin = False
+        self.gui.withdraw()
 
     def __loop__(self):
         self.loop_callback()
         self.gui.after(1, self.__loop__)
 
     def start(self, loop_callback, close_callback):
+        self.blink_label = self.gui.get_blink_label()
+        self.fist_label = self.gui.get_fist_label()
+        self.palm_label = self.gui.get_palm_label()
+        self.is_admin = True
         self.gui.deiconify()
         self.loop_callback = loop_callback
         self.close_callback = close_callback
@@ -591,9 +591,10 @@ class GuiManager():
         self.debug_tab.set_debug_frame(frame)
 
     def set_gesture_background(self, gesture_detected):
-        self.blink_label.set_gesture_background(gesture_detected)
-        self.fist_label.set_gesture_background(gesture_detected)
-        self.palm_label.set_gesture_background(gesture_detected)
+        if self.is_admin:
+            self.blink_label.set_gesture_background(gesture_detected)
+            self.fist_label.set_gesture_background(gesture_detected)
+            self.palm_label.set_gesture_background(gesture_detected)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)

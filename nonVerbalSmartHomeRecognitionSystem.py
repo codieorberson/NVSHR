@@ -101,6 +101,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
+        self.gui_manager.set_gesture_background(self.gesture_detector.get_gesture_detected())
         self.last_timestamp = timestamp
 
     def set_open_eye_threshold(self, new_ear_value):
