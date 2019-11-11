@@ -72,8 +72,9 @@ class GestureDetector():
         # First (hand_gesture) will create two more sub-processes while blink will not
         self.process_manager.add_process(
                 self.hand_gesture_detector.detect, (current_frame, fist_perimeter, palm_perimeter))
-        self.process_manager.add_process(
-                self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
+        self.blink_detector.detect(current_frame, left_eye_perimeter, right_eye_perimeter)
+#        self.process_manager.add_process(
+#                self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
 
         # Wait for children to yield control back to this process
         self.process_manager.on_done()
