@@ -7,9 +7,6 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import os
-import platform
-import subprocess
-from fpdf import FPDF
 
 # Define the elements to be laid out on each tab
 _gui_data = {
