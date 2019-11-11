@@ -266,12 +266,16 @@ class _App(Tk):
 
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
-            tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
-                       on_high_contrast, initial_high_contrast,
-                       on_min_time_inc, initial_min_time_inc,
-                       on_max_time_inc, initial_max_time_inc, page_configuration["elements"],
-                       settings_manager)
+            tab = Page(self.notebook, self, cap, 
+                    on_ear_change, initial_ear, 
+                    on_low_contrast, initial_low_contrast,
+                    on_high_contrast, initial_high_contrast,
+                    on_min_time_inc, initial_min_time_inc,
+                    on_max_time_inc, initial_max_time_inc, 
+                    page_configuration["elements"], settings_manager)
+
             self.notebook.add(tab, text=page_configuration["title"])
+
             if tab.is_debug:
                 debug_tab = tab
             if tab.is_fps:
@@ -302,9 +306,14 @@ class _App(Tk):
 
 # An instance of this class represents a tab.
 class Page(Frame):
-    def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
-                 on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, elements, settings_manager, *args, **kwargs):
+    def __init__(self, name, window, cap, 
+                on_ear_change, initial_ear, 
+                on_low_contrast, initial_low_contrast,
+                on_high_contrast, initial_high_contrast, 
+                on_min_time_inc, initial_min_time_inc,
+                on_max_time_inc, initial_max_time_inc, 
+                elements, settings_manager, *args, **kwargs):
+
         self.event_map = {
             "on_ear_change": on_ear_change,
             "on_low_contrast": on_low_contrast,
