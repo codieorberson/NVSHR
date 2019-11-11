@@ -224,35 +224,62 @@ class _App(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
 
-    def set_cap_and_get_debug_tab(self, cap, on_ear_change, initial_ear,
-                                  on_low_contrast, initial_low_contrast,
-                                  on_high_contrast, initial_high_contrast,
-                                  on_min_time_inc, initial_min_time_inc,
-                                  on_max_time_inc, initial_max_time_inc,
-                                  gesture_detected, settings_manager):
-        self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear, on_low_contrast,
-                                          initial_low_contrast,
-                                          on_high_contrast, initial_high_contrast,
-                                          on_min_time_inc, initial_min_time_inc,
-                                          on_max_time_inc, initial_max_time_inc,
-                                          gesture_detected, settings_manager)
-
-        self.notebook.grid(row=0)
+    def get_debug_tab(self):
         return self.debug_tab
+
+    def set_initial_ear(self, initial_value):
+        self.initial_ear = initial_value
+
+    def set_initial_low_contrast(self, initial_value):
+        self.initial_low_contrast = initial_value
+
+    def set_initial_high_contrast(self, initial_value):
+        self.initial_high_contrast = initial_value
+
+    def set_initial_minimum_time_increment(self, initial_value):
+        self.initial_minimum_time_increment = initial_value
+
+    def set_initial_maximum_time_increment(self, initial_value):
+        self.initial_maximum_time_increment = initial_value
+
+    def on_ear_change(self, callback):
+        self.on_ear_change = callback
+
+    def on_low_contrast_change(self, callback):
+        self.on_low_contrast_change = callback
+
+    def on_high_contrast_change(self, callback):
+        self.on_high_contrast_change = callback
+
+    def on_minimum_time_increment_change(self, callback):
+        self.on_minimum_time_increment_change = callback
+
+    def on_maximum_time_increment_change(self, callback):
+        self.on_maximum_time_increment_change = callback
+
+
+    def set_cap(self, cap, settings_manager):
+        self.notebook = ttk.Notebook(width=1000, height=800)
+        self.debug_tab = self.add_content(_gui_data, cap, self.on_ear_change, self.initial_ear, self.on_low_contrast_change,
+                                          self.initial_low_contrast,
+                                          self.on_high_contrast_change, self.initial_high_contrast,
+                                          self.on_minimum_time_increment_change, self.initial_minimum_time_increment,
+                                          self.on_maximum_time_increment_change, self.initial_maximum_time_increment,
+                                          settings_manager)
+        self.notebook.grid(row=0)
 
     def add_content(self, body, cap, on_ear_change, initial_ear,
                     on_low_contrast, initial_low_contrast,
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc,
-                    gesture_detected, settings_manager):
+                    settings_manager):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                        on_high_contrast, initial_high_contrast,
                        on_min_time_inc, initial_min_time_inc,
-                       on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"],
+                       on_max_time_inc, initial_max_time_inc, page_configuration["elements"],
                        settings_manager)
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
@@ -284,7 +311,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, settings_manager, *args, **kwargs):
+                 on_max_time_inc, initial_max_time_inc, elements, settings_manager, *args, **kwargs):
         self.event_map = {
             "on_ear_change": on_ear_change,
             "on_low_contrast": on_low_contrast,
@@ -309,7 +336,7 @@ class Page(Frame):
         self.is_palm_label = False
         self.is_command_menu = False
         self.has_list_box = False
-        self.gesture_detected = gesture_detected
+        self.gesture_detected = None
 
         self.optionsManager = settings_manager
         self.option = 1
@@ -553,29 +580,57 @@ class Page(Frame):
             self.blink_label.configure(bg="White")
 
 class GuiManager():
-    def __init__(self, cap, on_ear_change,
-                 initial_ear, on_low_contrast, initial_low_contrast,
-                 on_high_contrast, initial_high_contrast,
-                 on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc,
-                 gesture_detected, is_admin, settings_manager):
+    def __init__(self, cap, settings_manager):
+        self.cap = cap
+        self.settings_manager = settings_manager
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
-        self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
-                                                            on_low_contrast, initial_low_contrast,
-                                                            on_high_contrast, initial_high_contrast,
-                                                            on_min_time_inc, initial_min_time_inc,
-                                                            on_max_time_inc, initial_max_time_inc,
-                                                            gesture_detected, settings_manager)
-        self.fps_tab = self.gui.get_fps_tab()
-        self.is_admin = False
-        self.gui.withdraw()
+
+
+    def set_initial_ear(self, initial_value):
+        self.gui.set_initial_ear(initial_value)
+
+    def set_initial_low_contrast(self, initial_value):
+        self.gui.set_initial_low_contrast(initial_value)
+
+    def set_initial_high_contrast(self, initial_value):
+        self.gui.set_initial_high_contrast(initial_value)
+
+    def set_initial_minimum_time_increment(self, initial_value):
+        self.gui.set_initial_minimum_time_increment(initial_value)
+
+    def set_initial_maximum_time_increment(self, initial_value):
+        self.gui.set_initial_maximum_time_increment(initial_value)
+
+
+    def on_ear_change(self, callback):
+        self.gui.on_ear_change(callback)
+
+    def on_low_contrast_change(self, callback):
+        self.gui.on_low_contrast_change(callback)
+
+    def on_high_contrast_change(self, callback):
+        self.gui.on_high_contrast_change(callback)
+
+    def on_minimum_time_increment_change(self, callback):
+        self.gui.on_minimum_time_increment_change(callback)
+
+    def on_maximum_time_increment_change(self, callback):
+        self.gui.on_maximum_time_increment_change(callback)
+
 
     def __loop__(self):
         self.loop_callback()
         self.gui.after(1, self.__loop__)
 
-    def start(self, loop_callback, close_callback):
+    def start_background_process(self):
+        self.gui.set_cap(self.cap, self.settings_manager)
+        self.debug_tab = self.gui.get_debug_tab()
+        self.fps_tab = self.gui.get_fps_tab()
+        self.is_admin = False
+        self.gui.withdraw()
+
+    def start_foreground_process(self, loop_callback, close_callback):
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()

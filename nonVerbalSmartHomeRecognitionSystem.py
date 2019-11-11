@@ -51,19 +51,27 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.max_increment = self.database_manager.get_max_time_inc()
 
 
-        self.gui_manager = GuiManager(self.cap,
-                                      self.set_open_eye_threshold, self.open_eye_threshold,
-                                      self.set_low_contrast, self.low_contrast_value,
-                                      self.set_high_contrast, self.high_contrast_value,
-                                      self.set_min_time_inc, self.min_increment,
-                                      self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, False, self.admin_settings_manager)
+        self.gui_manager = GuiManager(self.cap, self.admin_settings_manager)
+
+        self.gui_manager.set_initial_ear(self.open_eye_threshold)
+        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
+        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
+        self.gui_manager.set_initial_minimum_time_increment(self.min_increment)
+        self.gui_manager.set_initial_maximum_time_increment(self.max_increment)
+ 
+        self.gui_manager.on_ear_change(self.set_open_eye_threshold)
+        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
+        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
+        self.gui_manager.on_minimum_time_increment_change(self.set_min_time_inc)
+        self.gui_manager.on_maximum_time_increment_change(self.set_max_time_inc)
+
+        self.gui_manager.start_background_process()
 
         self.pop_up_window = PopUp(self.main_loop, self.change_admin_status, self.on_close)
         self.pop_up_window.start()
 
     def change_admin_status(self):
-        self.gui_manager.start(self.main_loop, self.on_close)
+        self.gui_manager.start_foreground_process(self.main_loop, self.on_close)
      
     def main_loop(self):
         ret, frame = self.cap.read()
