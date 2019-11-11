@@ -85,9 +85,8 @@ class NonVerbalSmartHomeRecognitionSystem():
                 self.gesture_parser.parse_patterns, 
                 (gesture_sequences, timestamp))
 
-        self.process_manager.add_process(
-                self.gesture_detector.detect, (frame, timestamp, self.open_eye_threshold, fist_perimeter,
-                palm_perimeter, left_eye_perimeter, right_eye_perimeter))
+        self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold, fist_perimeter,
+                palm_perimeter, left_eye_perimeter, right_eye_perimeter)
 
         self.process_manager.on_done()
 
