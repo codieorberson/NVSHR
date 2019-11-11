@@ -2,17 +2,22 @@ from subprocess import Popen
 
 class SubprocessExecutor():
     def __init__(self):
-        self.subprocesses = []
+        self.subprocess_maps = []
 
-    def execute(self, file_name, argument):
+    def execute(self, file_name, argument, callback = None):
         self.__clean_up_subprocesses__()
-        self.subprocesses.append(Popen(['python3', file_name, argument]))
+        self.subprocess_maps.append({
+                'process' : Popen(['python3', file_name, argument]),
+                'callback' : callback
+                })
 
     def __clean_up_subprocesses__(self):
-        running_subprocesses = []
-        for subprocess in self.subprocesses:
-            if subprocess.poll() == None:
-                running_subprocesses.append(subprocess)
+        running_subprocess_maps = []
+        for subprocess_map in self.subprocess_maps:
+            if subprocess_map['process'].poll() == None:
+                running_subprocess_maps.append(subprocess_map)
             else:
-                subprocess.terminate()
-        self.subprocesses = running_subprocesses
+                subprocess_map['process'].terminate()
+                if subprocess_map['callback']:
+                    subprocess_map['callback']()
+        self.subprocess_maps = running_subprocess_maps
