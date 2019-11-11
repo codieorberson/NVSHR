@@ -14,16 +14,10 @@ from blinkDetector import BlinkDetector
 
 class GestureDetector():
     def __init__(self):
-        # Next value not being used right now, but may be in the near future.
-        # self.is_black_and_white = False
+        self.__set_up_helpers__()
+        self.__set_up_perimeters__()
+        self.__set_up_events__()
 
-        self.process_manager = ProcessManager()
-        self.hand_gesture_detector = HandGestureDetector()
-        self.blink_detector = BlinkDetector()
-
-        self.fist_event = None
-        self.palm_event = None
-        self.blink_event = None
         self.gesture_detected = None
 
     def on_fist(self, callback):
@@ -41,8 +35,7 @@ class GestureDetector():
     def get_gesture_detected(self):
         return self.gesture_detected
 
-    # Method is to be run in separate thread
-    def detect(self, frame, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
+    def detect(self, frame, timestamp, open_eye_threshold):
 
         # Code we may use in the future for contrast
         '''
@@ -65,34 +58,73 @@ class GestureDetector():
         else:
             current_frame = frame
         '''
+        self.__reset_perimeters__()
+        self.__detect_shapes__(frame)
+        self.__trigger_events__(timestamp, open_eye_threshold)
+        return self.__draw_rectangles__(frame)
 
-        current_frame = frame
+    def __set_up_helpers__(self):
+        self.process_manager = ProcessManager()
+        self.hand_gesture_detector = HandGestureDetector()
+        self.blink_detector = BlinkDetector()
 
-        # Creating two grandchild processes (relative to main.py)
-        # First (hand_gesture) will create two more sub-processes while blink will not
+    def __set_up_perimeters__(self):
+        self.fist_perimeter = MultithreadedPerimeter()
+        self.palm_perimeter = MultithreadedPerimeter()
+        self.left_eye_perimeter = MultithreadedPerimeter()
+        self.right_eye_perimeter = MultithreadedPerimeter()
+
+        self.perimeters = [
+                self.fist_perimeter, 
+                self.palm_perimeter, 
+                self.left_eye_perimeter, 
+                self.right_eye_perimeter
+                ]
+
+    def __set_up_events__(self): 
+        self.fist_event = None
+        self.palm_event = None
+        self.blink_event = None
+
+    def __reset_perimeters__(self):
+        for perimeter in self.perimeters:
+            perimeter.reset()
+
+    def __detect_shapes__(self, frame):
         self.process_manager.add_process(
-                self.hand_gesture_detector.detect, (current_frame, fist_perimeter, palm_perimeter))
-        self.blink_detector.detect(current_frame, left_eye_perimeter, right_eye_perimeter)
-#        self.process_manager.add_process(
-#                self.blink_detector.detect, (current_frame, left_eye_perimeter, right_eye_perimeter))
-
-        # Wait for children to yield control back to this process
+                self.hand_gesture_detector.detect, (frame, self.fist_perimeter, self.palm_perimeter))
+        self.blink_detector.detect(frame, self.left_eye_perimeter, self.right_eye_perimeter)
         self.process_manager.on_done()
 
-    def trigger_events(self, timestamp, open_eye_threshold, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter):
+    def __trigger_events__(self, timestamp, open_eye_threshold):
         self.gesture_detected = None
-        if fist_perimeter.is_set():
-            self.gesture_detected = "fist"
-            self.fist_event(timestamp)
+        self.__trigger_fist_event__(timestamp)
+        self.__trigger_palm_event__(timestamp)
+        self.__trigger_blink_event__(timestamp, open_eye_threshold)
 
-        if palm_perimeter.is_set():
-            self.gesture_detected = "palm"
-            self.palm_event(timestamp)
-        
-        if left_eye_perimeter.is_set() and right_eye_perimeter.is_set():
-            if open_eye_threshold / 100 > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio()) / 2:
-                self.gesture_detected = "blink"
-                self.blink_event(timestamp)
+    def __trigger_fist_event__(self, timestamp):
+        self.__trigger_hand_event__(self.fist_perimeter, 'fist', self.fist_event, timestamp)
+
+    def __trigger_palm_event__(self, timestamp):
+        self.__trigger_hand_event__(self.palm_perimeter, 'palm', self.palm_event, timestamp)
+
+    def __trigger_hand_event__(self, perimeter, gesture_name, event, timestamp):
+        if perimeter.is_set():
+            self.gesture_detected = gesture_name
+            event(timestamp)
+
+    def __trigger_blink_event__(self, timestamp, open_eye_threshold):        
+        if self.left_eye_perimeter.is_set() and self.right_eye_perimeter.is_set() and open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
+            self.gesture_detected = "blink"
+            self.blink_event(timestamp)
+
+    def __draw_rectangles__(self, frame):
+        for perimeter in self.perimeters:
+            if perimeter.is_set():
+                cv2.rectangle(frame, perimeter.get_top_corner(), perimeter.get_bottom_corner(), (0, 0, 255), 2)
+
+        return frame
+
 
     ''' This code is NOT being used right now 
     # Used for creating contrast within the frame to detect hand gestures more clearly

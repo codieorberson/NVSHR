@@ -33,38 +33,21 @@ class NonVerbalSmartHomeRecognitionSystem():
         timestamp = datetime.utcnow()
         self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
 
-        fist_perimeter = MultithreadedPerimeter()
-        palm_perimeter = MultithreadedPerimeter()
-        left_eye_perimeter = MultithreadedPerimeter()
-        right_eye_perimeter = MultithreadedPerimeter()
-
-        # Aggregates gestures into gesture sequences.
         gesture_sequences = self.gesture_lexer.lex(
                 timestamp, self.min_increment, self.max_increment)
 
-        # Creates a child process to check for predefined patterns of gestures in the list of gesture sequences
         self.process_manager.add_process(
                 self.gesture_parser.parse_patterns, 
                 (gesture_sequences, timestamp))
 
-        self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold, fist_perimeter,
-                palm_perimeter, left_eye_perimeter, right_eye_perimeter)
-
-        self.process_manager.on_done()
-
-        self.gesture_detector.trigger_events(
-                timestamp, self.open_eye_threshold, fist_perimeter, 
-                palm_perimeter, left_eye_perimeter, right_eye_perimeter)
-
-        # Drawing rectangles around identified gestures and eyes
-        for perimeter in [fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter]:
-            if perimeter.is_set():
-                cv2.rectangle(frame, perimeter.get_top_corner(), perimeter.get_bottom_corner(), (0, 0, 255), 2)
+        frame = self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold)
 
         self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gui_manager.set_gesture_background(self.gesture_detector.get_gesture_detected())
         self.last_timestamp = timestamp
+
+        self.process_manager.on_done()
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)

@@ -22,5 +22,8 @@ class MultithreadedPerimeter():
         self.x2.value = x_y_w_h_tuple[0] + x_y_w_h_tuple[2]
         self.y2.value = x_y_w_h_tuple[1] + x_y_w_h_tuple[3]
 
+    def reset(self):
+        self.set((0, 0, 0, 0))
+
     def is_set(self):
         return bool(self.x2.value > 0)
