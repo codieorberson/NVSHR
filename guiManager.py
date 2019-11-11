@@ -211,9 +211,6 @@ class _App(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
 
-    def get_debug_tab(self):
-        return self.debug_tab
-
     def set_initial_ear(self, initial_value):
         self.initial_ear = initial_value
 
@@ -250,12 +247,14 @@ class _App(Tk):
 
     def set_cap(self, cap, settings_manager):
         self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(_gui_data, cap, self.on_ear_change, self.initial_ear, self.on_low_contrast_change,
-                                          self.initial_low_contrast,
-                                          self.on_high_contrast_change, self.initial_high_contrast,
-                                          self.on_minimum_time_increment_change, self.initial_minimum_time_increment,
-                                          self.on_maximum_time_increment_change, self.initial_maximum_time_increment,
-                                          settings_manager)
+        self.debug_tab = self.add_content(_gui_data, cap, 
+                self.on_ear_change, self.initial_ear, 
+                self.on_low_contrast_change, self.initial_low_contrast,
+                self.on_high_contrast_change, self.initial_high_contrast,
+                self.on_minimum_time_increment_change, self.initial_minimum_time_increment,
+                self.on_maximum_time_increment_change, self.initial_maximum_time_increment,
+                settings_manager)
+
         self.notebook.grid(row=0)
 
     def add_content(self, body, cap, on_ear_change, initial_ear,
@@ -264,6 +263,7 @@ class _App(Tk):
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc,
                     settings_manager):
+
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
@@ -284,6 +284,9 @@ class _App(Tk):
                 self.blink_label = tab
 
         return debug_tab
+
+    def get_debug_tab(self):
+        return self.debug_tab
 
     def get_fps_tab(self):
         return self.fps_tab
