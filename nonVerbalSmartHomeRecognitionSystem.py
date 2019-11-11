@@ -1,7 +1,7 @@
 import sys
 import cv2
 from datetime import datetime
-from adminCmdManager import AdminCmdManager
+from commandManager import CommandManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
@@ -93,7 +93,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
-        self.admin_settings_manager = AdminCmdManager()
+        self.command_manager = CommandManager()
         self.smart_home_activator = SmartHomeActivator()
 
     def __set_up_gestures__(self):
@@ -121,7 +121,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.max_increment = self.database_manager.get_max_time_inc()
 
     def __set_up_admin_gui__(self):
-        self.gui_manager = GuiManager(self.cap, self.admin_settings_manager)
+        self.gui_manager = GuiManager(self.cap, self.command_manager)
 
         self.gui_manager.set_initial_ear(self.open_eye_threshold)
         self.gui_manager.set_initial_low_contrast(self.low_contrast_value)

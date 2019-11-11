@@ -10,7 +10,7 @@ command_data = {
 }
 
 
-class AdminCmdManager:
+class CommandManager:
     def __init__(self):
         exists = os.path.exists("command.json")
         if exists:

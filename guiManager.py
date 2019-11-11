@@ -10,7 +10,6 @@ import os
 import platform
 import subprocess
 from fpdf import FPDF
-from adminCmdManager import AdminCmdManager
 
 # Define the elements to be laid out on each tab
 _gui_data = {
