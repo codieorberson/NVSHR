@@ -580,6 +580,7 @@ class GuiManager():
         self.gui.after(1, self.__loop__)
 
     def start(self, loop_callback, close_callback):
+        self.gui.deiconify()
         self.loop_callback = loop_callback
         self.close_callback = close_callback
         self.gui.protocol("WM_DELETE_WINDOW", close_callback)
