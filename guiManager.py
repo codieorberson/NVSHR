@@ -334,7 +334,7 @@ class Page(Frame):
         self.has_list_box = False
         self.gesture_detected = None
 
-        self.optionsManager = settings_manager
+        self.command_manager = settings_manager
         self.option = 1
         self.command_index = 0
         self.is_full = 0
@@ -422,9 +422,9 @@ class Page(Frame):
                 self.palm_label.grid(row=self.row_index, column=3, padx=10, pady=10)
 
             elif element["format"] == "option":
-                self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
+                self.option_list = ["Alexa", "Smart Plug"]
                 row = self.row_index
-                for option in self.optionsManager.action:
+                for option in self.command_manager.action:
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                     small_frame.grid(row=row, column=0, padx=10, pady=10)
                     text = {"text": "Command " + str(self.option)}
@@ -432,7 +432,7 @@ class Page(Frame):
                     self.label.grid(row=row, column=0, padx=10, pady=10)
                     self.name = name
                     variable = StringVar()
-                    variable.set(self.optionsManager.action[self.option])
+                    variable.set(self.command_manager.action[self.option])
                     self.command_links[self.option] = variable
                     self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
                     self.optionMenu.grid(row=row, column=1, padx=10, pady=10, columnspan=100)
@@ -484,13 +484,13 @@ class Page(Frame):
 
     def set_value(self, value):
         for x in range(1, 5):
-            if value == self.optionsManager.action[x] and value != "None":
+            if value == self.command_manager.action[x] and value != "None":
                 messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
                                                                  "for this command.")
                 return
         for x in range(1, 5):
-            self.optionsManager.write_to_file(x, self.command_links[x].get())
+            self.command_manager.write_to_file(x, self.command_links[x].get())
             print("Command" + str(x) + ": " + self.command_links[x].get())
 
     def is_full_command(self, value):
