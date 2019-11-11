@@ -134,6 +134,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.on_high_contrast_change(self.set_high_contrast)
         self.gui_manager.on_minimum_time_increment_change(self.set_min_time_inc)
         self.gui_manager.on_maximum_time_increment_change(self.set_max_time_inc)
+        self.gui_manager.on_new_command(self.add_command)
 
         self.gui_manager.start_background_process()
    

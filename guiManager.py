@@ -253,6 +253,9 @@ class _App(Tk):
     def on_maximum_time_increment_change(self, callback):
         self.on_maximum_time_increment_change = callback
 
+    def on_new_command(self, callback):
+        self.on_new_command_change = callback
+
 
     def set_cap(self, cap, settings_manager):
         self.notebook = ttk.Notebook(width=1000, height=800)
@@ -613,6 +616,9 @@ class GuiManager():
 
     def on_maximum_time_increment_change(self, callback):
         self.gui.on_maximum_time_increment_change(callback)
+
+    def on_new_command(self, callback):
+        self.gui.on_new_command(callback)
 
 
     def __loop__(self):
