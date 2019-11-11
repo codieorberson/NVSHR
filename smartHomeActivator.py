@@ -1,58 +1,20 @@
-#import homeassistant
+from TPLink import TPLinkDevice
 from speaker import Speaker
-
-def _connect_to_home_assistant():
-    try:
-        # After installing homeassistant, go to localhost:8123 in your browser, then
-        # set up a profile (name and password can be whatevs) and go to
-        # localhost:8123/profile and scroll down to the bottom of the page where
-        # they let you generate a key. Copy that key and paste it into an otherwise
-        # blank text file. Save that file in the project directory as
-        # homeassistant.key
-        # (To get to the profile page the first time, you might need to go through
-        # an options menu on the left side of the homeassistant UI -- we should
-        # script this if we have time.)
-        with open('homeassistant.key') as file:
-            _homeassistant_key = file.readline()[:-1]
-    except:
-        _homeassistant_key = None
-        print('Warning: Homeassistant key not found. No commands will be sent to homeassistant.\n')
-
-    try:
-        url = "http://172.30.32.1:8123/api/"
-        headers = {
-            'Authorization': 'Bearer ' + _homeassistant_key,
-            'content-type': 'application/json',
-        }
-        from requests import get
-        response = get(url, headers=headers)
-        if response.text != '{"message": "API running."}':
-            raise Exception()
-    except:
-        response = None
-        print('Warning: Could not connect to homeassistant. No commands will be sent to homeassisant')
-
-    if response and response.text == '{"message": "API running."}':
-        connection = response
-    else:
-        connection = None
-
-    return connection
 
 class SmartHomeActivator():
     def __init__(self):
-       self.connection = _connect_to_home_assistant()
-       self.is_connected = bool(self.connection)
        self.speaker = Speaker()
+       self.Tp_Link_Devices = TPLinkDevice()
 
     def activate(self, smartHomeAction, device):
-        self.speaker.speak(smartHomeAction)
+        print("Device name:")
+        print(device)
+        if device == "Smart Plug":
+            ip_address = smartHomeAction
+            self.Tp_Link_Devices.turn_on_off(ip_address)
+            speaker.speak("Smart Plug " + ip_address + " toggled.")
+            self.subprocess_executor.execute('sound.py', 'success.wav')
+        elif device == 'Alexa':
+            self.speaker.speak(smartHomeAction)
 
-        if self.is_connected:
-            print('"' + smartHomeAction + '" sent to ' + device + '. ' +
-                  "<--(This is a lie, but you are connected to " +
-                  "homeassistant.)\n")
-            #This needs to actually trigger API calls that use TTS middleware.
-        else:
-            print('"' + smartHomeAction + '" not actually sent to ' + device +
-                  '.\n')
+        print('"' + smartHomeAction + '" sent to ' + device + '.\n')
