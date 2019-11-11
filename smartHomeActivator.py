@@ -7,8 +7,6 @@ class SmartHomeActivator():
        self.Tp_Link_Devices = TPLinkDevice()
 
     def activate(self, smartHomeAction, device):
-        print("Device name:")
-        print(device)
         if device == "Smart Plug":
             ip_address = smartHomeAction
             self.Tp_Link_Devices.turn_on_off(ip_address)
