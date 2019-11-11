@@ -145,15 +145,6 @@ _gui_data = {
                 },
                 {
                     "format": "text-cam-fps",
-                    # Note that FPS is only being
-                    # calculated on initial
-                    # execution, but we should
-                    # really make a hook to update
-                    # this value as the program
-                    # executes because FPS will
-                    # probably drop as we execute
-                    # other code in between frame
-                    # capture events:
                 },
                 {
                     "format": "gestures",
