@@ -370,6 +370,12 @@ class Page(Frame):
                         self.name = name
                         column_index += 1
 
+            elif element["format"] == "logo":
+                self.canvas = Canvas(self.list_box, width=100, height=66)
+                self.canvas.grid(row=self.row_index, column=0, pady=10)
+                image = PIL.ImageTk.PhotoImage(PIL.Image.open("NVSHRLogo.png"))
+                self.canvas.create_image(100, 66, anchor="nw", image=image)
+
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
                 self.label = Label(self, textvariable=text_var, font=20)
@@ -427,6 +433,36 @@ class Page(Frame):
                 self.palm_label = Label(self, text=element["body"][3], font=20, fg="Blue")
                 self.palm_label.grid(row=self.row_index, column=3, padx=10, pady=10)
 
+            elif element["format"] == "button":
+                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
+                self.delete_log_file()
+
+            elif element["format"] == "commands":
+                self.is_command_menu = True
+ 
+            elif element["format"] == "listbox":
+                if self.is_command_menu:
+                    self.command_listbox = Listbox(self, bd=0, height=60, width=150)
+                    self.command_listbox.grid(row=self.row_index, column=0, pady=10)
+                else:
+                    self.list_box = Listbox(self, bd=0, height=60, width=150)
+                    self.list_box.grid(row=self.row_index, column=0, pady=10)
+                    self.has_list_box = True
+
+            elif element["format"] == "new":
+                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+                small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
+                for x in range(1, 4):
+                    self.gesture_list = ["Fist", "Palm", "Blink"]
+                    variable = StringVar()
+                    variable.set(" ")
+                    self.new_command[self.command_index] = variable
+                    gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
+                    gesture.grid(row=self.row_index, column=self.command_index, pady=10)
+                    self.command_index += 1
+                add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
+                add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
+
             elif element["format"] == "option":
                 self.option_list = ["Alexa", "Smart Plug"]
                 row = self.row_index
@@ -446,42 +482,6 @@ class Page(Frame):
                     self.option += 1
                     row += 1
                 self.row_index = row
-
-            elif element["format"] == "button":
-                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
-                self.delete_log_file()
-
-            elif element["format"] == "new":
-                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
-                small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
-                for x in range(1, 4):
-                    self.gesture_list = ["Fist", "Palm", "Blink"]
-                    variable = StringVar()
-                    variable.set(" ")
-                    self.new_command[self.command_index] = variable
-                    gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
-                    gesture.grid(row=self.row_index, column=self.command_index, pady=10)
-                    self.command_index += 1
-                add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
-                add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
-
-            elif element["format"] == "listbox":
-                if self.is_command_menu:
-                    self.command_listbox = Listbox(self, bd=0, height=60, width=150)
-                    self.command_listbox.grid(row=self.row_index, column=0, pady=10)
-                else:
-                    self.list_box = Listbox(self, bd=0, height=60, width=150)
-                    self.list_box.grid(row=self.row_index, column=0, pady=10)
-                    self.has_list_box = True
-
-            elif element["format"] == "commands":
-                self.is_command_menu = True
-
-            elif element["format"] == "logo":
-                self.canvas = Canvas(self.list_box, width=100, height=66)
-                self.canvas.grid(row=self.row_index, column=0, pady=10)
-                image = PIL.ImageTk.PhotoImage(PIL.Image.open("NVSHRLogo.png"))
-                self.canvas.create_image(100, 66, anchor="nw", image=image)
 
             self.row_index += 1
 
