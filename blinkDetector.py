@@ -5,20 +5,15 @@ from imutils import face_utils
 
 class BlinkDetector:
 
-    def __init__(self, ear_thresh=0.2, ear_consec_frame=2, ear=None):
+    def __init__(self):
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor('eye.dat')
-        # self.source = source
-        self.ear_thresh = ear_thresh
-        self.ear_consec_frame = ear_consec_frame
-        self.ear = ear
-        # self.blinks = blinks : blinks isn't being used anywhere
 
     def detect(self, frame, left_eye_perimeter, right_eye_perimeter):
         # grab the indexes of the facial landmarks for the left and
         # right eye, respectively
-        (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-        (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+        (left_eye_start, left_eye_end) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+        (right_eye_start, right_eye_end) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -32,38 +27,9 @@ class BlinkDetector:
                 # array
                 shape = self.predictor(gray, face)
                 shape = face_utils.shape_to_np(shape)
-
-                # extract the left and right eye coordinates, then use the
-                # coordinates to compute the eye aspect ratio for both eyes
-                leftEye = shape[lStart:lEnd]
-                rightEye = shape[rStart:rEnd]
-
-                leftEyeHull = cv2.convexHull(leftEye)
-                rightEyeHull = cv2.convexHull(rightEye)
-
-                x = int(leftEyeHull[3][0][0])
-                width = int(leftEyeHull[0][0][0]) - x
-                y = int((leftEyeHull[1][0][1] + leftEyeHull[2][0][1]) / 2)
-
-                if len(leftEyeHull) > 5:
-                    height = y - int((leftEyeHull[4][0][1] + leftEyeHull[5][0][1]) / 2)
-                else:
-                    height = 0
-
-                y = y - height
-                left_eye_perimeter.set((x, y, width, height))
-
-                x = int(rightEyeHull[3][0][0])
-                width = int(rightEyeHull[0][0][0]) - x
-                y = int((rightEyeHull[1][0][1] + rightEyeHull[2][0][1]) / 2)
-
-                if len(rightEyeHull) > 5:
-                    height = y - int((rightEyeHull[4][0][1] + rightEyeHull[5][0][1]) / 2)
-                else:
-                    height = 0
-
-                y = y - height
-                right_eye_perimeter.set((x, y, width, height))
+                
+                self.__set_eye__(left_eye_perimeter, shape[left_eye_start:left_eye_end])
+                self.__set_eye__(right_eye_perimeter, shape[right_eye_start:right_eye_end])
 
         except:
             # Sometimes we're getting out of range errors when trying to access
@@ -71,3 +37,18 @@ class BlinkDetector:
             # screen. This should make our program not barf when that happens.
             left_eye_perimeter.set((0, 0, 0, 0))
             right_eye_perimeter.set((0, 0, 0, 0))
+
+    def __set_eye__(self, perimeter, eye_shape):
+        eye_hull = cv2.convexHull(eye_shape)
+
+        x = int(eye_hull[3][0][0])
+        width = int(eye_hull[0][0][0]) - x
+        y = int((eye_hull[1][0][1] + eye_hull[2][0][1]) / 2)
+
+        if len(eye_hull) > 5:
+            height = y - int((eye_hull[4][0][1] + eye_hull[5][0][1]) / 2)
+        else:
+            height = 0
+
+        y = y - height
+        perimeter.set((x, y, width, height))
