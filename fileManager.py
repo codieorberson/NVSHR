@@ -1,5 +1,6 @@
 import os
 
+
 class FileManager():
     def __init__(self, file_name, default_lines):
         self._file_name = file_name
@@ -20,12 +21,12 @@ class FileManager():
             file.writelines(lines)
         self._cached_lines[line_number] = line_contents
 
-    def append(self, line_contents):
+    def append_line(self, line_contents):
         with open(self._file_name, "a") as file:
             file.write(line_contents)
         self._cached_lines.append(line_contents)
 
-    def get_lines():
+    def get_lines(self):
         return self._cached_lines
 
     def get_line(self, line_number):

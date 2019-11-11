@@ -2,16 +2,20 @@ from fileManager import FileManager
 
 _default_log_values = ["   Date        Time     Command\n"]
 
-_default_command_values = []
+_default_command_values = [
+    "fist-palm-blink, Lights on/off, Alexa\n",
+    "palm-fist-blink, Smart Plug on/off, Alexa\n",
+    "fist-blink-palm, Heat on/off, Nest\n",
+    "palm-blink-fist, AC on/off, Nest\n",
+    "palm, STOP, Alexa\n"
+]
 
 _default_configuration_values = ["0.05\n",
-        "2\n",
-        "5\n",
-        #I never got the contrast settings to improve detection, so I don't
-        #know if these next two values are reasonable defaults:
-        "50\n",
-        "100\n"
-        ]
+                                 "2\n",
+                                 "5\n",
+                                 "50\n",
+                                 "100\n"
+                                 ]
 
 _configuration_index_map = {
         'open_eye_ratio' : 0,
@@ -22,24 +26,63 @@ _configuration_index_map = {
         }
 
 def _get_configuration_index(configuration_column_name):
-      return _configuration_index_map[configuration_column_name]
+    return _configuration_index_map[configuration_column_name]
 
 class DatabaseManager():
     def __init__(self):
-        self.log_manager = FileManager("log.csv", 
-                _default_log_values)
-        self.command_manager = FileManager("commands.csv", 
-                _default_command_values)
-        self.configuration_manager = FileManager("configuration.csv", 
-                _default_configuration_values)
+        self.log_manager = FileManager("log.csv",
+                                       _default_log_values)
+        self.command_manager = FileManager("commands.csv",
+                                           _default_command_values)
+        self.configuration_manager = FileManager("configuration.csv",
+                                                 _default_configuration_values)
+
+    def set_gesture(self, gesture_name, now):
+        self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
+                                              now.isoformat()[12:19], "    ", gesture_name, " \n")))
+
+    def get_gestures(self):
+        return self.log_manager.get_lines()
+
+    def set_command(self, gesture_sequence, command_text, device_name):
+        commands = self.get_commands()
+        is_registered = False
+        line_index = 0
+
+        for command in commands:
+            if command["gesture_sequence"] == gesture_sequence:
+                is_registered = True
+                break
+            else:
+                line_index += 1
+
+        gesture_sequence = '-'.join(gesture_sequence)
+        line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
+
+        if is_registered:
+            self.command_manager.set_line(line_index, line_contents)
+        else:
+            self.command_manager.append_line(line_contents)
+
+    def get_commands(self):
+        lines = self.command_manager.get_lines()
+        commands = []
+        for line in lines:
+            line = line.split(', ')
+            commands.append({
+                "gesture_sequence": line[0].split('-'),
+                "command_text": line[1],
+                "device_name": line[2][:-1]
+            })
+        return commands
 
     def __set_configuration__(self, column_name, value):
         self.configuration_manager.set_line(
-                _get_configuration_index(column_name), str(value) + "\n")
+            _get_configuration_index(column_name), str(value) + "\n")
 
     def __get_configuration__(self, column_name):
         return self.configuration_manager.get_line(
-                _get_configuration_index(column_name))
+            _get_configuration_index(column_name))
 
     def set_open_eye_threshold(self, new_open_eye_ratio):
         self.__set_configuration__('open_eye_ratio', new_open_eye_ratio / 100)
@@ -70,40 +113,3 @@ class DatabaseManager():
 
     def get_max_time_inc(self):
         return float(self.__get_configuration__('maximum_time_increment'))
-
-
-
-
-
-
-    # !!!!!!!!!Methods past this point are not actually implemented!!!!!!!!!!
-
-
-
-
-    def add_command(self, gesture_sequence, device, command):
-        if self.is_connected:
-            pass
-        else:
-            pass
-
-    def remove_command(self, geseture_sequence):
-        if self.is_connected:
-            pass
-        else:
-            pass
-
-    def get_commands(self):
-        if self.is_connected:
-            pass
-#            self.
-        else:
-            return self.commands
-#        return []
-
-    def add_log_message(self, gesture_sequence, was_recognised, timestamp):
-        pass
-
-    def get_log_messages(self):
-
-        return []

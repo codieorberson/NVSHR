@@ -48,7 +48,6 @@ class AdminCmdManager:
 
     def read_from_file(self):
         json.load("command.json")
-        self.action[1] = self.commandJson["Command1"]
-        self.action[2] = self.commandJson["Command2"]
-        self.action[3] = self.commandJson["Command3"]
-        self.action[4] = self.commandJson["Command4"]
+
+        for x in range(1, 5):
+            self.action[x] = self.commandJson["Command" + str(x)]
