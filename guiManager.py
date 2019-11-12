@@ -147,7 +147,7 @@ _gui_data = {
                 },
                 {
                     "format": "gestures",
-                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
+                    "body": ["Current Gesture", "blink", "fist", "palm"]
                 }
             ]
                  },
@@ -189,6 +189,9 @@ _gui_data = {
                 },
                 {
                     "format": "new"
+                },
+                {
+                    "format": "field"
                 },
                 {
                     "format": "option"
@@ -286,6 +289,8 @@ class _App(Tk):
                 self.palm_label = tab
             if tab.is_blink_label:
                 self.blink_label = tab
+            if tab.is_command_field:
+                self.command_field = tab
 
         return debug_tab
 
@@ -337,6 +342,7 @@ class Page(Frame):
         self.is_blink_label = False
         self.is_fist_label = False
         self.is_palm_label = False
+        self.is_command_field = False
         self.is_command_menu = False
         self.has_list_box = False
         self.gesture_detected = None
@@ -451,11 +457,16 @@ class Page(Frame):
                     self.list_box.grid(row=self.row_index, column=0, pady=10)
                     self.has_list_box = True
 
+            elif element["format"] == "field":
+                self.field = Entry(self.command_listbox)
+                self.field.grid(row = self.row_index, column = 0)
+                self.is_command_field = True
+
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 for x in range(1, 4):
-                    self.gesture_list = ["Fist", "Palm", "Blink"]
+                    self.gesture_list = ["fist", "palm", "blink"]
                     variable = StringVar()
                     variable.set(" ")
                     self.new_command[self.command_index] = variable
@@ -468,6 +479,7 @@ class Page(Frame):
             elif element["format"] == "option":
                 self.option_list = ["Alexa", "Smart Plug"]
                 row = self.row_index
+                 
                 for option in self.command_manager.action:
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                     small_frame.grid(row=row, column=0, padx=10, pady=10)
@@ -491,9 +503,6 @@ class Page(Frame):
         return frame[..., [2, 1, 0]]
 
     def set_value(self, value):
-        print("Setting a value?")
-        print(value)
-
         self.current_command_map["device_name"] = value
         self
         for x in range(1, 5):
@@ -504,10 +513,7 @@ class Page(Frame):
                 return
         for x in range(1, 5):
             self.command_manager.write_to_file(x, self.command_links[x].get())
-            print("Command" + str(x) + ": " + self.command_links[x].get())
 
-        print("adding command f'realz:")
-        print(self.current_command_map)
         self.event_map["on_new_command"](
                 self.current_command_map['gesture_sequence'],
                 self.current_command_map['command_text'],
@@ -532,7 +538,7 @@ class Page(Frame):
                         self.new_command[1].get(), 
                         self.new_command[2].get()
                         ]
-                self.current_command_map["command_text"] = "Command text input not yet implemented"
+                self.current_command_map["command_text"] = self.field.get()
                 self.label = Label(small_frame, text)
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 variable = StringVar()
