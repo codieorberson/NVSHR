@@ -9,11 +9,13 @@ command_data = {
     "Command4": "None"
 }
 
+_file_name = "./dynamic_data/command.json"
+
 class CommandManager:
     def __init__(self):
-        exists = os.path.exists("command.json")
+        exists = os.path.exists(_file_name)
         if exists:
-            with open("command.json", encoding='utf-8', errors='ignore') as cmdJson:
+            with open(_file_name, encoding='utf-8', errors='ignore') as cmdJson:
                 self.commandJson = json.load(cmdJson, strict=False)
                 # print(self.commandJson)
                 self.action = {}
@@ -23,7 +25,7 @@ class CommandManager:
 
                 cmdJson.close()
         else:
-            with open("command.json", "w+") as write_file:
+            with open(_file_name, "w+") as write_file:
                 json.dump(command_data, write_file)
                 write_file.close()
 
@@ -37,7 +39,7 @@ class CommandManager:
         else:
             command_data["Command4"] = action
 
-        with open("command.json", "r+") as write_file:
+        with open(_file_name, "r+") as write_file:
 
             # Start from the beginning of the file and save the needed data
             write_file.seek(0)
@@ -46,7 +48,7 @@ class CommandManager:
             write_file.close()
 
     def read_from_file(self):
-        json.load("command.json")
+        json.load(_file_name)
 
         for x in range(1, 5):
             self.action[x] = self.commandJson["Command" + str(x)]
