@@ -9,7 +9,6 @@ command_data = {
     "Command4": "None"
 }
 
-
 class CommandManager:
     def __init__(self):
         exists = os.path.exists("command.json")

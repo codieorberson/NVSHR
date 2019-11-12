@@ -124,6 +124,4 @@ class DatabaseManager():
     def close(self):
         self.log_manager.close()
         self.command_manager.close()
-        self.configuration_manager.close()
-
-        
+        self.configuration_manager.close() 

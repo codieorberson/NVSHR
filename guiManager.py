@@ -215,7 +215,6 @@ _gui_data = {
              }
 }
 
-
 # An instance of this class represents a window with multiple tabs.
 class _App(Tk):
     def __init__(self, *args, **kwargs):
@@ -253,7 +252,6 @@ class _App(Tk):
 
     def on_new_command(self, callback):
         self.on_new_command_change = callback
-
 
     def set_cap(self, cap, settings_manager):
         self.notebook = ttk.Notebook(width=1000, height=800)

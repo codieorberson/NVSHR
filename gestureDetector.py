@@ -125,7 +125,6 @@ class GestureDetector():
 
         return frame
 
-
     ''' This code is NOT being used right now 
     # Used for creating contrast within the frame to detect hand gestures more clearly
     def set_frame_contrast(Red, Green, Blue):

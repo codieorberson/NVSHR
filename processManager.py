@@ -15,7 +15,6 @@ class SynchronousProcess():
     def join(self):
         pass
 
-
 if platform.system() == 'Linux':
     #On Linux, we use multiprocessing.
     ProcessConstructor = Process
@@ -37,7 +36,6 @@ class ProcessManager():
             
         self.processes.append(self.process)
         self.process.start()
-        
 
     def on_done(self, callback=None):
         for self.process in self.processes:

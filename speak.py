@@ -8,8 +8,8 @@ engine = pyttsx3.init()
 
 def onWord(name, location, length):
     pass
+
 engine = pyttsx3.init()
 engine.connect('started-word', onWord)
 engine.say(command)
 engine.runAndWait()
-

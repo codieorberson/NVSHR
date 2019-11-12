@@ -7,7 +7,6 @@ class GestureParser():
         self.subprocess_executor = SubprocessExecutor()
         self.gesture_pattern_map = {}
 
-
     def add_pattern(self, gestures, event):
         self.gesture_pattern_map["".join(gestures)] = event
 
