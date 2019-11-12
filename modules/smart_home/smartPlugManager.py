@@ -1,9 +1,8 @@
-from pyHS100 import SmartPlug
+from pyHS100 import SmartPlug # pip3 insrtall pyhs100
 from speaker import Speaker
 import time
 
-#Need to install pyHS100 library (pip install pyhs100)
-class TPLinkDevice():
+class SmartPlugManager():
     def __init__(self):
         self.speaker = Speaker()
         self.smart_plug_map = {}
