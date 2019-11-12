@@ -1,5 +1,7 @@
 import pyttsx3
 #^^^If testing on windows, install both pyttsx3 and pypiwin32; on linux, python-espeak and PyAudio must be installed (through the system package manager or from source, not from pip3). Further Linux instructions available here: https://stackoverflow.com/questions/20023131/cannot-install-pyaudio-gcc-error
+from sys import path
+path.insert(1, './modules')
 from processManager import ProcessManager
 from sys import argv
 

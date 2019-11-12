@@ -5,4 +5,4 @@ class Speaker():
         self.subprocess_executor = SubprocessExecutor()
 
     def speak(self, command_text):
-        self.subprocess_executor.execute('speak.py', command_text)
+        self.subprocess_executor.execute('./modules/smart_home/speak.py', command_text)
