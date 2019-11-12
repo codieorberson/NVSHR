@@ -6,7 +6,7 @@
  If you are using a Windows machine, please check and make sure you are using the current SDK files.
  You can most likely find these files in your C directory (C:\Program Files (x86)\Microsoft SDKs\Windows Kits) or similar directory.
  If the SDKs are missing, you can download them from the official Windows website (https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk) or install the tool kits via Visual Studio Installer.
- *An example image is stored here (https://github.com/codieorberson/NVSHR/blob/master/Src/pics/SDKs.png).*
+ *An example image is stored here (https://github.com/codieorberson/NVSHR/blob/master/documentation/pics/SDKs.png).*
  
  *If an IDE is being used, ensure that Cmake is installed before installing dlib.*
  
