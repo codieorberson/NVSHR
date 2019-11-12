@@ -45,14 +45,14 @@ class DatabaseManager():
         return self.log_manager.get_lines()
 
     def set_command(self, gesture_sequence, command_text, device_name):
+        line_index = self.__get_line_index__(gesture_sequence)
         gesture_sequence = '-'.join(gesture_sequence)
         line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
-        line_index = self.__get_line_index__(gesture_sequence)
 
-        if line_index:
-            self.command_manager.set_line(line_index, line_contents)
-        else:
+        if line_index == None:
             self.command_manager.append_line(line_contents)
+        else:
+            self.command_manager.set_line(line_index, line_contents)
 
     def get_commands(self):
         lines = self.command_manager.get_lines()
