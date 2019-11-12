@@ -21,7 +21,7 @@ class GestureParser():
         if was_recognised:
             self.gesture_pattern_map[joined_gesture_sequence]()
         else:
-            self.subprocess_executor.execute('./modules/smart_home/sound.py', './static_data/failure.wav')
+            self.subprocess_executor.execute('./modules/smart_home/sound.py', 'failure.wav')
 
     def parse_patterns(self, gesture_patterns, now):
         for gesture_pattern in gesture_patterns:
