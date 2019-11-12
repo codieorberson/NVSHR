@@ -1,11 +1,6 @@
 import cv2
 import imutils
 import numpy as np
-from scipy.spatial import distance as dist
-from imutils.video import FileVideoStream
-from imutils.video import VideoStream
-from imutils import face_utils
-from datetime import datetime
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from gesture import Gesture
@@ -34,27 +29,6 @@ class GestureDetector():
 
     def detect(self, frame, timestamp, open_eye_threshold):
 
-        # Code we may use in the future for contrast
-        '''
-        panel = np.zeros([100, 700], np.uint8)
-
-        hContrastRed = 0
-        lContrastRed = 170
-
-        low_contrast = np.array([hContrastRed, hContrastGreen, hContrastBlue])
-        high_contrast = np.array([lContrastRed, lContrastGreen, lContrastBlue])
-
-        mask = cv2.inRange(frame, low_contrast, high_contrast)
-        mask_inv = cv2.bitwise_not(mask)
-
-        color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
-        gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
-
-        if self.is_black_and_white:
-            current_frame = gray_frame
-        else:
-            current_frame = frame
-        '''
         self.__reset_perimeters__()
         self.__detect_shapes__(frame)
         self.__trigger_events__(timestamp, open_eye_threshold)
@@ -122,7 +96,34 @@ class GestureDetector():
 
         return frame
 
-    ''' This code is NOT being used right now 
+    ''' This code is NOT being used right now
+
+
+#from scipy.spatial import distance as dist
+#from imutils.video import FileVideoStream
+#from imutils.video import VideoStream
+
+        # Code we may use in the future for contrast at the beginning of the detect method:
+        
+        panel = np.zeros([100, 700], np.uint8)
+
+        hContrastRed = 0
+        lContrastRed = 170
+
+        low_contrast = np.array([hContrastRed, hContrastGreen, hContrastBlue])
+        high_contrast = np.array([lContrastRed, lContrastGreen, lContrastBlue])
+
+        mask = cv2.inRange(frame, low_contrast, high_contrast)
+        mask_inv = cv2.bitwise_not(mask)
+
+        color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
+        gray_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
+
+        if self.is_black_and_white:
+            current_frame = gray_frame
+        else:
+            current_frame = frame
+
     # Used for creating contrast within the frame to detect hand gestures more clearly
     def set_frame_contrast(Red, Green, Blue):
         redContrast = Red
