@@ -47,6 +47,7 @@ class DatabaseManager():
     def set_command(self, gesture_sequence, command_text, device_name):
         line_index = self.__get_line_index__(gesture_sequence)
         gesture_sequence = '-'.join(gesture_sequence)
+        command_text = self.__stash_commas__(command_text)
         line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
 
         if line_index == None:
@@ -61,7 +62,7 @@ class DatabaseManager():
             line = line.split(', ')
             commands.append({
                 "gesture_sequence": line[0].split('-'),
-                "command_text": line[1],
+                "command_text": self.__restore_commas__(line[1]),
                 "device_name": line[2][:-1]
             })
         return commands
@@ -75,6 +76,12 @@ class DatabaseManager():
                 return line_index
             else:
                 line_index += 1
+
+    def __stash_commas__(self, command_text):
+        return command_text.replace(",", "☢")
+
+    def __restore_commas__(self, command_text):
+        return command_text.replace("☢", ",")
 
     def __set_configuration__(self, column_name, value):
         self.configuration_manager.set_line(
