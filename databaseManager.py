@@ -45,21 +45,11 @@ class DatabaseManager():
         return self.log_manager.get_lines()
 
     def set_command(self, gesture_sequence, command_text, device_name):
-        commands = self.get_commands()
-        is_registered = False
-        line_index = 0
-
-        for command in commands:
-            if command["gesture_sequence"] == gesture_sequence:
-                is_registered = True
-                break
-            else:
-                line_index += 1
-
         gesture_sequence = '-'.join(gesture_sequence)
         line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
+        line_index = self.__get_line_index__(gesture_sequence)
 
-        if is_registered:
+        if line_index:
             self.command_manager.set_line(line_index, line_contents)
         else:
             self.command_manager.append_line(line_contents)
@@ -75,6 +65,16 @@ class DatabaseManager():
                 "device_name": line[2][:-1]
             })
         return commands
+
+    def __get_line_index__(self, gesture_sequence):
+        commands = self.get_commands()
+        line_index = 0
+
+        for command in commands:
+            if command["gesture_sequence"] == gesture_sequence:
+                return line_index
+            else:
+                line_index += 1
 
     def __set_configuration__(self, column_name, value):
         self.configuration_manager.set_line(
