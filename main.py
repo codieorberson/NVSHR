@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 from nonVerbalSmartHomeRecognitionSystem import NonVerbalSmartHomeRecognitionSystem
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -253,7 +252,7 @@ class _App(Tk):
                 self.on_high_contrast_change, self.initial_high_contrast,
                 self.on_minimum_time_increment_change, self.initial_minimum_time_increment,
                 self.on_maximum_time_increment_change, self.initial_maximum_time_increment,
-                settings_manager)
+                self.on_new_command_change, settings_manager)
 
         self.notebook.grid(row=0)
 
@@ -262,7 +261,7 @@ class _App(Tk):
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc,
-                    settings_manager):
+                    on_new_command, settings_manager):
 
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
@@ -272,7 +271,8 @@ class _App(Tk):
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc, 
-                    page_configuration["elements"], settings_manager)
+                    on_new_command, page_configuration["elements"], 
+                    settings_manager)
 
             self.notebook.add(tab, text=page_configuration["title"])
 
@@ -312,14 +312,15 @@ class Page(Frame):
                 on_high_contrast, initial_high_contrast, 
                 on_min_time_inc, initial_min_time_inc,
                 on_max_time_inc, initial_max_time_inc, 
-                elements, settings_manager, *args, **kwargs):
+                on_new_command, elements, settings_manager, *args, **kwargs):
 
         self.event_map = {
             "on_ear_change": on_ear_change,
             "on_low_contrast": on_low_contrast,
             "on_high_contrast": on_high_contrast,
             "on_min_time_inc": on_min_time_inc,
-            "on_max_time_inc": on_max_time_inc
+            "on_max_time_inc": on_max_time_inc,
+            "on_new_command": on_new_command
         }
 
         self.initial_value_map = {
@@ -339,6 +340,7 @@ class Page(Frame):
         self.is_command_menu = False
         self.has_list_box = False
         self.gesture_detected = None
+        self.current_command_map = {}
 
         self.command_manager = settings_manager
         self.option = 1
@@ -489,6 +491,11 @@ class Page(Frame):
         return frame[..., [2, 1, 0]]
 
     def set_value(self, value):
+        print("Setting a value?")
+        print(value)
+
+        self.current_command_map["device_name"] = value
+        self
         for x in range(1, 5):
             if value == self.command_manager.action[x] and value != "None":
                 messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
@@ -499,10 +506,19 @@ class Page(Frame):
             self.command_manager.write_to_file(x, self.command_links[x].get())
             print("Command" + str(x) + ": " + self.command_links[x].get())
 
+        print("adding command f'realz:")
+        print(self.current_command_map)
+        self.event_map["on_new_command"](
+                self.current_command_map['gesture_sequence'],
+                self.current_command_map['command_text'],
+                self.current_command_map['device_name']
+                )
+
     def is_full_command(self, value):
         self.is_full += 1
 
     def add_new_command(self):
+
         if self.is_full >= 3:
             if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != self.new_command[
                 2].get():
@@ -510,6 +526,13 @@ class Page(Frame):
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 text = {"text": "Command " + str(self.option) + " (" + self.new_command[0].get() + ", " +
                                 self.new_command[1].get() + ", " + self.new_command[2].get() + ")"}
+
+                self.current_command_map["gesture_sequence"] = [
+                        self.new_command[0].get(), 
+                        self.new_command[1].get(), 
+                        self.new_command[2].get()
+                        ]
+                self.current_command_map["command_text"] = "Command text input not yet implemented"
                 self.label = Label(small_frame, text)
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 variable = StringVar()
