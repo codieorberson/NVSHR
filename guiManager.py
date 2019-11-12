@@ -6,6 +6,8 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import os
+from fpdf import FPDF
+import subprocess
 
 # Define the elements to be laid out on each tab
 _gui_data = {
@@ -190,9 +192,15 @@ _gui_data = {
                 {
                     "format": "new"
                 },
+#                {
+#                    "format": "device_selection"
+#                },
                 {
                     "format": "field"
                 },
+#                {
+#                    "format": "submit_button"
+#                },
                 {
                     "format": "option"
                 }
@@ -475,6 +483,31 @@ class Page(Frame):
                     self.command_index += 1
                 add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
                 add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
+
+            elif element["format"] == "device_selection":
+                self.option_list = ["Alexa", "Smart Plug"]
+                row = self.row_index
+                 
+                for option in self.command_manager.action:
+                    small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+                    small_frame.grid(row=row, column=0, padx=10, pady=10)
+                    text = {"text": "Command " + str(self.option)}
+                    self.label = Label(small_frame, text)
+                    self.label.grid(row=row, column=0, padx=10, pady=10)
+                    self.name = name
+                    variable = StringVar()
+                    variable.set(self.command_manager.action[self.option])
+                    self.command_links[self.option] = variable
+                    self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
+                    self.optionMenu.grid(row=row, column=1, padx=10, pady=10, columnspan=100)
+                    self.optionMenu.config(width=30)
+                    self.option += 1
+                    row += 1
+                self.row_index = row
+
+            elif element["format"] == "submit_button":
+                self.log_button = Button(self, text = 'Add Command', command = self.add_command).pack()
+                self.delete_log_file()
 
             elif element["format"] == "option":
                 self.option_list = ["Alexa", "Smart Plug"]
