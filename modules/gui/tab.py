@@ -1,13 +1,14 @@
+import os
+import platform
+import subprocess
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import tkinter
+
 import PIL.Image
 import PIL.ImageTk
 import cv2
-import os
 from fpdf import FPDF
-import subprocess
 
 class Tab(Frame):
     def __init__(self, name, window, cap, 
@@ -230,13 +231,15 @@ class Tab(Frame):
         self.current_command_map["device_name"] = value
         self
         for x in range(1, 5):
-            if value == self.command_manager.action[x] and value != "None":
+            if x in range(len(self.command_manager.action)) and value == self.command_manager.action[x] and value != "None":
                 messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
                                                                  "for this command.")
                 return
         for x in range(1, 5):
-            self.command_manager.write_to_file(x, self.command_links[x].get())
+            if x in range(len(self.command_links.keys())):
+                self.command_manager.change_keys(x, 'action', self.command_links[x].get())
+
 
         self.event_map["on_new_command"](
                 self.current_command_map['gesture_sequence'],
@@ -306,7 +309,7 @@ class Tab(Frame):
 
     def __display_image__(self, image):
         self.image = image
-        self.debug_canvas.create_image(0, 0, image=self.image, anchor=tkinter.NW)
+        self.debug_canvas.create_image(0, 0, image=self.image, anchor=NW)
 
     def set_debug_frame(self, frame):
         self.__display_image__(self.__frame_to_image__(self.__bgr_to_rgb__(frame)))

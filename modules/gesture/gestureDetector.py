@@ -21,15 +21,12 @@ class GestureDetector():
         self.gesture_detected = None
 
     def on_fist(self, callback):
-        self.gesture_detected = "fist"
         self.fist_event = callback
 
     def on_palm(self, callback):
-        self.gesture_detected = "palm"
         self.palm_event = callback
 
     def on_blink(self, callback):
-        self.gesture_detected = "blink"
         self.blink_event = callback
 
     def get_gesture_detected(self):

@@ -1,4 +1,3 @@
-import sys
 import cv2
 from datetime import datetime
 from commandManager import CommandManager
@@ -46,6 +45,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gui_manager.set_gesture_background(self.gesture_detector.get_gesture_detected())
         self.last_timestamp = timestamp
+        self.gesture_detected = self.gesture_detector.get_gesture_detected()
+        self.gui_manager.set_gesture_background(self.gesture_detected)
 
         self.process_manager.on_done()
 
