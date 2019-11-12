@@ -1,5 +1,5 @@
 # Non-Verbal Smart Home Recognition (NVSHR) System 
-![NVSHR Logo](NVSHRLogo.png)
+![NVSHR Logo](./static_data/NVSHRLogo.png)
 
 ### Environment Set-Up
 

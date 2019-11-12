@@ -1,5 +1,8 @@
-from TPLink import TPLinkDevice
 from speaker import Speaker
+import sys
+
+
+from TPLink import TPLinkDevice
 
 class SmartHomeActivator():
     def __init__(self):

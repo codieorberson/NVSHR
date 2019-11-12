@@ -4,7 +4,7 @@ class Gesture():
     def __init__(self, haar_cascade_xml, 
             detection_check = lambda detected_gestures: len(detected_gestures) > 0, 
             debug_color = (0, 0, 255)):
-        self.haar_cascade = cv2.CascadeClassifier(haar_cascade_xml)
+        self.haar_cascade = cv2.CascadeClassifier('./static_data/' + haar_cascade_xml)
         self.detection_check = detection_check
         self.debug_color = debug_color
 

@@ -2,7 +2,7 @@ import os
 
 class FileManager():
     def __init__(self, file_name, default_lines):
-        self._file_name = file_name
+        self._file_name = './dynamic_data/' + file_name
         self._cached_lines = []
         if not os.path.exists(file_name):
             with open(self._file_name, "w+") as file:

@@ -387,7 +387,7 @@ class Page(Frame):
             elif element["format"] == "logo":
                 self.canvas = Canvas(self.list_box, width=100, height=66)
                 self.canvas.grid(row=self.row_index, column=0, pady=10)
-                image = PIL.ImageTk.PhotoImage(PIL.Image.open("NVSHRLogo.png"))
+                image = PIL.ImageTk.PhotoImage(PIL.Image.open("./static_data/NVSHRLogo.png"))
                 self.canvas.create_image(100, 66, anchor="nw", image=image)
 
             elif element["format"] == "text-cam-status":

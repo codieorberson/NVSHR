@@ -7,7 +7,7 @@ class BlinkDetector:
 
     def __init__(self):
         self.detector = dlib.get_frontal_face_detector()
-        self.predictor = dlib.shape_predictor('eye.dat')
+        self.predictor = dlib.shape_predictor('./static_data/eye.dat')
 
     def detect(self, frame, left_eye_perimeter, right_eye_perimeter):
         # grab the indexes of the facial landmarks for the left and
