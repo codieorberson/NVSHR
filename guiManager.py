@@ -278,6 +278,7 @@ class _App(Tk):
     def get_palm_label(self):
         return self.palm_label
 
+
 # An instance of this class represents a tab.
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
@@ -467,8 +468,8 @@ class Page(Frame):
                                                                  "for this command.")
                 return
         for x in range(1, 5):
-            self.optionsManager.write_to_file(x, self.command_links[x].get())
-            print("Command" + str(x) + ": " + self.command_links[x].get())
+            self.optionsManager.change_keys(x, 'action', self.command_links[x].get())
+            # print("Command" + str(x) + ": " + self.command_links[x].get())
 
     def is_full_command(self, value):
         self.is_full += 1
@@ -484,6 +485,7 @@ class Page(Frame):
                 self.label = Label(small_frame, text)
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 variable = StringVar()
+                #  self.optionsManager.change_keys()
                 variable.set("None")
                 self.command_links[self.option] = variable
                 self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
@@ -511,11 +513,11 @@ class Page(Frame):
         file.close()
         pdf.output("logfile.pdf")
         subprocess.Popen(["logfile.pdf"], shell = True)
-        
+
     def delete_log_file(self):
         if os.path.exists("logfile.pdf"):
             os.remove("logfile.pdf")
-  
+
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
