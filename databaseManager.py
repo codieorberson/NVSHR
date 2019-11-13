@@ -3,11 +3,10 @@ from fileManager import FileManager
 _default_log_values = ["   Date        Time     Command\n"]
 
 _default_command_values = [
-    "fist-palm-blink, Lights on/off, Alexa\n",
-    "palm-fist-blink, Smart Plug on/off, Alexa\n",
-    "fist-blink-palm, Heat on/off, Nest\n",
-    "palm-blink-fist, AC on/off, Nest\n",
-    "palm, STOP, Alexa\n"
+    "Fist-Palm-Blink, None, Alexa\n",
+    "Palm-Fist-Blink, None, Alexa\n",
+    "Fist-Blink-Palm, None, Nest\n",
+    "Palm-Blink-Fist, None, Nest\n"
 ]
 
 _default_configuration_values = ["0.05\n",
@@ -118,5 +117,3 @@ class DatabaseManager():
         self.log_manager.close()
         self.command_manager.close()
         self.configuration_manager.close()
-
-        

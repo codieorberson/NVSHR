@@ -1,7 +1,7 @@
 import os
 
 
-class FileManager():
+class FileManager:
     def __init__(self, file_name, default_lines):
         self._file_name = file_name
         self._cached_lines = []
@@ -40,7 +40,3 @@ class FileManager():
             file.seek(0)
             file.close()
             os.remove(self._file_name)
-    
-
-
-    

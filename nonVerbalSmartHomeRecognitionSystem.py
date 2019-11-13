@@ -58,7 +58,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, self.admin, self.admin_settings_manager)
+                                      self.gesture_detected, self.admin, self.database_manager)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      

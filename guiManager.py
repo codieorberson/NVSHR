@@ -7,10 +7,8 @@ import PIL.Image
 import PIL.ImageTk
 import cv2
 import os
-import platform
 import subprocess
 from fpdf import FPDF
-from adminCmdManager import AdminCmdManager
 
 # Define the elements to be laid out on each tab
 _gui_data = {
@@ -284,7 +282,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, settings_manager, *args, **kwargs):
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, database_manager, *args, **kwargs):
         self.event_map = {
             "on_ear_change": on_ear_change,
             "on_low_contrast": on_low_contrast,
@@ -311,7 +309,7 @@ class Page(Frame):
         self.has_list_box = False
         self.gesture_detected = gesture_detected
 
-        self.optionsManager = settings_manager
+        self.optionsManager = database_manager
         self.option = 1
         self.command_index = 0
         self.is_full = 0
@@ -401,15 +399,16 @@ class Page(Frame):
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 row = self.row_index
-                for option in self.optionsManager.action:
+                for option in self.optionsManager.get_commands():
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                     small_frame.grid(row=row, column=0, padx=10, pady=10)
-                    text = {"text": "Command " + str(self.option)}
+                    text = {"text": "Command " + str(self.option) + " (" + option["gesture_sequence"][0] + ", " +
+                                    option["gesture_sequence"][1] + ", " + option["gesture_sequence"][2] + ")"}
                     self.label = Label(small_frame, text)
                     self.label.grid(row=row, column=0, padx=10, pady=10)
                     self.name = name
                     variable = StringVar()
-                    variable.set(self.optionsManager.action[self.option])
+                    variable.set(option["command_text"])
                     self.command_links[self.option] = variable
                     self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
                     self.optionMenu.grid(row=row, column=1, padx=10, pady=10, columnspan=100)
@@ -476,8 +475,8 @@ class Page(Frame):
 
     def add_new_command(self):
         if self.is_full >= 3:
-            if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != self.new_command[
-                2].get():
+            if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
+                    self.new_command[2].get():
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 text = {"text": "Command " + str(self.option) + " (" + self.new_command[0].get() + ", " +
@@ -560,7 +559,7 @@ class GuiManager():
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc,
-                 gesture_detected, is_admin, settings_manager):
+                 gesture_detected, is_admin, databse_manager):
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
@@ -568,7 +567,7 @@ class GuiManager():
                                                             on_high_contrast, initial_high_contrast,
                                                             on_min_time_inc, initial_min_time_inc,
                                                             on_max_time_inc, initial_max_time_inc,
-                                                            gesture_detected, settings_manager)
+                                                            gesture_detected, databse_manager)
         self.fps_tab = self.gui.get_fps_tab()
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
