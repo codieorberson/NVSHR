@@ -26,7 +26,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
-        self.admin_settings_manager = AdminCmdManager()
+        # self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))

@@ -343,6 +343,10 @@ class Page(Frame):
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
                 self.label = Label(self, textvariable=text_var, font=20)
+                if cap.isOpened == False:
+                    messagebox.showerror("No Camera Connected", "The system cannot recognize the connected "
+                                                                "camera and is not taking in any data. Please "
+                                                                "ensure your camera is connected properly.")
                 text_var.set("Camera On: " + str(cap.isOpened()))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 self.name = name
@@ -420,7 +424,7 @@ class Page(Frame):
 
             elif element["format"] == "button":
                 self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
-                self.delete_log_file()
+                # self.delete_log_file()
 
 
             elif element["format"] == "new":
@@ -502,17 +506,19 @@ class Page(Frame):
         self.is_full = 0
 
     def open_log_file(self):
+        if os.path.exists("logfile.pdf"):
+            self.delete_log_file()
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size = 10)
         count =1
         file = open('logfile.txt')
         for line in file:
-            pdf.cell(200, 10, txt = line, ln = count, align = "Left")
+            pdf.cell(200, 10, txt=line, ln=count, align="Left")
             count +=1
         file.close()
         pdf.output("logfile.pdf")
-        subprocess.Popen(["logfile.pdf"], shell = True)
+        subprocess.call(["open", "logfile.pdf"])
 
     def delete_log_file(self):
         if os.path.exists("logfile.pdf"):

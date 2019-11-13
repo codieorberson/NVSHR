@@ -1,5 +1,6 @@
 homeassistant.key
 logfile.txt
+logfile.pdf
 command.json
 log.csv
 configuration.csv
