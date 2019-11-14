@@ -109,21 +109,24 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_admin_gui__(self):
         self.gui_manager = GuiManager(self.cap, self.command_manager)
+        self.__set_up_gui_values__()
+        self.__set_up_gui_watchers__()
+        self.gui_manager.start_background_process()
 
+    def __set_up_gui_values__(self):
         self.gui_manager.set_initial_ear(self.open_eye_threshold)
         self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
         self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
         self.gui_manager.set_initial_minimum_time_increment(self.min_increment)
         self.gui_manager.set_initial_maximum_time_increment(self.max_increment)
- 
+
+    def __set_up_gui_watchers__(self): 
         self.gui_manager.on_ear_change(self.set_open_eye_threshold)
         self.gui_manager.on_low_contrast_change(self.set_low_contrast)
         self.gui_manager.on_high_contrast_change(self.set_high_contrast)
         self.gui_manager.on_minimum_time_increment_change(self.set_min_time_inc)
         self.gui_manager.on_maximum_time_increment_change(self.set_max_time_inc)
         self.gui_manager.on_new_command(self.add_command)
-
-        self.gui_manager.start_background_process()
    
     def __set_up_pop_up__(self):
         self.pop_up_window = PopUp(self.main_loop, self.change_admin_status, self.on_close)
