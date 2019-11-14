@@ -37,7 +37,16 @@ class DataManager():
         self.configuration_manager = FileManager("configuration.csv",
                 _default_configuration_values)
 
-    def set_gesture(self, gesture_name, now):
+    def add_fist(self, timestamp):
+        self.__add_gesture__('fist', timestamp)
+
+    def add_palm(self, timestamp):
+        self.__add_gesture__('palm', timestamp)
+
+    def add_blink(self, timestamp):
+        self.__add_gesture__('blink', timestamp)
+
+    def __add_gesture__(self, gesture_name, now):
         self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
                                               now.isoformat()[12:19], "    ", gesture_name, " \n")))
 

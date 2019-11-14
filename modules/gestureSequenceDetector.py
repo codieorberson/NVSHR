@@ -5,8 +5,8 @@ from guiManager import GuiManager
 from processManager import ProcessManager
 
 class GestureSequenceDetector():
-    def __init__(self, logger, database_manager):
-        self.__set_up_helpers__(logger, database_manager)
+    def __init__(self):
+        self.__set_up_helpers__()
         self.__set_up_gestures__()
 
     def set_open_eye_threshold(self, new_ear_value):
@@ -59,10 +59,10 @@ class GestureSequenceDetector():
     def on_unrecognised_gesture_sequence(self, callback):
         self.gesture_parser.on_unrecognised_pattern(callback)
 
-    def __set_up_helpers__(self, logger, database_manager):
+    def __set_up_helpers__(self):
         self.process_manager = ProcessManager()
         self.gesture_detector = GestureDetector()
-        self.gesture_lexer = GestureLexer(logger, database_manager)
+        self.gesture_lexer = GestureLexer()
         self.gesture_parser = GestureParser()
 
     def __set_up_gestures__(self):

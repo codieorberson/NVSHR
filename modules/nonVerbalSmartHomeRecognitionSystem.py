@@ -76,7 +76,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = datetime.utcnow()
         self.data_manager = DataManager()
         self.logger = Logger()
-        self.gesture_sequence_detector = GestureSequenceDetector(self.logger, self.data_manager)
+        self.gesture_sequence_detector = GestureSequenceDetector()
         self.command_manager = CommandManager()
         self.smart_home_activator = SmartHomeActivator()
         self.sound_player = SoundPlayer()
@@ -84,6 +84,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_sequence_detector.on_fist(self.logger.log_fist)
         self.gesture_sequence_detector.on_palm(self.logger.log_palm)
         self.gesture_sequence_detector.on_blink(self.logger.log_blink)
+
+        self.gesture_sequence_detector.on_fist(self.data_manager.add_fist)
+        self.gesture_sequence_detector.on_palm(self.data_manager.add_palm)
+        self.gesture_sequence_detector.on_blink(self.data_manager.add_blink)
 
         self.gesture_sequence_detector.on_recognised_gesture_sequence(self.__on_recognised_gesture_sequence__)
         

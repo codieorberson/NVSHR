@@ -3,9 +3,7 @@ import datetime
 import os
 
 class GestureLexer():
-    def __init__(self, logger, database_manager):
-        self.logger = logger
-        self.database_manager = database_manager
+    def __init__(self):
         self.gestures = []
         self.gesture_patterns = []
 
@@ -19,8 +17,6 @@ class GestureLexer():
         self.__add_gesture__('blink', timestamp)
 
     def __add_gesture__(self, gesture_name, now):
-#        self.logger.log_gesture(gesture_name, now)
-        self.database_manager.set_gesture(gesture_name, now)
         self.gestures.append((gesture_name, now.timestamp()))
   
     #Iterates over list of gestures in proper order. If a timestamp is less than current time - set max increment,
