@@ -7,6 +7,7 @@ configuration.csv
 *.sw[a-p]
 **/__pycache__
 *.pyc
+*.csv
 
 # The following file is no longer used, but we should keep ignoring it until 
 # we're sure that everyone has deleted it:

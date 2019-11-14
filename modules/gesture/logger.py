@@ -1,14 +1,16 @@
 import os
 
+_file_name = "./dynamic_data/logfile.txt"
+
 class Logger():
     def __init__(self):
-        exists = os.path.exists("logfile.txt")
+        exists = os.path.exists(_file_name)
         if not exists:
-            self.file = open("logfile.txt", 'w+')
+            self.file = open(_file_name, 'w+')
             self.file.write("   Date        Time     Command\n")
             print("   Date        Time     Command\n")
         else:
-            self.file = open("logfile.txt", "a+")
+            self.file = open(_file_name, "a+")
             
     def log(self, output):
         self.__init__()
@@ -30,4 +32,4 @@ class Logger():
     def close(self):
         self.file.seek(0)
         self.file.close()
-        os.remove("logfile.txt")
+        os.remove(_file_name)

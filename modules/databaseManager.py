@@ -9,12 +9,13 @@ _default_command_values = [
     "Palm-Blink-Fist, None, Nest\n"
 ]
 
-_default_configuration_values = ["0.05\n",
-                                 "2\n",
-                                 "5\n",
-                                 "50\n",
-                                 "100\n"
-                                 ]
+_default_configuration_values = [
+        "0.05\n",
+        "2\n",
+        "5\n",
+        "50\n",
+        "100\n"
+        ]
 
 _configuration_index_map = {
         'open_eye_ratio' : 0,
@@ -29,12 +30,11 @@ def _get_configuration_index(configuration_column_name):
 
 class DatabaseManager():
     def __init__(self):
-        self.log_manager = FileManager("log.csv",
-                                       _default_log_values)
-        self.command_manager = FileManager("commands.csv",
-                                           _default_command_values)
+        self.log_manager = FileManager("log.csv", _default_log_values)
+        self.command_manager = FileManager("commands.csv", 
+                _default_command_values)
         self.configuration_manager = FileManager("configuration.csv",
-                                                 _default_configuration_values)
+                _default_configuration_values)
 
     def set_gesture(self, gesture_name, now):
         self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
@@ -44,24 +44,15 @@ class DatabaseManager():
         return self.log_manager.get_lines()
 
     def set_command(self, gesture_sequence, command_text, device_name):
-        commands = self.get_commands()
-        is_registered = False
-        line_index = 0
-
-        for command in commands:
-            if command["gesture_sequence"] == gesture_sequence:
-                is_registered = True
-                break
-            else:
-                line_index += 1
-
+        line_index = self.__get_line_index__(gesture_sequence)
         gesture_sequence = '-'.join(gesture_sequence)
+        command_text = self.__stash_commas__(command_text)
         line_contents = gesture_sequence + ', ' + command_text + ', ' + device_name + '\n'
 
-        if is_registered:
-            self.command_manager.set_line(line_index, line_contents)
-        else:
+        if line_index == None:
             self.command_manager.append_line(line_contents)
+        else:
+            self.command_manager.set_line(line_index, line_contents)
 
     def get_commands(self):
         lines = self.command_manager.get_lines()
@@ -70,10 +61,26 @@ class DatabaseManager():
             line = line.split(', ')
             commands.append({
                 "gesture_sequence": line[0].split('-'),
-                "command_text": line[1],
+                "command_text": self.__restore_commas__(line[1]),
                 "device_name": line[2][:-1]
             })
         return commands
+
+    def __get_line_index__(self, gesture_sequence):
+        commands = self.get_commands()
+        line_index = 0
+
+        for command in commands:
+            if command["gesture_sequence"] == gesture_sequence:
+                return line_index
+            else:
+                line_index += 1
+
+    def __stash_commas__(self, command_text):
+        return command_text.replace(",", "☢")
+
+    def __restore_commas__(self, command_text):
+        return command_text.replace("☢", ",")
 
     def __set_configuration__(self, column_name, value):
         self.configuration_manager.set_line(

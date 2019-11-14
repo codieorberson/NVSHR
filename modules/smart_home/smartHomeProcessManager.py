@@ -14,7 +14,6 @@ class SynchronousProcess():
     def join(self):
         pass
 
-
 if platform.system() == 'Linux':
     #On Linux, we use multiprocessing.
     ProcessConstructor = Process
@@ -48,7 +47,3 @@ class ProcessManager():
         if self.process.is_alive():
             self.process.terminate()
         self.process.terminate()
-        
-        
-
-
