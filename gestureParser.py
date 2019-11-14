@@ -7,9 +7,9 @@ class GestureParser():
         self.database_manager = database_manager
         self.gesture_pattern_map = {}
         self.Tp_Link_Devices = TPLinkDevice()
+        self.commands = self.database_manager.get_commands()
 
     def add_pattern(self, gestures, event):
-        #        self.
         self.gesture_pattern_map["".join(gestures)] = event
 
     #Takes in a list of lists of gestures and matches them to any patterns under add_pattern
@@ -21,7 +21,7 @@ class GestureParser():
         self.logger.log_gesture_sequence(gesture_sequence, now, was_recognised)
 
         if was_recognised:
-            self.Tp_Link_Devices.turn_on_off(gesture_sequence)
+            self.perform_command(gesture_sequence)
             self.gesture_pattern_map[joined_gesture_sequence]()
             Sound.success()
         else:
@@ -30,3 +30,13 @@ class GestureParser():
     def parse_patterns(self, gesture_patterns, now):
         for gesture_pattern in gesture_patterns:
             self.parse_pattern(gesture_pattern, now)
+
+    #Iterating through the command dictionary and performing smart home action linked
+    #with the given gesture sequence
+    def perform_command(self, gesture_sequence):
+        index = 0
+        while(index < len(self.commands)):
+            for key in self.commands[index]:
+                if(gesture_sequence == self.commands[index]['gesture_sequence']):
+                    self.Tp_Link_Devices.turn_on_off(self.commands[index]['command_text'])
+                index += 1
