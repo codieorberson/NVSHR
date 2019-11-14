@@ -4,7 +4,8 @@ class FileManager():
     def __init__(self, file_name, default_lines):
         self._file_name = './dynamic_data/' + file_name
         self._cached_lines = []
-        if not os.path.exists(file_name):
+
+        if not os.path.exists(self._file_name):
             with open(self._file_name, "w+") as file:
                 file.writelines(default_lines)
             self._cached_lines = default_lines
