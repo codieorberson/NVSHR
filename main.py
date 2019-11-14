@@ -1,13 +1,20 @@
 #!/usr/local/bin/python3
 import sys
-sys.path.insert(1, './static_data/')
-sys.path.insert(2, './dynamic_data/')
-sys.path.insert(3, './modules/')
-sys.path.insert(4, './modules/gesture_sequence_detector/')
-sys.path.insert(5, './modules/smart_home_activator/')
-sys.path.insert(6, './modules/gui_manager/')
-sys.path.insert(7, './modules/sound_player/')
-sys.path.insert(8, './modules/data_manager/')
+
+paths = [
+        './static_data/',
+        './dynamic_data/',
+        './modules/',
+        './modules/data_manager/',
+        './modules/gesture_sequence_detector/',
+        './modules/gesture_sequence_detector/gesture_detector/',
+        './modules/smart_home_activator/',
+        './modules/sound_player/',
+        './modules/gui_manager/'
+        ]
+
+for i in range(0, len(paths)):
+    sys.path.insert(i + 1, paths[i])
 
 from nonVerbalSmartHomeRecognitionSystem import NonVerbalSmartHomeRecognitionSystem
 
