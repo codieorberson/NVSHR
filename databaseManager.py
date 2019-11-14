@@ -3,10 +3,10 @@ from fileManager import FileManager
 _default_log_values = ["   Date        Time     Command\n"]
 
 _default_command_values = [
-    "fist-palm-blink, Lights on/off, Alexa\n",
-    "palm-fist-blink, Smart Plug on/off, Alexa\n",
-    "fist-blink-palm, Heat on/off, Nest\n",
-    "palm-blink-fist, AC on/off, Nest\n",
+    "fist-palm-blink, Lights, Alexa\n",
+    "palm-fist-blink, Smart Plug, Alexa\n",
+    "fist-blink-palm, Heat, Nest\n",
+    "palm-blink-fist, Fan, Nest\n",
     "palm, STOP, Alexa\n"
 ]
 
