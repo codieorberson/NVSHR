@@ -5,6 +5,7 @@ def _catch_transition_exception(exception, value, traceback):
     if str(exception) == "<class 'NameError'>":
         pass
     else:
+        traceback.print_exc(file=sys.stdout)
         raise exception
 
 class PopUp:
@@ -75,9 +76,10 @@ class PopUp:
             self.close_system()
 
     def close_pop_up(self):
-        with RedirectStdStreams(stdout=devnull, stderr=devnull):
+        with stdout_redirected(to=os.devnull), merged_stderr_stdout():
             self.popup.destroy()
-            self.admin_callback()
+
+        self.admin_callback()
 
     def close_system(self):
         self.close_callback()

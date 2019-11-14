@@ -16,22 +16,22 @@ class GestureDetector():
         self.gesture_detected = None
 
     def on_fist(self, callback):
-        self.fist_event = callback
+        self.fist_events.append(callback)
 
     def on_palm(self, callback):
-        self.palm_event = callback
+        self.palm_events.append(callback)
 
     def on_blink(self, callback):
-        self.blink_event = callback
+        self.blink_events.append(callback)
 
     def get_gesture_detected(self):
         return self.gesture_detected
 
     def detect(self, frame, timestamp, open_eye_threshold):
-
         self.__reset_perimeters__()
         self.__detect_shapes__(frame)
         self.__trigger_events__(timestamp, open_eye_threshold)
+
         return self.__draw_rectangles__(frame)
 
     def __set_up_helpers__(self):
@@ -53,9 +53,9 @@ class GestureDetector():
                 ]
 
     def __set_up_events__(self): 
-        self.fist_event = None
-        self.palm_event = None
-        self.blink_event = None
+        self.fist_events = []
+        self.palm_events = []
+        self.blink_events = []
 
     def __reset_perimeters__(self):
         for perimeter in self.perimeters:
@@ -69,25 +69,27 @@ class GestureDetector():
 
     def __trigger_events__(self, timestamp, open_eye_threshold):
         self.gesture_detected = None
-        self.__trigger_fist_event__(timestamp)
-        self.__trigger_palm_event__(timestamp)
-        self.__trigger_blink_event__(timestamp, open_eye_threshold)
+        self.__trigger_fist_events__(timestamp)
+        self.__trigger_palm_events__(timestamp)
+        self.__trigger_blink_events__(timestamp, open_eye_threshold)
 
-    def __trigger_fist_event__(self, timestamp):
-        self.__trigger_hand_event__(self.fist_perimeter, 'fist', self.fist_event, timestamp)
+    def __trigger_fist_events__(self, timestamp):
+        self.__trigger_hand_events__(self.fist_perimeter, 'fist', self.fist_events, timestamp)
 
-    def __trigger_palm_event__(self, timestamp):
-        self.__trigger_hand_event__(self.palm_perimeter, 'palm', self.palm_event, timestamp)
+    def __trigger_palm_events__(self, timestamp):
+        self.__trigger_hand_events__(self.palm_perimeter, 'palm', self.palm_events, timestamp)
 
-    def __trigger_hand_event__(self, perimeter, gesture_name, event, timestamp):
+    def __trigger_hand_events__(self, perimeter, gesture_name, events, timestamp):
         if perimeter.is_set():
             self.gesture_detected = gesture_name
-            event(timestamp)
+            for event in events:
+                event(timestamp)
 
-    def __trigger_blink_event__(self, timestamp, open_eye_threshold):        
+    def __trigger_blink_events__(self, timestamp, open_eye_threshold):        
         if self.left_eye_perimeter.is_set() and self.right_eye_perimeter.is_set() and open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
             self.gesture_detected = "blink"
-            self.blink_event(timestamp)
+            for event in self.blink_events:
+                event(timestamp)
 
     def __draw_rectangles__(self, frame):
         for perimeter in self.perimeters:

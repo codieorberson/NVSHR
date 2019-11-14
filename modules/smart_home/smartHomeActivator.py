@@ -11,8 +11,7 @@ class SmartHomeActivator():
             ip_address = smartHomeAction
             self.smart_plug_manager.turn_on_off(ip_address)
             speaker.speak("Smart Plug " + ip_address + " toggled.")
-            self.subprocess_executor.execute('./modules/smart_home/sound.py', 
-                    './static_data/success.wav')
+            self.subprocess_executor.execute('./modules/smart_home/sound.py', 'success.wav')
         elif device == 'Alexa':
             self.speaker.speak(smartHomeAction)
 

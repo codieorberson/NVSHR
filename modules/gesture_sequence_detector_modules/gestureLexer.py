@@ -9,18 +9,27 @@ class GestureLexer():
         self.gestures = []
         self.gesture_patterns = []
 
-    def add(self, gesture_name, now):
-        self.logger.log_gesture(gesture_name, now)
+    def add_fist(self, timestamp):
+        self.__add_gesture__('fist', timestamp)
+
+    def add_palm(self, timestamp):
+        self.__add_gesture__('palm', timestamp)
+
+    def add_blink(self, timestamp):
+        self.__add_gesture__('blink', timestamp)
+
+    def __add_gesture__(self, gesture_name, now):
+#        self.logger.log_gesture(gesture_name, now)
         self.database_manager.set_gesture(gesture_name, now)
         self.gestures.append((gesture_name, now.timestamp()))
-
+  
     #Iterates over list of gestures in proper order. If a timestamp is less than current time - set max increment,
     #that gesture sequence is added to list of all sequences.
     def lex(self, now, min_increment, max_increment):
-        last_dict = {'fist' : None, 'palm' : None, 'blink' : None, 'left_wink' : None, 'right_wink' : None}
-
+        last_dict = {'fist' : None, 'palm' : None, 'blink' : None, 'left_wink' : None, 'right_wink' : None}        
         now = now.timestamp()
         gesture_pattern = []
+
         for gesture in self.gestures:
             if not last_dict[gesture[0]]:
                 last_dict[gesture[0]] = gesture[1]

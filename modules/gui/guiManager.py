@@ -80,3 +80,7 @@ class GuiManager():
 
     def destroy_gui(self):
         self.gui.destroy()
+
+    def add_command(self, gesture_sequence, command_text, device_name):
+        #This needs implemented
+        pass

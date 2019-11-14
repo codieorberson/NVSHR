@@ -17,7 +17,16 @@ class Logger():
         self.file.write(output)
         print(output) 
 
-    def log_gesture(self, gesture_name, now):
+    def log_fist(self, now):
+        self.__log_gesture__('fist', now)
+
+    def log_palm(self, now):
+        self.__log_gesture__('palm', now)
+
+    def log_blink(self, now):
+        self.__log_gesture__('blink', now)
+
+    def __log_gesture__(self, gesture_name, now):
         self.log(''.join((now.isoformat()[:10], "    ", now.isoformat()[12:19], 
                 "    ", gesture_name ," \n")))
 
@@ -27,7 +36,7 @@ class Logger():
         else:
             ending = "] not recognised"
 
-        self.log_gesture("pattern: [" + ', '.join(gesture_sequence) + ending, now)
+        self.__log_gesture__("pattern: [" + ', '.join(gesture_sequence) + ending, now)
 
     def close(self):
         self.file.seek(0)
