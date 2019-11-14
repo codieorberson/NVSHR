@@ -11,20 +11,20 @@ _default_command_values = [
 ]
 
 _default_configuration_values = [
-        "0.05\n",
-        "2\n",
-        "5\n",
-        "50\n",
-        "100\n"
-        ]
+    "0.05\n",
+    "2\n",
+    "5\n",
+    "50\n",
+    "100\n"
+]
 
 _configuration_index_map = {
-        'open_eye_ratio' : 0,
-        'minimum_time_increment' : 1,
-        'maximum_time_increment' : 2,
-        'low_contrast' : 3,
-        'high_contrast' : 4
-        }
+    'open_eye_ratio' : 0,
+    'minimum_time_increment' : 1,
+    'maximum_time_increment' : 2,
+    'low_contrast' : 3,
+    'high_contrast' : 4
+}
 
 def _get_configuration_index(configuration_column_name):
     return _configuration_index_map[configuration_column_name]
@@ -133,4 +133,4 @@ class DataManager():
     def close(self):
         self.log_manager.close()
         self.command_manager.close()
-        self.configuration_manager.close() 
+        self.configuration_manager.close()
