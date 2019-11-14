@@ -5,8 +5,8 @@ _default_log_values = ["   Date        Time     Command\n"]
 _default_command_values = [
     "fist-palm-blink, 192.168.1.197, Smart Plug\n",
     "palm-fist-blink, 192.168.1.198, Smart Plug\n",
-    "fist-blink-palm, Heat on/off, Alexa\n",
-    "palm-blink-fist, AC on/off, Alexa\n",
+    "fist-blink-palm, Turn on heat, Alexa\n",
+    "palm-blink-fist, Turn off heat, Alexa\n",
     "palm, STOP, Alexa\n"
 ]
 
