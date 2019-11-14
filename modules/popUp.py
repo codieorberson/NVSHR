@@ -5,7 +5,6 @@ def _catch_transition_exception(exception, value, traceback):
     if str(exception) == "<class 'NameError'>":
         pass
     else:
-        traceback.print_exc(file=sys.stdout)
         raise exception
 
 class PopUp:
