@@ -1,14 +1,14 @@
 import cv2
 from datetime import datetime
+from processManager import ProcessManager
 from gestureSequenceDetector import GestureSequenceDetector
 from commandManager import CommandManager
 from databaseManager import DatabaseManager
-from guiManager import GuiManager
 from logger import Logger
-from processManager import ProcessManager
-from subprocessExecutor import SubprocessExecutor
-from smartHomeActivator import SmartHomeActivator
 from popUp import PopUp
+from guiManager import GuiManager
+from smartHomeActivator import SmartHomeActivator
+from soundPlayer import SoundPlayer
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
@@ -73,13 +73,13 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_helpers__(self):
         self.process_manager = ProcessManager()
-        self.subprocess_executor = SubprocessExecutor()
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
         self.gesture_sequence_detector = GestureSequenceDetector(self.logger, self.database_manager)
         self.command_manager = CommandManager()
         self.smart_home_activator = SmartHomeActivator()
+        self.sound_player = SoundPlayer()
 
         self.gesture_sequence_detector.on_fist(self.logger.log_fist)
         self.gesture_sequence_detector.on_palm(self.logger.log_palm)
@@ -133,7 +133,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.logger.log_gesture_sequence(gestures, timestamp, True)
 
     def __on_unrecognised_gesture_sequence__(self, gestures, timestamp):
-        self.subprocess_executor.execute('./modules/smart_home/sound.py', 'failure.wav')
+        self.sound_player.play_failure_sound()
         self.logger.log_gesture_sequence(gestures, timestamp, False)
 
     def __bind_smart_home_activation__(self, command_text, device_name):

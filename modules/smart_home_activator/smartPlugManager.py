@@ -1,17 +1,12 @@
 from pyHS100 import SmartPlug # pip3 insrtall pyhs100
-from speaker import Speaker
 import time
 
 class SmartPlugManager():
     def __init__(self):
-        self.speaker = Speaker()
         self.smart_plug_map = {}
 
     def turn_on_off(self, ip_address):
-        try:
-            self.__toggle_smart_plug__(self.__get_smart_plug__(ip_address))
-        except:
-            self.speaker.speak("Unable to communicate with Smart Plug at " + ip_address)
+        self.__toggle_smart_plug__(self.__get_smart_plug__(ip_address))
 
     def __get_smart_plug__(self, ip_address):
         if not ip_address in self.smart_plug_map:
