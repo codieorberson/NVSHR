@@ -9,11 +9,12 @@ from popUp import PopUp
 from guiManager import GuiManager
 from smartHomeActivator import SmartHomeActivator
 from soundPlayer import SoundPlayer
+from framesPerSecondMeter import FramesPerSecondMeter
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
         self.__set_up_helpers__()
-        self.__set_up_commands__()    
+        self.__set_up_commands__()
         self.__set_up_camera__()
         self.__set_up_configuration__()
         self.__set_up_admin_gui__()
@@ -23,17 +24,14 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.start_foreground_process(self.main_loop, self.on_close)
      
     def main_loop(self):
-        ret, frame = self.cap.read()
-
         timestamp = datetime.utcnow()
-        self.fps = str(1/((timestamp - self.last_timestamp).microseconds/1000000))[:4]
+        ret, frame = self.cap.read()
 
         frame = self.gesture_sequence_detector.detect(frame, timestamp, self.open_eye_threshold, self.min_increment, self.max_increment)
 
-        self.gui_manager.set_fps(self.fps)
+        self.gui_manager.set_fps(self.frames_per_second_meter.cycle())
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gui_manager.set_gesture_background(self.gesture_sequence_detector.get_gesture_detected())
-        self.last_timestamp = timestamp
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)
@@ -72,8 +70,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.data_manager.close()
 
     def __set_up_helpers__(self):
+        self.frames_per_second_meter = FramesPerSecondMeter()
         self.process_manager = ProcessManager()
-        self.last_timestamp = datetime.utcnow()
         self.data_manager = DataManager()
         self.logger = Logger()
         self.gesture_sequence_detector = GestureSequenceDetector()
