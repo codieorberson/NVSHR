@@ -7,6 +7,7 @@ sys.path.insert(4, './modules/gesture_sequence_detector/')
 sys.path.insert(5, './modules/smart_home_activator/')
 sys.path.insert(6, './modules/gui_manager/')
 sys.path.insert(7, './modules/sound_player/')
+sys.path.insert(8, './modules/data_manager/')
 
 from nonVerbalSmartHomeRecognitionSystem import NonVerbalSmartHomeRecognitionSystem
 

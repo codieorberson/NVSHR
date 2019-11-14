@@ -3,7 +3,7 @@ from datetime import datetime
 from processManager import ProcessManager
 from gestureSequenceDetector import GestureSequenceDetector
 from commandManager import CommandManager
-from databaseManager import DatabaseManager
+from dataManager import DataManager
 from logger import Logger
 from popUp import PopUp
 from guiManager import GuiManager
@@ -37,27 +37,27 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)
-        self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
+        self.data_manager.set_open_eye_threshold(self.open_eye_threshold)
         
     def set_low_contrast(self, new_low_contrast):
-        self.database_manager.set_low_contrast(int(new_low_contrast))
+        self.data_manager.set_low_contrast(int(new_low_contrast))
 
     def set_high_contrast(self, new_high_contrast):
-        self.database_manager.set_high_contrast(int(new_high_contrast))
+        self.data_manager.set_high_contrast(int(new_high_contrast))
 
     def set_min_time_inc(self, new_min_time_inc):
         self.min_increment = int(new_min_time_inc)
-        self.database_manager.set_min_time_inc(new_min_time_inc)
+        self.data_manager.set_min_time_inc(new_min_time_inc)
 
     def set_max_time_inc(self, new_max_time_inc):
         self.max_increment = int(new_max_time_inc)
-        self.database_manager.set_max_time_inc(new_max_time_inc)
+        self.data_manager.set_max_time_inc(new_max_time_inc)
 
     def add_command(self, gesture_sequence, command_text, device_name):
 #        self.gui_manager.add_command(gesture_sequence, command_text, device_name)
         self.gesture_sequence_detector.on_gesture_sequence(gesture_sequence, 
                 self.__bind_smart_home_activation__(command_text, device_name))
-        self.database_manager.set_command(gesture_sequence, command_text, device_name)
+        self.data_manager.set_command(gesture_sequence, command_text, device_name)
 
     def on_close(self):
         # Close down OpenCV
@@ -69,14 +69,14 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # Close log file
         self.logger.close() 
-        self.database_manager.close()
+        self.data_manager.close()
 
     def __set_up_helpers__(self):
         self.process_manager = ProcessManager()
         self.last_timestamp = datetime.utcnow()
-        self.database_manager = DatabaseManager()
+        self.data_manager = DataManager()
         self.logger = Logger()
-        self.gesture_sequence_detector = GestureSequenceDetector(self.logger, self.database_manager)
+        self.gesture_sequence_detector = GestureSequenceDetector(self.logger, self.data_manager)
         self.command_manager = CommandManager()
         self.smart_home_activator = SmartHomeActivator()
         self.sound_player = SoundPlayer()
@@ -90,7 +90,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_sequence_detector.on_unrecognised_gesture_sequence(self.__on_unrecognised_gesture_sequence__)
  
     def __set_up_commands__(self):
-        for command_map in self.database_manager.get_commands():
+        for command_map in self.data_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
                     command_map['command_text'],
                     command_map['device_name'])
@@ -101,11 +101,11 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
 
     def __set_up_configuration__(self):
-        self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
-        self.low_contrast_value = self.database_manager.get_low_contrast()
-        self.high_contrast_value = self.database_manager.get_high_contrast()
-        self.min_increment = self.database_manager.get_min_time_inc()
-        self.max_increment = self.database_manager.get_max_time_inc()
+        self.open_eye_threshold = self.data_manager.get_open_eye_threshold()
+        self.low_contrast_value = self.data_manager.get_low_contrast()
+        self.high_contrast_value = self.data_manager.get_high_contrast()
+        self.min_increment = self.data_manager.get_min_time_inc()
+        self.max_increment = self.data_manager.get_max_time_inc()
 
     def __set_up_admin_gui__(self):
         self.gui_manager = GuiManager(self.cap, self.command_manager)

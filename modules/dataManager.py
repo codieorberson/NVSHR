@@ -29,7 +29,7 @@ _configuration_index_map = {
 def _get_configuration_index(configuration_column_name):
     return _configuration_index_map[configuration_column_name]
 
-class DatabaseManager():
+class DataManager():
     def __init__(self):
         self.log_manager = FileManager("log.csv", _default_log_values)
         self.command_manager = FileManager("commands.csv", 
