@@ -1,13 +1,11 @@
 from sound import Sound
-from TPLink import TPLinkDevice
+from smartHomeActivator import SmartHomeActivator
 
 class GestureParser():
     def __init__(self, logger, database_manager):
         self.logger = logger
-        self.database_manager = database_manager
         self.gesture_pattern_map = {}
-        self.Tp_Link_Devices = TPLinkDevice()
-        self.commands = self.database_manager.get_commands()
+        self.smart_Home_Activator = SmartHomeActivator(database_manager)
 
     def add_pattern(self, gestures, event):
         self.gesture_pattern_map["".join(gestures)] = event
@@ -16,27 +14,12 @@ class GestureParser():
     #Then sends confirm or failure noise, and logs the sequence in logger.
     def parse_pattern(self, gesture_sequence, now):
         joined_gesture_sequence = "".join(gesture_sequence)
-        was_recognised = bool(
+        was_recognized = bool(
             joined_gesture_sequence in self.gesture_pattern_map)
-        self.logger.log_gesture_sequence(gesture_sequence, now, was_recognised)
-
-        if was_recognised:
-            self.perform_command(gesture_sequence)
-            self.gesture_pattern_map[joined_gesture_sequence]()
-            Sound.success()
-        else:
-            Sound.failure()
+        self.logger.log_gesture_sequence(gesture_sequence, now, was_recognized)
+        self.smart_Home_Activator.activate(gesture_sequence, was_recognized)
 
     def parse_patterns(self, gesture_patterns, now):
         for gesture_pattern in gesture_patterns:
             self.parse_pattern(gesture_pattern, now)
 
-    #Iterating through the command dictionary and performing smart home action linked
-    #with the given gesture sequence
-    def perform_command(self, gesture_sequence):
-        index = 0
-        while(index < len(self.commands)):
-            for key in self.commands[index]:
-                if(gesture_sequence == self.commands[index]['gesture_sequence']):
-                    self.Tp_Link_Devices.turn_on_off(self.commands[index]['command_text'])
-                index += 1
