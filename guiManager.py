@@ -377,7 +377,7 @@ class Page(Frame):
                     event_name = event
                     self.slider_command = self.event_map[event_name]
                     if event_name == "on_ear_change":
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=10, command=self.slider_command)
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
                     elif event_name == "on_low_contrast" or event_name == "on_high_contrast":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
                     elif event_name == "on_min_time_inc" or "on_max_time_inc":
@@ -404,6 +404,9 @@ class Page(Frame):
                 self.palm_label = Label(self, text=element["body"][3], font=20, fg="Blue")
                 self.palm_label.grid(row=self.row_index, column=3, padx=10, pady=10)
 
+            elif element["format"] == "commands":
+                self.is_command_menu = True
+
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
                 row = self.row_index
@@ -428,10 +431,6 @@ class Page(Frame):
                     row += 1
                 self.row_index = row
 
-            elif element["format"] == "button":
-                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
-                # self.delete_log_file()
-
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
@@ -446,6 +445,10 @@ class Page(Frame):
                 add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
                 add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
 
+            elif element["format"] == "button":
+                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
+                # self.delete_log_file()
+
             elif element["format"] == "listbox":
                 if self.is_command_menu:
                     self.command_listbox = Listbox(self, bd=0, height=60, width=150)
@@ -454,9 +457,6 @@ class Page(Frame):
                     self.list_box = Listbox(self, bd=0, height=60, width=150)
                     self.list_box.grid(row=self.row_index, column=0, pady=10)
                     self.has_list_box = True
-
-            elif element["format"] == "commands":
-                self.is_command_menu = True
 
             elif element["format"] == "logo":
                 self.canvas = Canvas(self.list_box, width=100, height=66)
@@ -481,8 +481,10 @@ class Page(Frame):
         for option in self.optionsManager.get_commands():
             self.optionsManager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
                                              option["gesture_sequence"][2]], self.command_links[count].get(), "None")
-            self.gesture_parser.update_pattern(option["gesture_sequence"], lambda: self.smart_home_activator.activate(
-                self.command_links[count].get(), "None"))
+            self.gesture_parser.add_pattern(option['gesture_sequence'],
+                                            lambda: self.smart_home_activator.activate(
+                                                str(self.command_links[count].get()),
+                                                "None"))
             count += 1
 
     def is_full_command(self, value):

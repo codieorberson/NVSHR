@@ -24,8 +24,10 @@ _configuration_index_map = {
         'high_contrast' : 4
         }
 
+
 def _get_configuration_index(configuration_column_name):
     return _configuration_index_map[configuration_column_name]
+
 
 class DatabaseManager():
     def __init__(self):
