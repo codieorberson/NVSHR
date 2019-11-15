@@ -12,11 +12,6 @@ class GestureParser():
     def add_pattern(self, gestures, event):
         self.gesture_pattern_map["".join(gestures)] = event
 
-    def update(self):
-        for command in self.database_manager.get_commands():
-            self.gesture_pattern_map["".join(command["gesture_sequence"])] = \
-                lambda: self.smart_home_activator.activate(command["command_text"], command["device_name"])
-
     # Takes in a list of lists of gestures and matches them to any patterns under add_pattern
     # Then sends confirm or failure noise, and logs the sequence in logger.
     def parse_pattern(self, gesture_sequence, now):
