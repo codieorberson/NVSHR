@@ -9,14 +9,14 @@ class TPLinkDevice():
         time.sleep(1.2)
         self.fan_Plug = SmartPlug("192.168.1.198")
 
-    def turn_on_off(self, command):
-        if command == 'Lights': #Change gesture sequence to default value
+    def turn_on_off(self, device):
+        if device == 'Lights': #Change gesture sequence to default value
             if self.light_Plug.state == "OFF":
                 self.light_Plug.turn_on()
             else:
                 self.light_Plug.turn_off()
             
-        elif command == 'Fan': #Change gesture sequence to default value
+        elif device == 'Smart Plug': #Change gesture sequence to default value
             if self.fan_Plug.state == "OFF":
                 self.fan_Plug.turn_on()
             else:
