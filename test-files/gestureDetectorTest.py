@@ -113,7 +113,7 @@ def test_gesture_detector_trigger_events_palm():
     palm_perimeter.is_set.return_value = True
     detector.palm_event = MagicMock()
 
-    detector.trigger_events(timestamp, 4, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
+    detector.trigger_events(timestamp, 400, fist_perimeter, palm_perimeter, left_eye_perimeter, right_eye_perimeter)
 
     assert detector.palm_event.called, "detector.trigger_events() did not call the palm callback."
 
