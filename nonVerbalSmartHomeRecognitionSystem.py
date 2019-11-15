@@ -33,8 +33,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
 
-        self.smart_home_activator = SmartHomeActivator()
-
         for command_map in self.database_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
                              command_map['command_text'],
