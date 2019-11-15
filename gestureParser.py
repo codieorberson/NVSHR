@@ -2,10 +2,9 @@ from sound import Sound
 from TPLink import TPLinkDevice
 
 class GestureParser():
-    def __init__(self, logger, database_manager, activator):
+    def __init__(self, logger, database_manager):
         self.logger = logger
         self.database_manager = database_manager
-        self.smart_home_activator = activator
         self.gesture_pattern_map = {}
         self.Tp_Link_Devices = TPLinkDevice()
 
