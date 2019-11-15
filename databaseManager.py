@@ -3,10 +3,10 @@ from fileManager import FileManager
 _default_log_values = ["   Date        Time     Command\n"]
 
 _default_command_values = [
-    "Fist-Palm-Blink, None, Alexa\n",
-    "Palm-Fist-Blink, None, Alexa\n",
-    "Fist-Blink-Palm, None, Nest\n",
-    "Palm-Blink-Fist, None, Nest\n"
+    "fist-palm-blink, None, None\n",
+    "palm-fist-blink, None, None\n",
+    "fist-blink-palm, None, None\n",
+    "palm-blink-fist, None, None\n"
 ]
 
 _default_configuration_values = ["0.05\n",

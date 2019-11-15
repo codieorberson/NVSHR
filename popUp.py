@@ -1,16 +1,9 @@
 #!/usr/local/bin/python3
 import tkinter
 
-def _catch_transition_exception(exception, value, traceback):
-    if str(exception) == "<class 'NameError'>":
-        pass
-    else:
-        raise exception
-
 class PopUp:
     def __init__(self):
         self.popup = tkinter.Tk()
-        self.popup.report_callback_exception = _catch_transition_exception
 
         self.is_admin = None
 
