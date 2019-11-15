@@ -227,14 +227,14 @@ class _App(Tk):
                                   on_high_contrast, initial_high_contrast,
                                   on_min_time_inc, initial_min_time_inc,
                                   on_max_time_inc, initial_max_time_inc,
-                                  gesture_detected, settings_manager, parser, activator):
+                                  gesture_detected, settings_manager, parser):
         self.notebook = ttk.Notebook(width=1000, height=800)
         self.debug_tab = self.add_content(_gui_data, cap, on_ear_change, initial_ear, on_low_contrast,
                                           initial_low_contrast,
                                           on_high_contrast, initial_high_contrast,
                                           on_min_time_inc, initial_min_time_inc,
                                           on_max_time_inc, initial_max_time_inc,
-                                          gesture_detected, settings_manager, parser, activator)
+                                          gesture_detected, settings_manager, parser)
 
         self.notebook.grid(row=0)
         return self.debug_tab
@@ -244,14 +244,14 @@ class _App(Tk):
                     on_high_contrast, initial_high_contrast,
                     on_min_time_inc, initial_min_time_inc,
                     on_max_time_inc, initial_max_time_inc,
-                    gesture_detected, settings_manager, parser, activator):
+                    gesture_detected, settings_manager, parser):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = Page(self.notebook, self, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                        on_high_contrast, initial_high_contrast,
                        on_min_time_inc, initial_min_time_inc,
                        on_max_time_inc, initial_max_time_inc, gesture_detected, page_configuration["elements"],
-                       settings_manager, parser, activator)
+                       settings_manager, parser)
             self.notebook.add(tab, text=page_configuration["title"])
             if tab.is_debug:
                 debug_tab = tab
@@ -283,7 +283,7 @@ class _App(Tk):
 class Page(Frame):
     def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
                  on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, database_manager, parser, activator,
+                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, database_manager, parser,
                  *args, **kwargs):
         self.event_map = {
             "on_ear_change": on_ear_change,
@@ -313,7 +313,6 @@ class Page(Frame):
 
         self.optionsManager = database_manager
         self.gesture_parser = parser
-        self.smart_home_activator = activator
         self.option = 1
         self.command_index = 0
         self.is_full = 0
@@ -408,7 +407,7 @@ class Page(Frame):
                 self.is_command_menu = True
 
             elif element["format"] == "option":
-                self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning"]
+                self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
                 row = self.row_index
                 for option in self.optionsManager.get_commands():
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
@@ -479,12 +478,16 @@ class Page(Frame):
 
         count = 1
         for option in self.optionsManager.get_commands():
+            device = None
+
+            if self.command_links[count].get() == "Heater" or self.command_links[count].get() == "Air Conditioning":
+                device = "Nest"
+            else:
+                device = "Alexa"
+
             self.optionsManager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
-                                             option["gesture_sequence"][2]], self.command_links[count].get(), "None")
-            self.gesture_parser.add_pattern(option['gesture_sequence'],
-                                            lambda: self.smart_home_activator.activate(
-                                                str(self.command_links[count].get()),
-                                                "None"))
+                                             option["gesture_sequence"][2]], self.command_links[count].get(), device)
+            self.gesture_parser.update()
             count += 1
 
     def is_full_command(self, value):
@@ -582,7 +585,7 @@ class GuiManager():
                  on_high_contrast, initial_high_contrast,
                  on_min_time_inc, initial_min_time_inc,
                  on_max_time_inc, initial_max_time_inc,
-                 gesture_detected, is_admin, database_manager, parser, activator):
+                 gesture_detected, is_admin, database_manager, parser):
         self.gui = _App()
         self.gui.title("Non-Verbal Smart Home Recognition System")
         self.debug_tab = self.gui.set_cap_and_get_debug_tab(cap, on_ear_change, initial_ear,
@@ -590,7 +593,7 @@ class GuiManager():
                                                             on_high_contrast, initial_high_contrast,
                                                             on_min_time_inc, initial_min_time_inc,
                                                             on_max_time_inc, initial_max_time_inc,
-                                                            gesture_detected, database_manager, parser, activator)
+                                                            gesture_detected, database_manager, parser)
         self.fps_tab = self.gui.get_fps_tab()
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()

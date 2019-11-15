@@ -22,9 +22,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
+        self.smart_home_activator = SmartHomeActivator()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
-        self.gesture_parser = GestureParser(self.logger, self.database_manager)
+        self.gesture_parser = GestureParser(self.logger, self.database_manager, self.smart_home_activator)
         self.gesture_detected = None
         # self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
@@ -32,8 +33,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
-
-        self.smart_home_activator = SmartHomeActivator()
 
         for command_map in self.database_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
@@ -59,7 +58,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
                                       self.gesture_detected, self.admin, self.database_manager,
-                                      self.gesture_parser, self.smart_home_activator)
+                                      self.gesture_parser)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      
