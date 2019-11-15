@@ -481,9 +481,8 @@ class Page(Frame):
         for option in self.optionsManager.get_commands():
             self.optionsManager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
                                              option["gesture_sequence"][2]], self.command_links[count].get(), "None")
-            self.gesture_parser.update_pattern(option["gesture_sequence"],
-                                               lambda: self.smart_home_activator.activate(
-                                                   self.command_links[count].get(), "None"))
+            self.gesture_parser.update_pattern(option["gesture_sequence"], lambda: self.smart_home_activator.activate(
+                self.command_links[count].get(), "None"))
             count += 1
 
     def is_full_command(self, value):

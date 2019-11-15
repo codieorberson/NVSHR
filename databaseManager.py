@@ -112,8 +112,3 @@ class DatabaseManager():
 
     def get_max_time_inc(self):
         return float(self.__get_configuration__('maximum_time_increment'))
-
-    def close(self):
-        self.log_manager.close()
-        self.command_manager.close()
-        self.configuration_manager.close()

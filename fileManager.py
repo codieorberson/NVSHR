@@ -34,9 +34,3 @@ class FileManager:
 
     def get_length(self):
         return len(self._cached_lines)
-    
-    def close(self):
-        with open(self._file_name, "w+") as file:
-            file.seek(0)
-            file.close()
-            os.remove(self._file_name)

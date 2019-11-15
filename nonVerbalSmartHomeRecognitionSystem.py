@@ -136,5 +136,4 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.destroy_gui()
 
         # Close log file
-        self.logger.close() 
-        self.database_manager.close()
+        self.logger.close()
