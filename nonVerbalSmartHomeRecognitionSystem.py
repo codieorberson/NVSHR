@@ -22,7 +22,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
-        self.smart_home_activator = SmartHomeActivator()
+        self.smart_home_activator = SmartHomeActivator(self.database_manager)
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
