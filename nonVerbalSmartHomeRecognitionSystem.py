@@ -83,8 +83,6 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.process_manager.on_done()
 
-        self.gesture_detector.trigger_events(timestamp, self.open_eye_threshold)
-
         self.gui_manager.set_fps(self.fps)
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.last_timestamp = timestamp

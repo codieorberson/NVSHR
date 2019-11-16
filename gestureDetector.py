@@ -77,10 +77,10 @@ class GestureDetector():
         self.blink_detector.detect(current_frame, self.left_eye_perimeter, self.right_eye_perimeter)
 
         self.process_manager.on_done()
-
+        self.__trigger_events__(timestamp, open_eye_threshold)
         return self.__draw_rectangles__(frame)
 
-    def trigger_events(self, timestamp, open_eye_threshold):
+    def __trigger_events__(self, timestamp, open_eye_threshold):
 
         self.gesture_detected = None
         if self.fist_perimeter.is_set():
