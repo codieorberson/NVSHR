@@ -235,7 +235,6 @@ class _App(Tk):
                                           on_min_time_inc, initial_min_time_inc,
                                           on_max_time_inc, initial_max_time_inc,
                                           gesture_detected, settings_manager)
-
         self.notebook.grid(row=0)
         return self.debug_tab
 
@@ -263,6 +262,11 @@ class _App(Tk):
                 self.fist_label = tab
             if tab.is_palm_label:
                 self.palm_label = tab
+            if tab.is_low_contrast:
+                self.low_contrast = tab
+            if tab.is_high_contrast:
+                self.high_contrast = tab
+            
 
         return debug_tab
 
@@ -278,6 +282,11 @@ class _App(Tk):
     def get_palm_label(self):
         return self.palm_label
 
+    def get_low_contrast(self):
+        return self.low_contrast
+    
+    def get_high_contrast(self):
+        return self.high_contrast
 
 # An instance of this class represents a tab.
 class Page(Frame):
@@ -292,7 +301,6 @@ class Page(Frame):
             "on_min_time_inc": on_min_time_inc,
             "on_max_time_inc": on_max_time_inc
         }
-
         self.initial_value_map = {
             "on_ear_change": initial_ear,
             "on_low_contrast": initial_low_contrast,
@@ -319,7 +327,13 @@ class Page(Frame):
         self.command_links = {}
         self.new_command = {}
 
+        self.is_low_contrast = False
+        self.is_high_contrast = False
         self.row_index = 1
+
+        self.default_low_contrast = 0
+        self.default_high_contrast = 113
+
         for element in elements:
             if element["format"] == "text":
                 column_index = 0
@@ -376,8 +390,12 @@ class Page(Frame):
                     self.slider_command = self.event_map[event_name]
                     if event_name == "on_ear_change":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                    elif event_name == "on_low_contrast" or event_name == "on_high_contrast":
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
+                    elif event_name == "on_low_contrast":
+                        self.is_low_contrast = True
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command and self.change_default_low_contrast)
+                    elif event_name == "on_high_contrast":
+                        self.is_high_contrast = True
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command and self.change_default_high_contrast)
                     elif event_name == "on_min_time_inc" or "on_max_time_inc":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
 
@@ -575,6 +593,20 @@ class Page(Frame):
             self.fist_label.configure(bg="White")
             self.palm_label.configure(bg="White")
             self.blink_label.configure(bg="White")
+    
+    def change_default_low_contrast(self, value):
+        self.default_low_contrast = value
+        return(self.change_low_contrast())
+
+    def change_default_high_contrast(self, value):
+        self.default_high_contrast = value
+        return(self.change_high_contrast())
+
+    def change_low_contrast(self):
+        return(self.default_low_contrast)
+        
+    def change_high_contrast(self):
+        return(self.default_high_contrast)
 
 
 class GuiManager():
@@ -596,6 +628,9 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
+        
+        self.low_contrast = self.gui.get_low_contrast()
+        self.high_contrast = self.gui.get_high_contrast()
 
         if is_admin == False:
             self.gui.withdraw()
@@ -621,6 +656,13 @@ class GuiManager():
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
-
+    
+    def update_low_contrast(self):
+        return(self.low_contrast.change_low_contrast())
+    
+    def update_high_contrast(self):
+        return(self.high_contrast.change_high_contrast())
+        
     def destroy_gui(self):
         self.gui.destroy()
+        
