@@ -45,6 +45,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser.on_recognised_pattern(lambda gesture_sequence, timestamp: self.logger.log_gesture_sequence(gesture_sequence, timestamp, True))
         self.gesture_parser.on_unrecognised_pattern(lambda gesture_sequence, timestamp: self.logger.log_gesture_sequence(gesture_sequence, timestamp, False))
 
+        self.gesture_parser.on_recognised_pattern(lambda gesture_sequence, timestamp: self.smart_home_activator.activate(gesture_sequence, True))
+
+        self.gesture_parser.on_unrecognised_pattern(lambda gesture_sequence, timestamp: self.smart_home_activator.activate(gesture_sequence, False))
+
         for command_map in self.database_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
                              command_map['command_text'],

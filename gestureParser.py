@@ -1,11 +1,8 @@
-from smartHomeActivator import SmartHomeActivator
-
 class GestureParser():
     def __init__(self):
         self.gesture_pattern_map = {}
         self.recognised_pattern_events = []
         self.unrecognised_pattern_events = []
-        self.smart_home_activator = SmartHomeActivator()
 
     def add_pattern(self, gestures, event):
         self.gesture_pattern_map["".join(gestures)] = event
@@ -25,7 +22,6 @@ class GestureParser():
             self.gesture_pattern_map[joined_gesture_sequence](now)
             for event in self.recognised_pattern_events:
                 event(gesture_sequence, now)
-            self.smart_home_activator.activate(gesture_sequence, True)
         else:
             for event in self.unrecognised_pattern_events:
                 event(gesture_sequence, now)
