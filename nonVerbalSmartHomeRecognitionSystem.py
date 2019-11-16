@@ -24,7 +24,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.logger = Logger()
         self.smart_home_activator = SmartHomeActivator(self.database_manager)
         self.gesture_detector = GestureDetector()
-        self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
+        self.gesture_lexer = GestureLexer()
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
         # self.admin_settings_manager = AdminCmdManager()
@@ -32,7 +32,13 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
-        self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
+        self.gesture_detector.on_blink(lambda timestamp: self.logger.log_gesture("blink", timestamp))
+        self.gesture_detector.on_fist(lambda timestamp: self.logger.log_gesture("fist", timestamp))
+        self.gesture_detector.on_palm(lambda timestamp: self.logger.log_gesture("palm", timestamp))
+        self.gesture_detector.on_blink(lambda timestamp: self.logger.log_gesture("blink", timestamp))
+        self.gesture_detector.on_fist(lambda timestamp: self.database_manager.set_gesture("fist", timestamp))
+        self.gesture_detector.on_palm(lambda timestamp: self.database_manager.set_gesture("palm", timestamp))
+        self.gesture_detector.on_blink(lambda timestamp: self.database_manager.on_gesture("blink", timestamp))
 
         for command_map in self.database_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
