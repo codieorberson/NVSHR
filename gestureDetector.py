@@ -21,19 +21,19 @@ class GestureDetector():
         self.hand_gesture_detector = HandGestureDetector()
         self.blink_detector = BlinkDetector()
 
-        self.fist_event = None
-        self.palm_event = None
-        self.blink_event = None
+        self.fist_events = []
+        self.palm_events = []
+        self.blink_events = []
         self.gesture_detected = None
 
     def on_fist(self, callback):
-        self.fist_event = callback
+        self.fist_events.append(callback)
 
     def on_palm(self, callback):
-        self.palm_event = callback
+        self.palm_events.append(callback)
 
     def on_blink(self, callback):
-        self.blink_event = callback
+        self.blink_events.append(callback)
 
     def get_gesture_detected(self):
         return self.gesture_detected
@@ -80,18 +80,20 @@ class GestureDetector():
         self.gesture_detected = None
         if fist_perimeter.is_set():
             self.gesture_detected = "fist"
-            self.fist_event(timestamp)
+            for event in self.fist_events:
+                event(timestamp)
 
         if palm_perimeter.is_set():
             self.gesture_detected = "palm"
-            self.palm_event(timestamp)
+            for event in self.palm_events:
+                event(timestamp)
         
         if left_eye_perimeter.is_set() and right_eye_perimeter.is_set():
             if open_eye_threshold / 100 > (left_eye_perimeter.get_ratio() + right_eye_perimeter.get_ratio()) / 2:
                 self.gesture_detected = "blink"
-                self.blink_event(timestamp)
 
-                self.blink_event(timestamp)
+                for event in self.blink_events:
+                    event(timestamp)
 
     ''' This code is NOT being used right now 
     # Used for creating contrast within the frame to detect hand gestures more clearly
