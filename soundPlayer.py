@@ -4,8 +4,8 @@ class SoundPlayer():
     def __init__(self):
         self.sound = Sound()
 
-    def playSuccessSound(self):
+    def play_success_sound(self):
         self.sound.from_file('Success.wav')
 
-    def playFailureSound(self):
+    def play_failure_sound(self):
         self.sound.from_file('Failure.wav')
