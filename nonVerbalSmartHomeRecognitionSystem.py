@@ -115,11 +115,7 @@ class NonVerbalSmartHomeRecognitionSystem():
     def __set_up_commands__(self):
         self.gesture_parser.on_gesture_sequence(self.logger.log_gesture_sequence)
         self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence, was_recognised))
-
-        for command_map in self.database_manager.get_commands():
-            self.add_command(command_map['gesture_sequence'],
-                             command_map['command_text'],
-                             command_map['device_name'])
+        self.update_commands()
 
     def __set_up_camera__(self): 
         self.cap = cv2.VideoCapture(0)
@@ -127,7 +123,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
 
     def __set_up_configuration__(self):
-
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.low_contrast_value = self.database_manager.get_low_contrast()
         self.high_contrast_value = self.database_manager.get_high_contrast()
@@ -140,7 +135,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.__set_up_gui_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)
  
-
     def __set_up_gui_values__(self):
         self.gui_manager.set_initial_ear(self.open_eye_threshold)
         self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
