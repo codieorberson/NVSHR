@@ -1,3 +1,4 @@
+import multiprocessing
 from multiprocessing import Process
 import platform
 
@@ -30,15 +31,17 @@ class ProcessManager():
         if arguments:
             if not isinstance(arguments, tuple):
                 arguments = (arguments, )
-            process = ProcessConstructor(target=callback, args=arguments)
+            self.process = ProcessConstructor(target=callback, args=arguments)
         else:
-            process = ProcessConstructor(target=callback)
-        self.processes.append(process)
-        process.start()
+            self.process = ProcessConstructor(target=callback)
+            
+        self.processes.append(self.process)
+        self.process.start()
+        
 
     def on_done(self, callback=None):
-        for process in self.processes:
-            process.join()
+        for self.process in self.processes:
+            self.process.join()
         self.processes = []
         if callback:
             callback()

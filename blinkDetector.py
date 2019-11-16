@@ -49,10 +49,10 @@ class BlinkDetector:
                     height = y - int((leftEyeHull[4][0][1] + leftEyeHull[5][0][1]) / 2)
                 else:
                     height = 0
-                
+
                 y = y - height
                 left_eye_perimeter.set((x, y, width, height))
-                
+
                 x = int(rightEyeHull[3][0][0])
                 width = int(rightEyeHull[0][0][0]) - x
                 y = int((rightEyeHull[1][0][1] + rightEyeHull[2][0][1]) / 2)
@@ -61,13 +61,11 @@ class BlinkDetector:
                     height = y - int((rightEyeHull[4][0][1] + rightEyeHull[5][0][1]) / 2)
                 else:
                     height = 0
- 
+
                 y = y - height
                 right_eye_perimeter.set((x, y, width, height))
 
         except:
-            #Sometimes we're getting out of range errors when trying to access
-            #the six points on the eyes, particularly when they move off
-            #screen. This should make our program not barf when that happens.
+            # handle event when eyes are close to the edge of the screen
             left_eye_perimeter.set((0, 0, 0, 0))
             right_eye_perimeter.set((0, 0, 0, 0))
