@@ -1,7 +1,7 @@
 import os
 
 
-class FileManager():
+class FileManager:
     def __init__(self, file_name, default_lines):
         self._file_name = file_name
         self._cached_lines = []
@@ -34,13 +34,3 @@ class FileManager():
 
     def get_length(self):
         return len(self._cached_lines)
-    
-    def close(self):
-        with open(self._file_name, "w+") as file:
-            file.seek(0)
-            file.close()
-            os.remove(self._file_name)
-    
-
-
-    

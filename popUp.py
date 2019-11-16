@@ -1,21 +1,14 @@
 #!/usr/local/bin/python3
 import tkinter
 
-def _catch_transition_exception(exception, value, traceback):
-    if str(exception) == "<class 'NameError'>":
-        pass
-    else:
-        raise exception
-
 class PopUp:
     def __init__(self):
         self.popup = tkinter.Tk()
-        self.popup.report_callback_exception = _catch_transition_exception
 
         self.is_admin = None
 
         # Window needs to be centered within the screen and should have a title saying Welcome!
-        self.center(400, 200, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
+        self.center(400, 300, self.popup.winfo_screenwidth(), self.popup.winfo_screenheight())
 
         self.popup.geometry("400x300+%d+%d" % (self.x, self.y))
         self.popup.wm_title("Welcome!")

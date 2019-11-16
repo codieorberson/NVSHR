@@ -1,10 +1,7 @@
 # Non-Verbal Smart Home Recognition (NVSHR) System 
+![NVSHR Logo](NVSHRLogo.png)
 
-### Postgres Setup
-
-Install postgres, grant your current user account access to psql, and create a database named after your user account if your system's user creation process didn't do that for you automagically.
-
-### Further Environment Set-Up
+### Environment Set-Up
 
  If you are using a Windows machine, please check and make sure you are using the current SDK files.
  You can most likely find these files in your C directory (C:\Program Files (x86)\Microsoft SDKs\Windows Kits) or similar directory.
@@ -65,7 +62,11 @@ Follow these steps to initialize the NVSHR system on your device:
 
 1. Run `main.py`. 
 
-2. After running the previous command, a pop-up window will appear with video feedback from the connected camera. Please ensure the camera is placed properly so that the user is within the camera frame. 
+2. After running the previous command, a pop-up window will appear verifying what type of you you are. 
+
+    a. If you are a regular user, the window will disappear and you will be able to begin using the system.
+    
+    b. If you are an administrator for the system, the administrator GUI will appear for system configuration. Please follow all instructions on within the system to ensure the user will have the easiest experience with the system.  
     
 ### Testing the NVSHR System
 

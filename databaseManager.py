@@ -3,11 +3,10 @@ from fileManager import FileManager
 _default_log_values = ["   Date        Time     Command\n"]
 
 _default_command_values = [
-    "fist-palm-blink, Lights, Alexa\n",
-    "palm-fist-blink, Smart Plug, Alexa\n",
-    "fist-blink-palm, Heat, Nest\n",
-    "palm-blink-fist, Fan, Nest\n",
-    "palm, STOP, Alexa\n"
+    "fist-palm-blink, None, None\n",
+    "palm-fist-blink, None, None\n",
+    "fist-blink-palm, None, None\n",
+    "palm-blink-fist, None, None\n"
 ]
 
 _default_configuration_values = ["0.05\n",
@@ -25,8 +24,10 @@ _configuration_index_map = {
         'high_contrast' : 4
         }
 
+
 def _get_configuration_index(configuration_column_name):
     return _configuration_index_map[configuration_column_name]
+
 
 class DatabaseManager():
     def __init__(self):
@@ -113,10 +114,3 @@ class DatabaseManager():
 
     def get_max_time_inc(self):
         return float(self.__get_configuration__('maximum_time_increment'))
-
-    def close(self):
-        self.log_manager.close()
-        self.command_manager.close()
-        self.configuration_manager.close()
-
-        

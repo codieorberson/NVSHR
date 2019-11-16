@@ -22,18 +22,17 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
+        self.smart_home_activator = SmartHomeActivator()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
         self.gesture_detected = None
-        self.admin_settings_manager = AdminCmdManager()
+        # self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
         self.gesture_detector.on_blink(lambda timestamp: self.gesture_lexer.add("blink", timestamp))
-
-        self.smart_home_activator = SmartHomeActivator()
 
         for command_map in self.database_manager.get_commands():
             self.add_command(command_map['gesture_sequence'],
@@ -58,7 +57,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                                       self.set_high_contrast, self.high_contrast_value,
                                       self.set_min_time_inc, self.min_increment,
                                       self.set_max_time_inc, self.max_increment,
-                                      self.gesture_detected, self.admin, self.admin_settings_manager)
+                                      self.gesture_detected, self.admin, self.database_manager)
 
         self.gui_manager.start(self.main_loop, self.on_close)
      
@@ -103,6 +102,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detected = self.gesture_detector.get_gesture_detected()
         self.gui_manager.set_gesture_background(self.gesture_detected)
 
+        self.update_commands()
+
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)
         self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
@@ -126,6 +127,12 @@ class NonVerbalSmartHomeRecognitionSystem():
                                         lambda: self.smart_home_activator.activate(command_text, device_name))
         self.database_manager.set_command(gesture_sequence, command_text, device_name)
 
+    def update_commands(self):
+        for command_map in self.database_manager.get_commands():
+            self.add_command(command_map['gesture_sequence'],
+                             command_map['command_text'],
+                             command_map['device_name'])
+
     def on_close(self):
         # Close down OpenCV
         self.cap.release()
@@ -135,5 +142,4 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.destroy_gui()
 
         # Close log file
-        self.logger.close() 
-        self.database_manager.close()
+        self.logger.close()

@@ -10,8 +10,8 @@ class GestureParser():
     def add_pattern(self, gestures, event):
         self.gesture_pattern_map["".join(gestures)] = event
 
-    #Takes in a list of lists of gestures and matches them to any patterns under add_pattern
-    #Then sends confirm or failure noise, and logs the sequence in logger.
+    # Takes in a list of lists of gestures and matches them to any patterns under add_pattern
+    # Then sends confirm or failure noise, and logs the sequence in logger.
     def parse_pattern(self, gesture_sequence, now):
         joined_gesture_sequence = "".join(gesture_sequence)
         was_recognized = bool(
