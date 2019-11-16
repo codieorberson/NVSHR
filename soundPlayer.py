@@ -1,11 +1,14 @@
-from sound import Sound
+from subprocessExecutor import SubprocessExecutor
 
 class SoundPlayer():
     def __init__(self):
-        self.sound = Sound()
+        self.subprocessExecutor = SubprocessExecutor()
 
-    def playSuccessSound(self):
-        self.sound.from_file('Success.wav')
+    def play_success_sound(self):
+        self.__play_file__('Success.wav')
 
-    def playFailureSound(self):
-        self.sound.from_file('Failure.wav')
+    def play_failure_sound(self):
+        self.__play_file__('Failure.wav')
+
+    def __play_file__(self, file_name):
+        self.subprocess_executor.execute('./play_file.py', file_name)
