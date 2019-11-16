@@ -1,11 +1,5 @@
 import cv2
 import imutils
-import numpy as np
-from scipy.spatial import distance as dist
-from imutils.video import FileVideoStream
-from imutils.video import VideoStream
-from imutils import face_utils
-from datetime import datetime
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from gesture import Gesture
@@ -16,23 +10,8 @@ class GestureDetector():
     def __init__(self):
         # Next value not being used right now, but may be in the near future.
         # self.is_black_and_white = False
-
-        self.process_manager = ProcessManager()
-        self.hand_gesture_detector = HandGestureDetector()
-        self.blink_detector = BlinkDetector()
-
-        self.fist_perimeter = MultithreadedPerimeter()
-        self.palm_perimeter = MultithreadedPerimeter() 
-        self.left_eye_perimeter = MultithreadedPerimeter()
-        self.right_eye_perimeter = MultithreadedPerimeter()
- 
-        self.perimeters = [
-            self.fist_perimeter, 
-            self.palm_perimeter, 
-            self.left_eye_perimeter, 
-            self.right_eye_perimeter
-        ]
-
+        self.__set_up_helpers__()
+        self.__set_up_perimeters__()
         self.gesture_events = []
         self.gesture_detected = None
 
@@ -67,32 +46,33 @@ class GestureDetector():
             current_frame = frame
         '''
 
-        current_frame = frame
-
         self.__reset_perimeters__()
-
-        self.process_manager.add_process(
-                self.hand_gesture_detector.detect, (current_frame, self.fist_perimeter, self.palm_perimeter))
-
-        self.blink_detector.detect(current_frame, self.left_eye_perimeter, self.right_eye_perimeter)
-
-        self.process_manager.on_done()
+        self.__detect_shapes__(frame)
         self.__trigger_events__(timestamp, open_eye_threshold)
         return self.__draw_rectangles__(frame)
 
+    def __detect_shapes__(self, frame):
+        self.process_manager.add_process(
+                self.hand_gesture_detector.detect, (frame, self.fist_perimeter, self.palm_perimeter))
+
+        self.blink_detector.detect(frame, self.left_eye_perimeter, self.right_eye_perimeter)
+  
+        self.process_manager.on_done()
+
     def __trigger_events__(self, timestamp, open_eye_threshold):
-
         self.gesture_detected = None
-        if self.fist_perimeter.is_set():
-            self.gesture_detected = "fist"
-            for event in self.gesture_events:
-                event('fist', timestamp)
 
-        if self.palm_perimeter.is_set():
-            self.gesture_detected = "palm"
+        self.__trigger_hand_events__(self.fist_perimeter, 'fist', timestamp)
+        self.__trigger_hand_events__(self.palm_perimeter, 'palm', timestamp)
+        self.__trigger_blink_events__(timestamp, open_eye_threshold)
+
+    def __trigger_hand_events__(self, perimeter, gesture_name, timestamp):
+        if perimeter.is_set():
+            self.gesture_detected = gesture_name
             for event in self.gesture_events:
-                event('palm', timestamp)
-        
+                event(gesture_name, timestamp)
+
+    def __trigger_blink_events__(self, timestamp, open_eye_threshold):        
         if self.left_eye_perimeter.is_set() and self.right_eye_perimeter.is_set():
             if open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
                 self.gesture_detected = "blink"
@@ -111,8 +91,33 @@ class GestureDetector():
         for perimeter in self.perimeters:
             perimeter.set((0, 0, 0, 0))
 
+    def __set_up_helpers__(self):
+        self.process_manager = ProcessManager()
+        self.hand_gesture_detector = HandGestureDetector()
+        self.blink_detector = BlinkDetector()
+
+    def __set_up_perimeters__(self):
+        self.fist_perimeter = MultithreadedPerimeter()
+        self.palm_perimeter = MultithreadedPerimeter() 
+        self.left_eye_perimeter = MultithreadedPerimeter()
+        self.right_eye_perimeter = MultithreadedPerimeter()
+ 
+        self.perimeters = [
+            self.fist_perimeter, 
+            self.palm_perimeter, 
+            self.left_eye_perimeter, 
+            self.right_eye_perimeter
+        ]
+
+
 
     ''' This code is NOT being used right now 
+
+import numpy as np
+from scipy.spatial import distance as dist
+from imutils.video import FileVideoStream
+from imutils.video import VideoStream
+
     # Used for creating contrast within the frame to detect hand gestures more clearly
     def set_frame_contrast(Red, Green, Blue):
         redContrast = Red
