@@ -2,7 +2,7 @@ from subprocessExecutor import SubprocessExecutor
 
 class SoundPlayer():
     def __init__(self):
-        self.subprocessExecutor = SubprocessExecutor()
+        self.subprocess_executor = SubprocessExecutor()
 
     def play_success_sound(self):
         self.__play_file__('Success.wav')
