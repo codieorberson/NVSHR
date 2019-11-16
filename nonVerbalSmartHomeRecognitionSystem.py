@@ -82,7 +82,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                 (gesture_sequences, timestamp))
 
         self.process_manager.add_process(
-                self.gesture_detector.detect, (frame, timestamp, self.open_eye_threshold, fist_perimeter,
+                self.gesture_detector.detect, (frame, self.gui_manager.update_low_contrast(), self.gui_manager.update_high_contrast(), timestamp, self.open_eye_threshold, fist_perimeter,
                 palm_perimeter, left_eye_perimeter, right_eye_perimeter))
 
         self.process_manager.on_done()
@@ -101,6 +101,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = timestamp
         self.gesture_detected = self.gesture_detector.get_gesture_detected()
         self.gui_manager.set_gesture_background(self.gesture_detected)
+       # (self.gui_manager.update_low_contrast())
+        #self.gui_manager.update_high_contrast()
 
         self.update_commands()
 
