@@ -1,4 +1,3 @@
-from sound import Sound
 from smartHomeActivator import SmartHomeActivator
 
 class GestureParser():
@@ -17,6 +16,10 @@ class GestureParser():
         was_recognized = bool(
             joined_gesture_sequence in self.gesture_pattern_map)
         self.logger.log_gesture_sequence(gesture_sequence, now, was_recognized)
+
+        if was_recognized: 
+            self.gesture_pattern_map[joined_gesture_sequence]()
+
         self.smart_Home_Activator.activate(gesture_sequence, was_recognized)
 
     def parse_patterns(self, gesture_patterns, now):
