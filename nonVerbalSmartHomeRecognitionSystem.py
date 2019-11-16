@@ -53,15 +53,15 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.low_contrast_value = self.database_manager.get_low_contrast()
         self.high_contrast_value = self.database_manager.get_high_contrast()
-        self.min_increment = self.database_manager.get_min_time_inc()
-        self.max_increment = self.database_manager.get_max_time_inc()
+        self.min_increment = self.database_manager.get_minimum_time_increment()
+        self.max_increment = self.database_manager.get_maximum_time_increment()
 
         self.gui_manager = GuiManager(self.cap,
                                       self.set_open_eye_threshold, self.open_eye_threshold,
                                       self.set_low_contrast, self.low_contrast_value,
                                       self.set_high_contrast, self.high_contrast_value,
-                                      self.set_min_time_inc, self.min_increment,
-                                      self.set_max_time_inc, self.max_increment,
+                                      self.set_minimum_time_increment, self.min_increment,
+                                      self.set_maximum_time_increment, self.max_increment,
                                       self.gesture_detected, self.admin, self.database_manager)
 
         self.gui_manager.start(self.main_loop, self.on_close)
@@ -119,13 +119,13 @@ class NonVerbalSmartHomeRecognitionSystem():
     def set_high_contrast(self, new_high_contrast):
         self.database_manager.set_high_contrast(int(new_high_contrast))
 
-    def set_min_time_inc(self, new_min_time_inc):
-        self.min_increment = int(new_min_time_inc)
-        self.database_manager.set_min_time_inc(new_min_time_inc)
+    def set_minimum_time_increment(self, new_minimum_time_increment):
+        self.min_increment = int(new_minimum_time_increment)
+        self.database_manager.set_minimum_time_increment(new_minimum_time_increment)
 
-    def set_max_time_inc(self, new_max_time_inc):
-        self.max_increment = int(new_max_time_inc)
-        self.database_manager.set_max_time_inc(new_max_time_inc)
+    def set_maximum_time_increment(self, new_maximum_time_increment):
+        self.max_increment = int(new_maximum_time_increment)
+        self.database_manager.set_maximum_time_increment(new_maximum_time_increment)
 
     def add_command(self, gesture_sequence, command_text, device_name):
         self.gesture_parser.add_pattern(gesture_sequence,
