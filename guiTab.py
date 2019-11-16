@@ -10,25 +10,9 @@ import subprocess
 from fpdf import FPDF
 
 class GuiTab(Frame):
-    def __init__(self, name, window, cap, on_ear_change, initial_ear, on_low_contrast, initial_low_contrast,
-                 on_high_contrast, initial_high_contrast, on_min_time_inc, initial_min_time_inc,
-                 on_max_time_inc, initial_max_time_inc, gesture_detected, elements, database_manager,
-                 *args, **kwargs):
-        self.event_map = {
-            "on_ear_change": on_ear_change,
-            "on_low_contrast": on_low_contrast,
-            "on_high_contrast": on_high_contrast,
-            "on_min_time_inc": on_min_time_inc,
-            "on_max_time_inc": on_max_time_inc
-        }
-
-        self.initial_value_map = {
-            "on_ear_change": initial_ear,
-            "on_low_contrast": initial_low_contrast,
-            "on_high_contrast": initial_high_contrast,
-            "on_min_time_inc": initial_min_time_inc,
-            "on_max_time_inc": initial_max_time_inc
-        }
+    def __init__(self, name, window, database_manager, *args, **kwargs):
+        self.event_map = {}
+        self.initial_value_map = {}
 
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
@@ -38,9 +22,9 @@ class GuiTab(Frame):
         self.is_palm_label = False
         self.is_command_menu = False
         self.has_list_box = False
-        self.gesture_detected = gesture_detected
+        self.name = name
 
-        self.optionsManager = database_manager
+        self.database_manager = database_manager
         self.option = 1
         self.command_index = 0
         self.is_full = 0
@@ -48,8 +32,46 @@ class GuiTab(Frame):
         self.command_links = {}
         self.new_command = {}
 
+    def set_initial_ear(self, initial_value):
+        self.initial_value_map['on_ear_change'] = initial_value
+
+    def set_initial_low_contrast(self, initial_value):
+        self.initial_value_map['on_low_contrast'] = initial_value
+
+    def set_initial_high_contrast(self, initial_value):
+        self.initial_value_map['on_high_contrast'] = initial_value
+
+    def set_initial_minimum_time_increment(self, initial_value):
+        self.initial_value_map['on_min_time_inc'] = initial_value
+
+    def set_initial_maximum_time_increment(self, initial_value):
+        self.initial_value_map['on_max_time_inc'] = initial_value
+
+    def set_cap(self, cap):
+        self.cap = cap
+
+    def on_ear_change(self, callback):
+        self.event_map['on_ear_change'] = callback
+
+    def on_low_contrast_change(self, callback):
+        self.event_map['on_low_contrast'] = callback
+
+    def on_high_contrast_change(self, callback):
+        self.event_map['on_high_contrast'] = callback
+
+    def on_minimum_time_increment_change(self, callback):
+        self.event_map['on_min_time_inc'] = callback
+
+    def on_maximum_time_increment_change(self, callback):
+        self.event_map['on_max_time_inc'] = callback
+
+    def on_new_command(self, callback):
+        self.on_new_command_change = callback
+
+    def load_data(self, tab_elements):
         self.row_index = 1
-        for element in elements:
+
+        for element in tab_elements:
             if element["format"] == "text":
                 column_index = 0
                 body_index = list(element.keys()).index("body")
@@ -57,46 +79,40 @@ class GuiTab(Frame):
                     if self.is_command_menu:
                         self.label = Label(self.command_listbox, element.get(body))
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
-                        self.name = name
                         column_index += 1
                     elif self.has_list_box:
                         self.label = Label(self.list_box, element.get(body))
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=0)
-                        self.name = name
                         column_index += 1
                     else:
                         self.label = Label(self, element.get(body))
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
-                        self.name = name
                         column_index += 1
 
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
                 self.label = Label(self, textvariable=text_var, font=20)
-                if cap.isOpened == False:
+                if self.cap.isOpened == False:
                     messagebox.showerror("No Camera Connected", "The system cannot recognize the connected "
                                                                 "camera and is not taking in any data. Please "
                                                                 "ensure your camera is connected properly.")
-                text_var.set("Camera On: " + str(cap.isOpened()))
+                text_var.set("Camera On: " + str(self.cap.isOpened()))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
-                self.name = name
 
             elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
                 self.label = Label(self, textvariable=self.fps_container, font=20)
-                self.fps_container.set("FPS:       " + self.get_cam_fps(cap))
+                self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
-                self.name = name
                 self.is_fps = True
 
             elif element["format"] == "video":
                 self.is_debug = True
-                self.debug_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-                self.debug_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+                self.debug_width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+                self.debug_height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
                 self.debug_canvas.grid(row=self.row_index, column=0, padx=10, pady=10, columnspan=5)
-                self.name = name
 
             elif element["format"] == "slider":
                 column_index = 0
@@ -112,7 +128,6 @@ class GuiTab(Frame):
 
                     self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100
                     self.slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
-                    self.name = name
                     column_index += 1
 
             elif element["format"] == "gestures":
@@ -137,7 +152,7 @@ class GuiTab(Frame):
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
                 row = self.row_index
-                for option in self.optionsManager.get_commands():
+                for option in self.database_manager.get_commands():
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                     small_frame.grid(row=row, column=0, padx=10, pady=10)
                     text = {"text": "Command " + str(self.option) + " (" + option["gesture_sequence"][
@@ -146,7 +161,6 @@ class GuiTab(Frame):
                                         2].capitalize() + ")"}
                     self.label = Label(small_frame, text)
                     self.label.grid(row=row, column=0, padx=10, pady=10)
-                    self.name = name
                     variable = StringVar()
                     variable.set(option["command_text"])
                     self.command_links[self.option] = variable
@@ -197,7 +211,7 @@ class GuiTab(Frame):
         return frame[..., [2, 1, 0]]
 
     def set_value(self, value):
-        for option in self.optionsManager.get_commands():
+        for option in self.database_manager.get_commands():
             if value == option["command_text"] and value != "None":
                 messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
@@ -205,7 +219,7 @@ class GuiTab(Frame):
                 return
 
         count = 1
-        for option in self.optionsManager.get_commands():
+        for option in self.database_manager.get_commands():
             device = None
 
             if self.command_links[count].get() == "Heater" or self.command_links[count].get() == "Air Conditioning":
@@ -213,7 +227,7 @@ class GuiTab(Frame):
             else:
                 device = "Alexa"
 
-            self.optionsManager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
+            self.database_manager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
                                              option["gesture_sequence"][2]], self.command_links[count].get(), device)
             count += 1
 
@@ -232,13 +246,13 @@ class GuiTab(Frame):
                 self.label = Label(small_frame, text)
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 variable = StringVar()
-                #  self.optionsManager.change_keys()
+                #  self.database_manager.change_keys()
                 variable.set("None")
                 self.command_links[self.option] = variable
                 self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
-                self.optionsManager.set_command([self.new_command[0].get().lower(), self.new_command[1].get().lower(),
+                self.database_manager.set_command([self.new_command[0].get().lower(), self.new_command[1].get().lower(),
                                                  self.new_command[2].get().lower()], "None", "None")
                 self.option += 1
                 self.row_index += 1
