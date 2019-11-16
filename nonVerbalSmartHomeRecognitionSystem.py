@@ -32,16 +32,10 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
 
-        self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
-        self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))
-        self.gesture_detector.on_blink(lambda timestamp: self.logger.log_gesture("blink", timestamp))
-        self.gesture_detector.on_fist(lambda timestamp: self.logger.log_gesture("fist", timestamp))
-        self.gesture_detector.on_palm(lambda timestamp: self.logger.log_gesture("palm", timestamp))
-        self.gesture_detector.on_blink(lambda timestamp: self.logger.log_gesture("blink", timestamp))
-        self.gesture_detector.on_fist(lambda timestamp: self.database_manager.set_gesture("fist", timestamp))
-        self.gesture_detector.on_palm(lambda timestamp: self.database_manager.set_gesture("palm", timestamp))
-        self.gesture_detector.on_blink(lambda timestamp: self.database_manager.set_gesture("blink", timestamp))
-
+        self.gesture_detector.on_gesture(self.gesture_lexer.add)
+        self.gesture_detector.on_gesture(self.database_manager.set_gesture)
+        self.gesture_detector.on_gesture(self.logger.log_gesture)
+ 
         self.gesture_parser.on_recognised_pattern(lambda gesture_sequence, timestamp: self.logger.log_gesture_sequence(gesture_sequence, timestamp, True))
         self.gesture_parser.on_unrecognised_pattern(lambda gesture_sequence, timestamp: self.logger.log_gesture_sequence(gesture_sequence, timestamp, False))
 
