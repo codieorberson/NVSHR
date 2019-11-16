@@ -12,8 +12,7 @@ from smartHomeActivator import SmartHomeActivator
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
-        self.admin = True
-
+        self.is_admin = True
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
@@ -48,16 +47,13 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
         self.low_contrast_value = self.database_manager.get_low_contrast()
         self.high_contrast_value = self.database_manager.get_high_contrast()
-        self.min_increment = self.database_manager.get_minimum_time_increment()
-        self.max_increment = self.database_manager.get_maximum_time_increment()
+        self.minimum_time_increment = self.database_manager.get_minimum_time_increment()
+        self.maximum_time_increment = self.database_manager.get_maximum_time_increment()
 
-        self.gui_manager = GuiManager(self.cap,
-                                      self.set_open_eye_threshold, self.open_eye_threshold,
-                                      self.set_low_contrast, self.low_contrast_value,
-                                      self.set_high_contrast, self.high_contrast_value,
-                                      self.set_minimum_time_increment, self.min_increment,
-                                      self.set_maximum_time_increment, self.max_increment,
-                                      self.gesture_detected, self.admin, self.database_manager)
+        self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin)
+
+        self.__set_up_gui_values__()
+        self.__set_up_gui_watchers__()
 
         self.gui_manager.start(self.main_loop, self.on_close)
      
@@ -69,7 +65,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # Aggregates gestures into gesture sequences.
         gesture_sequences = self.gesture_lexer.lex(
-                timestamp, self.min_increment, self.max_increment)
+                timestamp, self.minimum_time_increment, self.maximum_time_increment)
 
         # Creates a child process to check for predefined patterns of gestures in the list of gesture sequences
         self.process_manager.add_process(
@@ -99,11 +95,11 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.database_manager.set_high_contrast(int(new_high_contrast))
 
     def set_minimum_time_increment(self, new_minimum_time_increment):
-        self.min_increment = int(new_minimum_time_increment)
+        self.minimum_time_increment = int(new_minimum_time_increment)
         self.database_manager.set_minimum_time_increment(new_minimum_time_increment)
 
     def set_maximum_time_increment(self, new_maximum_time_increment):
-        self.max_increment = int(new_maximum_time_increment)
+        self.maximum_time_increment = int(new_maximum_time_increment)
         self.database_manager.set_maximum_time_increment(new_maximum_time_increment)
 
     def add_command(self, gesture_sequence, command_text, device_name):
@@ -127,3 +123,18 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # Close log file
         self.logger.close()
+
+    def __set_up_gui_values__(self):
+        self.gui_manager.set_initial_ear(self.open_eye_threshold)
+        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
+        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
+        self.gui_manager.set_initial_minimum_time_increment(self.minimum_time_increment)
+        self.gui_manager.set_initial_maximum_time_increment(self.maximum_time_increment)
+
+    def __set_up_gui_watchers__(self): 
+        self.gui_manager.on_ear_change(self.set_open_eye_threshold)
+        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
+        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
+        self.gui_manager.on_minimum_time_increment_change(self.set_minimum_time_increment)
+        self.gui_manager.on_maximum_time_increment_change(self.set_maximum_time_increment)
+        self.gui_manager.on_new_command(self.add_command) 
