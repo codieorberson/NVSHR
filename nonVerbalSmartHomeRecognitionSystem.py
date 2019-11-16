@@ -22,13 +22,15 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
-        self.smart_home_activator = SmartHomeActivator(self.database_manager)
+        self.smart_home_activator = SmartHomeActivator()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer()
-        self.gesture_parser = GestureParser(self.logger, self.database_manager)
+        self.gesture_parser = GestureParser()
         self.gesture_detected = None
         # self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()
+
+        self.smart_home_activator.set_commands(self.database_manager.get_commands())
 
         self.gesture_detector.on_fist(lambda timestamp: self.gesture_lexer.add("fist", timestamp))
         self.gesture_detector.on_palm(lambda timestamp: self.gesture_lexer.add("palm", timestamp))

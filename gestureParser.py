@@ -1,12 +1,11 @@
 from smartHomeActivator import SmartHomeActivator
 
 class GestureParser():
-    def __init__(self, logger, database_manager):
-        self.logger = logger
+    def __init__(self):
         self.gesture_pattern_map = {}
         self.recognised_pattern_events = []
         self.unrecognised_pattern_events = []
-        self.smart_Home_Activator = SmartHomeActivator(database_manager)
+        self.smart_Home_Activator = SmartHomeActivator()
 
     def add_pattern(self, gestures, event):
         self.gesture_pattern_map["".join(gestures)] = event
