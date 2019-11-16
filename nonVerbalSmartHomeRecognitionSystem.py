@@ -10,14 +10,10 @@ from logger import Logger
 from multithreadedPerimeter import MultithreadedPerimeter
 from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
-from popUp import PopUp
-
 
 class NonVerbalSmartHomeRecognitionSystem():
     def __init__(self):
-
-        self.pop_up_window = PopUp()
-        self.admin = self.pop_up_window.send_verification()
+        self.admin = True
 
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
