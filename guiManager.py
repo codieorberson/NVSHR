@@ -77,7 +77,8 @@ class GuiManager():
 
     def update_log_text(self, content):
         self.log_page.log_text.config(state = NORMAL)
-        self.log_page.log_text.insert(INSERT, content)
+        
+        self.log_page.log_text.insert("1.0", content)
         self.log_page.log_text.config(state = DISABLED)
         self.log_page.log_text.see(END)
 

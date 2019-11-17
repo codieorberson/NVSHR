@@ -194,6 +194,7 @@ class GuiTab(Frame):
                 self.log_text = Text(self, font = 20, height = 30, width = 60, yscrollcommand = self.scro.set)
                 with open("./log.csv") as logfile:
                     content = logfile.readlines()
+                    content.reverse()
                     for line in content:
                         self.log_text.insert(INSERT,line)
                 self.log_text.config(state = DISABLED)
