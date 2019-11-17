@@ -103,14 +103,14 @@ class DatabaseManager():
     def get_high_contrast(self):
         return float(self.__get_configuration__('high_contrast'))
  
-    def set_min_time_inc(self, new_min_time_inc):
-        self.__set_configuration__('minimum_time_increment', new_min_time_inc)
+    def set_minimum_time_increment(self, new_minimum_time_increment):
+        self.__set_configuration__('minimum_time_increment', new_minimum_time_increment)
 
-    def get_min_time_inc(self):
+    def get_minimum_time_increment(self):
         return float(self.__get_configuration__('minimum_time_increment'))
  
-    def set_max_time_inc(self, new_max_time_inc):
-        self.__set_configuration__('maximum_time_increment', new_max_time_inc)
+    def set_maximum_time_increment(self, new_maximum_time_increment):
+        self.__set_configuration__('maximum_time_increment', new_maximum_time_increment)
 
-    def get_max_time_inc(self):
+    def get_maximum_time_increment(self):
         return float(self.__get_configuration__('maximum_time_increment'))

@@ -2,10 +2,11 @@ from TPLink import TPLinkDevice
 from sound import Sound 
 
 class SmartHomeActivator():
-    def __init__(self, database_manager):
-        self.database_manager = database_manager
+    def __init__(self):
         self.tp_Link_Devices = TPLinkDevice()
-        self.commands = self.database_manager.get_commands()
+
+    def set_commands(self, commands):
+        self.commands = commands
 
     def activate(self, gesture_sequence, was_recognized):
         if was_recognized:
