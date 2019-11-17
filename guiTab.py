@@ -48,6 +48,9 @@ class GuiTab(Frame):
     def set_initial_maximum_time_increment(self, initial_value):
         self.initial_value_map['on_max_time_inc'] = initial_value
 
+    def set_initial_log(self, logged_lines):
+        self.initial_value_map['logged_lines'] = logged_lines
+
     def set_cap(self, cap):
         self.cap = cap
 
@@ -192,14 +195,12 @@ class GuiTab(Frame):
                 self.scro = Scrollbar(self)
                 self.scro.grid(row = self.row_index, column = 1, sticky=N+E+S+W)
                 self.log_text = Text(self, font = 20, height = 30, width = 60, yscrollcommand = self.scro.set)
-                with open("./log.csv") as logfile:
-                    content = logfile.readlines()
-                    content.reverse()
-                    for line in content:
-                        self.log_text.insert(INSERT,line)
+              
+                for line in self.initial_value_map['logged_lines']:
+                    self.log_text.insert(INSERT,line)
                 self.log_text.config(state = DISABLED)
                 self.log_text.grid(row=self.row_index, column = 0, padx = 10, pady = 10)
-                self.log_text.see(END)
+                self.scro.set(0, 0)
                 self.scro.config(command = self.log_text.yview)
 
             elif element["format"] == "listbox":

@@ -24,6 +24,9 @@ class GuiWindow(Tk):
     def set_initial_maximum_time_increment(self, initial_value):
         self.initial_maximum_time_increment = initial_value
 
+    def set_initial_log(self, logged_lines):
+        self.initial_log = logged_lines
+
     def on_ear_change(self, callback):
         self.on_ear_change = callback
 
@@ -59,6 +62,7 @@ class GuiWindow(Tk):
             tab.set_initial_high_contrast(self.initial_high_contrast)
             tab.set_initial_minimum_time_increment(self.initial_minimum_time_increment)
             tab.set_initial_maximum_time_increment(self.initial_maximum_time_increment)
+            tab.set_initial_log(self.initial_log)
             tab.set_cap(self.cap)
 
             tab.on_ear_change(self.on_ear_change)

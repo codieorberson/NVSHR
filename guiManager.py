@@ -28,6 +28,10 @@ class GuiManager():
     def set_initial_maximum_time_increment(self, initial_value):
         self.gui.set_initial_maximum_time_increment(initial_value)
 
+    def set_initial_log(self, logged_lines):
+        logged_lines.reverse()
+        self.gui.set_initial_log(logged_lines)
+
     def on_ear_change(self, callback):
         self.gui.on_ear_change(callback)
 
@@ -80,7 +84,7 @@ class GuiManager():
         
         self.log_page.log_text.insert("1.0", content)
         self.log_page.log_text.config(state = DISABLED)
-        self.log_page.log_text.see(END)
+        self.log_page.log_text.see(CURRENT)
 
     def destroy_gui(self):
         self.gui.destroy()
