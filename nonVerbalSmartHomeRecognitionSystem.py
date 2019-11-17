@@ -1,3 +1,4 @@
+import sys
 import cv2
 from datetime import datetime
 from adminCmdManager import AdminCmdManager
@@ -22,7 +23,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.last_timestamp = datetime.utcnow()
         self.database_manager = DatabaseManager()
         self.logger = Logger()
-        self.smart_home_activator = SmartHomeActivator()
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer(self.logger, self.database_manager)
         self.gesture_parser = GestureParser(self.logger, self.database_manager)
@@ -142,6 +142,6 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # Close the GUI
         self.gui_manager.destroy_gui()
-
-        # Close log file
+     
+        # Close log file.
         self.logger.close()
