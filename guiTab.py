@@ -323,20 +323,15 @@ class GuiTab(Frame):
             return str(cap.get(cv2.CAP_PROP_FPS))
 
     # This code, as written, cannot display two simultaneous gestures.
-    def set_gesture_background(self, gesture_detected):
-        if gesture_detected == "fist":
-            self.fist_label.configure(bg="Black")
-            self.palm_label.configure(bg="White")
-            self.blink_label.configure(bg="White")
-        elif gesture_detected == "palm":
-            self.palm_label.configure(bg="Black")
-            self.fist_label.configure(bg="White")
-            self.blink_label.configure(bg="White")
-        elif gesture_detected == "blink":
-            self.blink_label.configure(bg="Black")
-            self.fist_label.configure(bg="White")
-            self.palm_label.configure(bg="White")
-        else:
-            self.fist_label.configure(bg="White")
-            self.palm_label.configure(bg="White")
-            self.blink_label.configure(bg="White")
+    def set_gesture_background(self, gestures_detected):
+        self.fist_label.configure(bg="White")
+        self.palm_label.configure(bg="White")
+        self.blink_label.configure(bg="White")
+ 
+        for gesture_detected in gestures_detected:
+            if gesture_detected == "fist":
+                self.fist_label.configure(bg="Black")
+            elif gesture_detected == "palm":
+                self.palm_label.configure(bg="Black")
+            elif gesture_detected == "blink":
+                self.blink_label.configure(bg="Black")

@@ -37,11 +37,11 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.process_manager.on_done()
 
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
-        self.gesture_detected = self.gesture_detector.get_gesture_detected()
-        self.gui_manager.set_gesture_background(self.gesture_detected)
+        self.gestures_detected = self.gesture_detector.get_gestures_detected()
+        self.gui_manager.set_gesture_background(self.gestures_detected)
 
         new_log_line = self.logger.get_output()
-        if self.gesture_detected != None:
+        if len(self.gestures_detected) > 0:
             self.gui_manager.update_log_text(new_log_line)
 
         self.update_commands()
@@ -98,7 +98,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector = GestureDetector()
         self.gesture_lexer = GestureLexer()
         self.gesture_parser = GestureParser()
-        self.gesture_detected = None
+        self.gestures_detected = []
         self.process_manager = ProcessManager()
         # self.admin_settings_manager = AdminCmdManager()
         # self.AdminSettingsManager.read_from_file()

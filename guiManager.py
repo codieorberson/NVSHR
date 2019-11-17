@@ -76,10 +76,11 @@ class GuiManager():
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
 
-    def set_gesture_background(self, gesture_detected):
-        self.blink_label.set_gesture_background(gesture_detected)
-        self.fist_label.set_gesture_background(gesture_detected)
-        self.palm_label.set_gesture_background(gesture_detected)
+    def set_gesture_background(self, gestures_detected):
+       
+        self.blink_label.set_gesture_background(gestures_detected)
+        self.fist_label.set_gesture_background(gestures_detected)
+        self.palm_label.set_gesture_background(gestures_detected)
 
     def update_log_text(self, content):
         self.log_page.log_text.config(state = NORMAL)

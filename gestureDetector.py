@@ -34,13 +34,13 @@ class GestureDetector():
         ]
 
         self.gesture_events = []
-        self.gesture_detected = None
+        self.gestures_detected = []
 
     def on_gesture(self, callback):
         self.gesture_events.append(callback)
 
-    def get_gesture_detected(self):
-        return self.gesture_detected
+    def get_gestures_detected(self):
+        return self.gestures_detected
 
     # Method is to be run in separate thread
     def detect(self, frame, timestamp, open_eye_threshold):
@@ -81,24 +81,21 @@ class GestureDetector():
         return self.__draw_rectangles__(frame)
 
     def __trigger_events__(self, timestamp, open_eye_threshold):
+        self.gestures_detected = []
 
-        self.gesture_detected = None
         if self.fist_perimeter.is_set():
-            self.gesture_detected = "fist"
-            for event in self.gesture_events:
-                event('fist', timestamp)
+            self.gestures_detected.append("fist")
 
         if self.palm_perimeter.is_set():
-            self.gesture_detected = "palm"
-            for event in self.gesture_events:
-                event('palm', timestamp)
+            self.gestures_detected.append("palm")
         
         if self.left_eye_perimeter.is_set() and self.right_eye_perimeter.is_set():
             if open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
-                self.gesture_detected = "blink"
+                self.gestures_detected.append("blink")
 
-                for event in self.gesture_events:
-                    event('blink', timestamp)
+        for gesture_name in self.gestures_detected:
+            for event in self.gesture_events:
+                event(gesture_name, timestamp)
 
     def __draw_rectangles__(self, frame):
         for perimeter in self.perimeters:
