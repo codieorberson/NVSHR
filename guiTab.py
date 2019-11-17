@@ -10,7 +10,7 @@ import subprocess
 from fpdf import FPDF
 
 class GuiTab(Frame):
-    def __init__(self, name, window, database_manager, *args, **kwargs):
+    def __init__(self, name, window, *args, **kwargs):
         self.event_map = {}
         self.initial_value_map = {}
 
@@ -25,7 +25,6 @@ class GuiTab(Frame):
         self.has_list_box = False
         self.name = name
 
-        self.database_manager = database_manager
         self.option = 1
         self.command_index = 0
         self.is_full = 0
@@ -50,6 +49,9 @@ class GuiTab(Frame):
 
     def set_initial_log(self, logged_lines):
         self.initial_value_map['logged_lines'] = logged_lines
+        
+    def set_initial_commands(self, commands):
+        self.initial_value_map['initial_commands'] = commands
 
     def set_cap(self, cap):
         self.cap = cap
@@ -70,7 +72,7 @@ class GuiTab(Frame):
         self.event_map['on_max_time_inc'] = callback
 
     def on_new_command(self, callback):
-        self.on_new_command_change = callback
+        self.event_map['on_new_command'] = callback
 
     def load_data(self, tab_elements):
         self.row_index = 1
@@ -156,7 +158,7 @@ class GuiTab(Frame):
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
                 row = self.row_index
-                for option in self.database_manager.get_commands():
+                for option in self.initial_value_map['initial_commands']:
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                     small_frame.grid(row=row, column=0, padx=10, pady=10)
                     text = {"text": "Command " + str(self.option) + " (" + option["gesture_sequence"][
@@ -224,7 +226,7 @@ class GuiTab(Frame):
         return frame[..., [2, 1, 0]]
 
     def set_value(self, value):
-        for option in self.database_manager.get_commands():
+        for option in self.initial_value_map['initial_commands']:
             if value == option["command_text"] and value != "None":
                 messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
@@ -232,7 +234,7 @@ class GuiTab(Frame):
                 return
 
         count = 1
-        for option in self.database_manager.get_commands():
+        for option in self.initial_value_map['initial_commands']:
             device = None
 
             if self.command_links[count].get() == "Heater" or self.command_links[count].get() == "Air Conditioning":
@@ -240,8 +242,12 @@ class GuiTab(Frame):
             else:
                 device = "Alexa"
 
-            self.database_manager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
-                                             option["gesture_sequence"][2]], self.command_links[count].get(), device)
+            self.event_map['on_new_command']([option["gesture_sequence"][0], 
+                    option["gesture_sequence"][1],
+                    option["gesture_sequence"][2]], 
+                    self.command_links[count].get(), 
+                    device)
+
             count += 1
 
     def is_full_command(self, value):
@@ -259,14 +265,17 @@ class GuiTab(Frame):
                 self.label = Label(small_frame, text)
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 variable = StringVar()
-                #  self.database_manager.change_keys()
                 variable.set("None")
                 self.command_links[self.option] = variable
                 self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
-                self.database_manager.set_command([self.new_command[0].get().lower(), self.new_command[1].get().lower(),
-                                                 self.new_command[2].get().lower()], "None", "None")
+                self.event_map['on_new_command']([self.new_command[0].get().lower(), 
+                        self.new_command[1].get().lower(), 
+                        self.new_command[2].get().lower()], 
+                        "None", 
+                        "None")
+
                 self.option += 1
                 self.row_index += 1
             else:

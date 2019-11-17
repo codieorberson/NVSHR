@@ -128,7 +128,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.maximum_time_increment = self.database_manager.get_maximum_time_increment()
 
     def __set_up_gui__(self):
-        self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin)
+        self.gui_manager = GuiManager(self.cap, self.is_admin)
         self.__set_up_gui_values__()
         self.__set_up_gui_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)
@@ -140,6 +140,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_initial_minimum_time_increment(self.minimum_time_increment)
         self.gui_manager.set_initial_maximum_time_increment(self.maximum_time_increment) 
         self.gui_manager.set_initial_log(self.database_manager.get_gestures())
+        self.gui_manager.set_initial_commands(self.database_manager.get_commands())
 
     def __set_up_gui_watchers__(self): 
         self.gui_manager.on_ear_change(self.set_open_eye_threshold)

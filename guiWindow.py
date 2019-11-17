@@ -27,6 +27,9 @@ class GuiWindow(Tk):
     def set_initial_log(self, logged_lines):
         self.initial_log = logged_lines
 
+    def set_initial_commands(self, commands):
+        self.initial_commands = commands
+
     def on_ear_change(self, callback):
         self.on_ear_change = callback
 
@@ -45,17 +48,17 @@ class GuiWindow(Tk):
     def on_new_command(self, callback):
         self.on_new_command_change = callback
 
-    def set_cap(self, cap, settings_manager):
+    def set_cap(self, cap):
         self.cap = cap
         self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(gui_data, self.on_new_command_change, settings_manager)
+        self.debug_tab = self.add_content(gui_data, self.on_new_command_change)
 
         self.notebook.grid(row=0)
 
-    def add_content(self, body, gesture_detected, settings_manager):
+    def add_content(self, body, gesture_detected):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
-            tab = GuiTab(self.notebook, self, settings_manager)
+            tab = GuiTab(self.notebook, self)
 
             tab.set_initial_ear(self.initial_ear)
             tab.set_initial_low_contrast(self.initial_low_contrast)
@@ -63,6 +66,7 @@ class GuiWindow(Tk):
             tab.set_initial_minimum_time_increment(self.initial_minimum_time_increment)
             tab.set_initial_maximum_time_increment(self.initial_maximum_time_increment)
             tab.set_initial_log(self.initial_log)
+            tab.set_initial_commands(self.initial_commands)
             tab.set_cap(self.cap)
 
             tab.on_ear_change(self.on_ear_change)
