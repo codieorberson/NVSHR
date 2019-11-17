@@ -536,6 +536,7 @@ class Page(Frame):
 
         self.is_full = 0
 
+    ''' The code block below is old version of log file display, we can remove it later'''
     # def open_log_file(self):
     #     if os.path.exists("logfile.pdf"):
     #         self.delete_log_file()
