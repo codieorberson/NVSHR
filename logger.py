@@ -16,6 +16,9 @@ class Logger():
         self.output = output
         self.file.write(output)
         print(output) 
+    
+    def get_output(self):
+        return self.output
 
     def log_gesture(self, gesture_name, now):
         self.log(''.join((now.isoformat()[:10], "    ", now.isoformat()[12:19], 

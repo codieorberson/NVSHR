@@ -4,6 +4,7 @@ from framesPerSecondMeter import FramesPerSecondMeter
 from tkinter import *
 
 
+
 class GuiManager():
     def __init__(self, cap, settings_manager, is_admin):
         self.cap = cap
