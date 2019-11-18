@@ -38,6 +38,9 @@ class GuiManager():
     def set_up_maximum_time_increment(self, initial_value, callback):
         self.gui.set_up_maximum_time_increment(initial_value, callback)
 
+    def set_up_view(self, initial_view_name, on_view_change):
+        self.gui.set_up_view(initial_view_name, on_view_change)
+
     def set_up_commands(self, commands, callback):
         self.gui.set_up_commands(commands, callback)
 

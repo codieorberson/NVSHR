@@ -1,9 +1,7 @@
-from processManager import ProcessManager
 from gesture import Gesture
 
 class HandGestureDetector():
     def __init__(self, fist_perimeter, palm_perimeter):
-        self.process_manager = ProcessManager()
         self.fist = Gesture("fist.xml", fist_perimeter)
         self.palm = Gesture("palm.xml", palm_perimeter)
 
@@ -27,8 +25,17 @@ class HandGestureDetector():
 
     def turn_off_palm_contrast(self):
         self.palm.turn_off_contrast()
+
+    def set_view_filter(self, view_filter_name):
+        self.view_filter_name = view_filter_name
         
     def detect(self, frame):
-        self.process_manager.add_process(self.fist.detect, (frame, ))
-        self.palm.detect(frame)
-        self.process_manager.on_done()
+        fist_frame = self.fist.detect(frame)
+        palm_frame = self.palm.detect(frame)
+
+        if self.view_filter_name == 'fist':
+            return self.fist_frame
+        elif self.view_filter_name == 'palm':
+            return self.palm_frame
+        else:
+            return frame

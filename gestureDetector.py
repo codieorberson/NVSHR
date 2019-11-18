@@ -7,7 +7,6 @@ from imutils.video import VideoStream
 from imutils import face_utils
 from datetime import datetime
 from multithreadedPerimeter import MultithreadedPerimeter
-from processManager import ProcessManager
 from gesture import Gesture
 from handGestureDetector import HandGestureDetector
 from blinkDetector import BlinkDetector
@@ -47,17 +46,22 @@ class GestureDetector():
     def get_gestures_detected(self):
         return self.gestures_detected
 
+    def set_view_filter(self, view_filter_name):
+        self.view_filter_name = view_filter_name
+        self.hand_gesture_detector.set_view_filter(view_filter_name)
+
     def detect(self, frame, timestamp):
+        frame_map = {}
         current_frame = frame
         self.__reset_perimeters__()
+        hand_frame = self.hand_gesture_detector.detect(current_frame)
+        blink_frame = self.blink_detector.detect(current_frame, self.left_eye_perimeter, self.right_eye_perimeter)
 
-        self.process_manager.add_process(
-                self.hand_gesture_detector.detect, (current_frame, ))
-
-        self.blink_detector.detect(current_frame, self.left_eye_perimeter, self.right_eye_perimeter)
-
-        self.process_manager.on_done()
         self.__trigger_events__(timestamp)
+        if self.view_filter_name == "blink":
+            current_frame = blink_frame
+        elif self.view_filter_name == 'fist' or self.view_filter_name == 'palm':
+            current_frame = hand_frame
         return self.__draw_rectangles__(frame)
 
     def __trigger_events__(self, timestamp):
@@ -102,7 +106,5 @@ class GestureDetector():
         ]
 
     def __set_up_helpers__(self):
-        self.process_manager = ProcessManager()
         self.hand_gesture_detector = HandGestureDetector(self.fist_perimeter, self.palm_perimeter)
         self.blink_detector = BlinkDetector()
-

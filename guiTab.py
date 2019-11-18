@@ -72,6 +72,10 @@ class GuiTab(Frame):
     def set_up_maximum_time_increment(self, initial_value, callback):
         self.initial_value_map['on_max_time_inc'] = initial_value
         self.event_map['on_max_time_inc'] = callback
+
+    def set_up_view(self, initial_view_name, on_view_change):
+        self.initial_value_map["on_view_change"] = initial_view_name
+        self.event_map["on_view_change"] = on_view_change
        
     def set_up_commands(self, commands, callback):
         self.initial_value_map['initial_commands'] = commands
@@ -139,6 +143,23 @@ class GuiTab(Frame):
                     self.check_box = Checkbutton(self,
                             command = check_box_command, 
                             variable = check_box_data)
+                    
+                    self.check_box.grid(row=self.row_index, column=column_index, padx=4, pady=4)
+
+                    column_index += 1
+
+            elif element["format"] == "radio_button":
+                column_index = 0
+                radio_buttons_shared_variable = StringVar(self.window, self.initial_value_map["on_view_change"])
+                for event in element["events"]:
+                    event_name = event
+
+                    radio_button_command = partial(self.event_map['on_view_change'], radio_buttons_shared_variable)
+
+                    self.check_box = Radiobutton(self,
+                            command = radio_button_command, 
+                            variable = radio_buttons_shared_variable,
+                            value = event_name)
                     
                     self.check_box.grid(row=self.row_index, column=column_index, padx=4, pady=4)
 

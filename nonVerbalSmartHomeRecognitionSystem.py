@@ -7,7 +7,6 @@ from gestureLexer import GestureLexer
 from gestureParser import GestureParser
 from guiManager import GuiManager
 from logger import Logger
-from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
 
 class NonVerbalSmartHomeRecognitionSystem():
@@ -27,14 +26,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         gesture_sequences = self.gesture_lexer.lex(
                 timestamp, self.minimum_time_increment, self.maximum_time_increment)
 
-        # Creates a child process to check for predefined patterns of gestures in the list of gesture sequences
-        self.process_manager.add_process(
-                self.gesture_parser.parse_patterns, 
-                (gesture_sequences, timestamp))
-
+        self.gesture_parser.parse_patterns(gesture_sequences, timestamp)
         frame = self.gesture_detector.detect(frame, timestamp)
-
-        self.process_manager.on_done()
 
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gestures_detected = self.gesture_detector.get_gestures_detected()
@@ -85,6 +78,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.maximum_time_increment = int(new_maximum_time_increment)
         self.database_manager.set_maximum_time_increment(new_maximum_time_increment)
 
+    def on_view_change(self, view_name_container):
+        view_name = view_name_container.get()
+        self.gesture_detector.set_view_filter(view_name)
+
     def add_command(self, gesture_sequence, command_text, device_name):
         self.gesture_parser.add_pattern(gesture_sequence,
                                         lambda: self.smart_home_activator.activate(command_text, device_name))
@@ -115,7 +112,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_lexer = GestureLexer()
         self.gesture_parser = GestureParser()
         self.gestures_detected = []
-        self.process_manager = ProcessManager()
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
 
     def __set_up_gestures__(self):
@@ -169,6 +165,9 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_up_palm_low_contrast(self.palm_low_contrast_value, self.set_palm_low_contrast)
         self.gui_manager.set_up_palm_high_contrast(self.palm_high_contrast_value, self.set_palm_high_contrast)
         self.gui_manager.set_up_toggle_palm_contrast(self.should_use_palm_contrast, self.set_toggle_palm_contrast)
+
+        self.gui_manager.set_up_view("normal", self.on_view_change)
+        self.gesture_detector.set_view_filter("normal")
  
         self.gui_manager.set_up_minimum_time_increment(self.minimum_time_increment, self.set_minimum_time_increment)
         self.gui_manager.set_up_maximum_time_increment(self.maximum_time_increment, self.set_maximum_time_increment) 

@@ -54,6 +54,10 @@ class GuiWindow(Tk):
         for tab in self.tabs:
             tab.set_up_maximum_time_increment(initial_value, callback)
 
+    def set_up_view(self, initial_view_name, on_view_change):
+        for tab in self.tabs:
+            tab.set_up_view(initial_view_name, on_view_change)
+
     def set_up_commands(self, commands, callback):
         for tab in self.tabs:
             tab.set_up_commands(commands, callback)

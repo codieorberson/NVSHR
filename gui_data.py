@@ -148,6 +148,15 @@ gui_data = {
                     ]
                 },
                 {
+                    "format": "radio_button",
+                    "events": [
+                        "normal",
+                        "eyes",
+                        "fists",
+                        "palms"
+                    ]
+                },
+                {
                     "format": "text",
                     "multicolumn" : "true",
                     "body": {"text": "Set the Low Contrast for fist:"},
