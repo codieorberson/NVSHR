@@ -18,4 +18,4 @@ class SoundPlayer():
         if self.is_linux:
             self.subprocess_executor.execute('./play_file.py', file_name)
         else:
-            self.sound(file_name)
+            self.sound.from_file(file_name)

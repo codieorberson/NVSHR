@@ -15,7 +15,7 @@ class GestureParser():
         joined_gesture_sequence = "".join(gesture_sequence)
 
         if joined_gesture_sequence in self.gesture_pattern_map:
-            self.gesture_pattern_map[joined_gesture_sequence](now)
+            self.gesture_pattern_map[joined_gesture_sequence]
             was_recognised = True
         else:
             was_recognised = False
