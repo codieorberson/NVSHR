@@ -70,6 +70,10 @@ class GuiWindow(Tk):
                 self.palm_label = tab
             if tab.is_logfile:
                 self.log_text = tab
+            if tab.is_low_contrast:
+                self.low_contrast = tab
+            if tab.is_high_contrast:
+                self.high_contrast = tab
 
     def get_debug_tab(self):
         return self.debug_tab
@@ -88,3 +92,9 @@ class GuiWindow(Tk):
 
     def get_log_page(self):
         return self.log_text
+
+    def get_low_contrast(self):
+        return self.low_contrast
+
+    def get_high_contrast(self):
+        return self.high_contrast

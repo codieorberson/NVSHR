@@ -32,15 +32,15 @@ class NonVerbalSmartHomeRecognitionSystem():
                 self.gesture_parser.parse_patterns, 
                 (gesture_sequences, timestamp))
 
-        frame = self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold)
+        frame = self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold, self.gui_manager.update_low_contrast(), self.gui_manager.update_high_contrast())
 
         self.process_manager.on_done()
 
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gestures_detected = self.gesture_detector.get_gestures_detected()
         self.gui_manager.set_gesture_background(self.gestures_detected)
-
         new_log_line = self.logger.get_output()
+
         if len(self.gestures_detected) > 0:
             self.gui_manager.update_log_text(new_log_line)
 
@@ -76,14 +76,9 @@ class NonVerbalSmartHomeRecognitionSystem():
                              command_map['device_name'])
 
     def on_close(self):
-        # Close down OpenCV
         self.cap.release()
         cv2.destroyAllWindows()
-
-        # Close the GUI
         self.gui_manager.destroy_gui()
-
-        # Close log file
         self.logger.close()
 
     def __set_up_pop_up__(self):
@@ -100,9 +95,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser = GestureParser()
         self.gestures_detected = []
         self.process_manager = ProcessManager()
-        # self.admin_settings_manager = AdminCmdManager()
-        # self.AdminSettingsManager.read_from_file()
-
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
 
     def __set_up_gestures__(self):
