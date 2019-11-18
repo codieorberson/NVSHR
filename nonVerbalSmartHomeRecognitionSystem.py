@@ -52,11 +52,11 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.set_open_eye_threshold(self.open_eye_threshold)
         
     def set_low_contrast(self, new_low_contrast):
-        self.database_manager.set_low_contrast(int(new_low_contrast))
+        self.database_manager.set_palm_low_contrast(int(new_low_contrast))
         self.gesture_detector.set_palm_low_contrast(new_low_contrast)
 
     def set_high_contrast(self, new_high_contrast):
-        self.database_manager.set_high_contrast(int(new_high_contrast))
+        self.database_manager.set_palm_high_contrast(int(new_high_contrast))
         self.gesture_detector.set_palm_high_contrast(new_high_contrast)
 
     def set_minimum_time_increment(self, new_minimum_time_increment):
@@ -117,18 +117,24 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_configuration__(self):
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
-        self.low_contrast_value = self.database_manager.get_low_contrast()
-        self.high_contrast_value = self.database_manager.get_high_contrast()
+
+        self.fist_low_contrast_value = self.database_manager.get_fist_low_contrast()
+        self.fist_high_contrast_value = self.database_manager.get_fist_high_contrast()
+        self.should_use_fist_contrast = self.database_manager.get_toggle_fist_contrast()
+
+        self.palm_low_contrast_value = self.database_manager.get_palm_low_contrast()
+        self.palm_high_contrast_value = self.database_manager.get_palm_high_contrast()
+        self.should_use_palm_contrast = self.database_manager.get_toggle_palm_contrast()
+
         self.minimum_time_increment = self.database_manager.get_minimum_time_increment()
         self.maximum_time_increment = self.database_manager.get_maximum_time_increment()
+        self.gesture_detector.set_fist_low_contrast(self.fist_low_contrast_value)
+        self.gesture_detector.set_fist_high_contrast(self.fist_high_contrast_value)
+        self.gesture_detector.toggle_fist_contrast(self.should_use_fist_contrast)
 
-        self.gesture_detector.toggle_fist_contrast(False)#self.database_manager.get_should_use_palm_contrast(())
-        self.gesture_detector.toggle_palm_contrast(True)#self.database_manager.get_should_use_palm_contrast(())
-        self.gesture_detector.set_fist_low_contrast(self.low_contrast_value)
-        self.gesture_detector.set_fist_high_contrast(self.high_contrast_value)
-
-        self.gesture_detector.set_palm_low_contrast(self.low_contrast_value)
-        self.gesture_detector.set_palm_high_contrast(self.high_contrast_value)
+        self.gesture_detector.set_palm_low_contrast(self.palm_low_contrast_value)
+        self.gesture_detector.set_palm_high_contrast(self.palm_high_contrast_value)
+        self.gesture_detector.toggle_palm_contrast(self.should_use_palm_contrast)
 
         self.gesture_detector.set_open_eye_threshold(self.open_eye_threshold)
 
@@ -139,8 +145,8 @@ class NonVerbalSmartHomeRecognitionSystem():
  
     def __set_up_gui_values_and_watchers__(self):
         self.gui_manager.set_up_ear(self.open_eye_threshold, self.set_open_eye_threshold)
-        self.gui_manager.set_up_low_contrast(self.low_contrast_value, self.set_low_contrast)
-        self.gui_manager.set_up_high_contrast(self.high_contrast_value, self.set_high_contrast)
+        self.gui_manager.set_up_low_contrast(self.palm_low_contrast_value, self.set_low_contrast)
+        self.gui_manager.set_up_high_contrast(self.palm_high_contrast_value, self.set_high_contrast)
         self.gui_manager.set_up_minimum_time_increment(self.minimum_time_increment, self.set_minimum_time_increment)
         self.gui_manager.set_up_maximum_time_increment(self.maximum_time_increment, self.set_maximum_time_increment) 
         self.gui_manager.set_up_commands(self.database_manager.get_commands(), self.add_command)
