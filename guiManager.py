@@ -12,45 +12,27 @@ class GuiManager():
         if is_admin == False:
             self.gui.withdraw()
 
-    def set_initial_ear(self, initial_value):
-        self.gui.set_initial_ear(initial_value)
+    def set_up_ear(self, initial_value, callback):
+        self.gui.set_up_ear(initial_value, callback)
 
-    def set_initial_low_contrast(self, initial_value):
-        self.gui.set_initial_low_contrast(initial_value)
+    def set_up_low_contrast(self, initial_value, callback):
+        self.gui.set_up_low_contrast(initial_value, callback)
 
-    def set_initial_high_contrast(self, initial_value):
-        self.gui.set_initial_high_contrast(initial_value)
+    def set_up_high_contrast(self, initial_value, callback):
+        self.gui.set_up_high_contrast(initial_value, callback)
 
-    def set_initial_minimum_time_increment(self, initial_value):
-        self.gui.set_initial_minimum_time_increment(initial_value)
+    def set_up_minimum_time_increment(self, initial_value, callback):
+        self.gui.set_up_minimum_time_increment(initial_value, callback)
 
-    def set_initial_maximum_time_increment(self, initial_value):
-        self.gui.set_initial_maximum_time_increment(initial_value)
+    def set_up_maximum_time_increment(self, initial_value, callback):
+        self.gui.set_up_maximum_time_increment(initial_value, callback)
+
+    def set_up_commands(self, commands, callback):
+        self.gui.set_up_commands(commands, callback)
 
     def set_initial_log(self, logged_lines):
         logged_lines.reverse()
         self.gui.set_initial_log(logged_lines)
-
-    def set_initial_commands(self, commands):
-        self.gui.set_initial_commands(commands)
-
-    def on_ear_change(self, callback):
-        self.gui.on_ear_change(callback)
-
-    def on_low_contrast_change(self, callback):
-        self.gui.on_low_contrast_change(callback)
-
-    def on_high_contrast_change(self, callback):
-        self.gui.on_high_contrast_change(callback)
-
-    def on_minimum_time_increment_change(self, callback):
-        self.gui.on_minimum_time_increment_change(callback)
-
-    def on_maximum_time_increment_change(self, callback):
-        self.gui.on_maximum_time_increment_change(callback)
-
-    def on_new_command(self, callback):
-        self.gui.on_new_command(callback)
 
     def __loop__(self):
         self.loop_callback()

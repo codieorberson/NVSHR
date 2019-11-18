@@ -9,44 +9,32 @@ class GuiWindow(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
 
-    def set_initial_ear(self, initial_value):
+    def set_up_ear(self, initial_value, callback):
         self.initial_ear = initial_value
+        self.on_ear_change = callback
 
-    def set_initial_low_contrast(self, initial_value):
+    def set_up_low_contrast(self, initial_value, callback):
         self.initial_low_contrast = initial_value
+        self.on_low_contrast_change = callback
 
-    def set_initial_high_contrast(self, initial_value):
+    def set_up_high_contrast(self, initial_value, callback):
         self.initial_high_contrast = initial_value
+        self.on_high_contrast_change = callback
 
-    def set_initial_minimum_time_increment(self, initial_value):
+    def set_up_minimum_time_increment(self, initial_value, callback):
         self.initial_minimum_time_increment = initial_value
+        self.on_minimum_time_increment_change = callback
 
-    def set_initial_maximum_time_increment(self, initial_value):
+    def set_up_maximum_time_increment(self, initial_value, callback):
         self.initial_maximum_time_increment = initial_value
+        self.on_maximum_time_increment_change = callback
+
+    def set_up_commands(self, commands, callback):
+        self.initial_commands = commands
+        self.on_new_command_change = callback
 
     def set_initial_log(self, logged_lines):
         self.initial_log = logged_lines
-
-    def set_initial_commands(self, commands):
-        self.initial_commands = commands
-
-    def on_ear_change(self, callback):
-        self.on_ear_change = callback
-
-    def on_low_contrast_change(self, callback):
-        self.on_low_contrast_change = callback
-
-    def on_high_contrast_change(self, callback):
-        self.on_high_contrast_change = callback
-
-    def on_minimum_time_increment_change(self, callback):
-        self.on_minimum_time_increment_change = callback
-
-    def on_maximum_time_increment_change(self, callback):
-        self.on_maximum_time_increment_change = callback
-
-    def on_new_command(self, callback):
-        self.on_new_command_change = callback
 
     def set_cap(self, cap):
         self.cap = cap
@@ -60,21 +48,14 @@ class GuiWindow(Tk):
             page_configuration = body[list(body.keys())[i]]
             tab = GuiTab(self.notebook, self)
 
-            tab.set_initial_ear(self.initial_ear)
-            tab.set_initial_low_contrast(self.initial_low_contrast)
-            tab.set_initial_high_contrast(self.initial_high_contrast)
-            tab.set_initial_minimum_time_increment(self.initial_minimum_time_increment)
-            tab.set_initial_maximum_time_increment(self.initial_maximum_time_increment)
+            tab.set_up_ear(self.initial_ear, self.on_ear_change)
+            tab.set_up_low_contrast(self.initial_low_contrast, self.on_low_contrast_change)
+            tab.set_up_high_contrast(self.initial_high_contrast, self.on_high_contrast_change)
+            tab.set_up_minimum_time_increment(self.initial_minimum_time_increment, self.on_minimum_time_increment_change)
+            tab.set_up_maximum_time_increment(self.initial_maximum_time_increment, self.on_maximum_time_increment_change)
+            tab.set_up_commands(self.initial_commands, self.on_new_command_change)
             tab.set_initial_log(self.initial_log)
-            tab.set_initial_commands(self.initial_commands)
             tab.set_cap(self.cap)
-
-            tab.on_ear_change(self.on_ear_change)
-            tab.on_low_contrast_change(self.on_low_contrast_change)
-            tab.on_high_contrast_change(self.on_high_contrast_change)
-            tab.on_minimum_time_increment_change(self.on_minimum_time_increment_change)
-            tab.on_maximum_time_increment_change(self.on_maximum_time_increment_change)
-            tab.on_new_command(self.on_new_command_change)
 
             tab.load_data(page_configuration['elements'])
             self.notebook.add(tab, text=page_configuration["title"])

@@ -32,47 +32,35 @@ class GuiTab(Frame):
         self.command_links = {}
         self.new_command = {}
 
-    def set_initial_ear(self, initial_value):
+    def set_up_ear(self, initial_value, callback):
         self.initial_value_map['on_ear_change'] = initial_value
-
-    def set_initial_low_contrast(self, initial_value):
-        self.initial_value_map['on_low_contrast'] = initial_value
-
-    def set_initial_high_contrast(self, initial_value):
-        self.initial_value_map['on_high_contrast'] = initial_value
-
-    def set_initial_minimum_time_increment(self, initial_value):
-        self.initial_value_map['on_min_time_inc'] = initial_value
-
-    def set_initial_maximum_time_increment(self, initial_value):
-        self.initial_value_map['on_max_time_inc'] = initial_value
-
-    def set_initial_log(self, logged_lines):
-        self.initial_value_map['logged_lines'] = logged_lines
-        
-    def set_initial_commands(self, commands):
-        self.initial_value_map['initial_commands'] = commands
-
-    def set_cap(self, cap):
-        self.cap = cap
-
-    def on_ear_change(self, callback):
         self.event_map['on_ear_change'] = callback
 
-    def on_low_contrast_change(self, callback):
+    def set_up_low_contrast(self, initial_value, callback):
+        self.initial_value_map['on_low_contrast'] = initial_value
         self.event_map['on_low_contrast'] = callback
 
-    def on_high_contrast_change(self, callback):
+    def set_up_high_contrast(self, initial_value, callback):
+        self.initial_value_map['on_high_contrast'] = initial_value
         self.event_map['on_high_contrast'] = callback
 
-    def on_minimum_time_increment_change(self, callback):
+    def set_up_minimum_time_increment(self, initial_value, callback):
+        self.initial_value_map['on_min_time_inc'] = initial_value
         self.event_map['on_min_time_inc'] = callback
 
-    def on_maximum_time_increment_change(self, callback):
+    def set_up_maximum_time_increment(self, initial_value, callback):
+        self.initial_value_map['on_max_time_inc'] = initial_value
         self.event_map['on_max_time_inc'] = callback
-
-    def on_new_command(self, callback):
+       
+    def set_up_commands(self, commands, callback):
+        self.initial_value_map['initial_commands'] = commands
         self.event_map['on_new_command'] = callback
+        
+    def set_initial_log(self, logged_lines):
+        self.initial_value_map['logged_lines'] = logged_lines
+ 
+    def set_cap(self, cap):
+        self.cap = cap
 
     def load_data(self, tab_elements):
         self.row_index = 1

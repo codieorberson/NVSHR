@@ -129,23 +129,14 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_gui__(self):
         self.gui_manager = GuiManager(self.cap, self.is_admin)
-        self.__set_up_gui_values__()
-        self.__set_up_gui_watchers__()
+        self.__set_up_gui_values_and_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)
  
-    def __set_up_gui_values__(self):
-        self.gui_manager.set_initial_ear(self.open_eye_threshold)
-        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
-        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
-        self.gui_manager.set_initial_minimum_time_increment(self.minimum_time_increment)
-        self.gui_manager.set_initial_maximum_time_increment(self.maximum_time_increment) 
+    def __set_up_gui_values_and_watchers__(self):
+        self.gui_manager.set_up_ear(self.open_eye_threshold, self.set_open_eye_threshold)
+        self.gui_manager.set_up_low_contrast(self.low_contrast_value, self.set_low_contrast)
+        self.gui_manager.set_up_high_contrast(self.high_contrast_value, self.set_high_contrast)
+        self.gui_manager.set_up_minimum_time_increment(self.minimum_time_increment, self.set_minimum_time_increment)
+        self.gui_manager.set_up_maximum_time_increment(self.maximum_time_increment, self.set_maximum_time_increment) 
+        self.gui_manager.set_up_commands(self.database_manager.get_commands(), self.add_command)
         self.gui_manager.set_initial_log(self.database_manager.get_gestures())
-        self.gui_manager.set_initial_commands(self.database_manager.get_commands())
-
-    def __set_up_gui_watchers__(self): 
-        self.gui_manager.on_ear_change(self.set_open_eye_threshold)
-        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
-        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
-        self.gui_manager.on_minimum_time_increment_change(self.set_minimum_time_increment)
-        self.gui_manager.on_maximum_time_increment_change(self.set_maximum_time_increment)
-        self.gui_manager.on_new_command(self.add_command)
