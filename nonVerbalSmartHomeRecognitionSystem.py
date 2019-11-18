@@ -32,7 +32,7 @@ class NonVerbalSmartHomeRecognitionSystem():
                 self.gesture_parser.parse_patterns, 
                 (gesture_sequences, timestamp))
 
-        frame = self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold, self.gui_manager.update_low_contrast(), self.gui_manager.update_high_contrast())
+        frame = self.gesture_detector.detect(frame, timestamp, self.open_eye_threshold, self.database_manager.get_low_contrast(), self.database_manager.get_high_contrast())
 
         self.process_manager.on_done()
 

@@ -125,11 +125,11 @@ class GuiTab(Frame):
 
                     elif event_name == "on_low_contrast":
                         self.is_low_contrast = True
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command and self.change_default_low_contrast)
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
 
                     elif event_name == "on_high_contrast":
                         self.is_high_contrast = True
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command and self.change_default_high_contrast)
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
 
                     elif event_name == "on_min_time_inc" or "on_max_time_inc":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
@@ -337,19 +337,3 @@ class GuiTab(Frame):
                 self.palm_label.configure(bg="Black")
             elif gesture_detected == "blink":
                 self.blink_label.configure(bg="Black")
- 
-    def change_default_low_contrast(self, value):
-        self.default_low_contrast = value
-        return(self.change_low_contrast())
-
-    def change_default_high_contrast(self, value):
-        self.default_high_contrast = value
-        return(self.change_high_contrast())
-
-    def change_low_contrast(self):
-        return(self.default_low_contrast)
-        
-    def change_high_contrast(self):
-        return(self.default_high_contrast)
-
-

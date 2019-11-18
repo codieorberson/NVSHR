@@ -92,9 +92,3 @@ class GuiWindow(Tk):
 
     def get_log_page(self):
         return self.log_text
-
-    def get_low_contrast(self):
-        return self.low_contrast
-
-    def get_high_contrast(self):
-        return self.high_contrast

@@ -35,21 +35,7 @@ class GuiManager():
 
     def set_cap(self, cap):
         self.gui.set_cap(cap)
-   
-    def change_default_low_contrast(self, value):
-        self.default_low_contrast = value
-        return(self.change_low_contrast())
-
-    def change_default_high_contrast(self, value):
-        self.default_high_contrast = value
-        return(self.change_high_contrast())
-
-    def change_low_contrast(self):
-        return(self.default_low_contrast)
-        
-    def change_high_contrast(self):
-        return(self.default_high_contrast)
-
+  
     def __loop__(self):
         self.loop_callback()
         self.fps_tab.set_fps(self.frames_per_second_meter.cycle())
@@ -63,8 +49,6 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
-        self.low_contrast = self.gui.get_low_contrast()
-        self.high_contrast = self.gui.get_high_contrast()
         self.log_page = self.gui.get_log_page()
 
         self.loop_callback = loop_callback
@@ -87,12 +71,5 @@ class GuiManager():
         self.log_page.log_text.config(state = DISABLED)
         self.log_page.log_text.see(CURRENT)
     
-    def update_low_contrast(self):
-        return(self.low_contrast.change_low_contrast())
-    
-    def update_high_contrast(self):
-        return(self.high_contrast.change_high_contrast())
-        
     def destroy_gui(self):
         self.gui.destroy()
-        
