@@ -12,8 +12,8 @@ _default_command_values = [
 _default_configuration_values = ["0.05\n",
                                  "2\n",
                                  "5\n",
-                                 "50\n",
-                                 "100\n"
+                                 "0\n",
+                                 "113\n"
                                  ]
 
 _configuration_index_map = {
