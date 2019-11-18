@@ -59,10 +59,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.database_manager.set_fist_high_contrast(int(new_high_contrast))
         self.gesture_detector.set_fist_high_contrast(new_high_contrast)
 
-    def set_toggle_fist_contrast(self, should_be_on):
-        print("SHOULD FIST CONTRAST BE ON?")
-        print("Value:")
-        print(should_be_on)
+    def set_toggle_fist_contrast(self, status_container):
+        should_be_on = status_container.get()
         self.database_manager.set_toggle_fist_contrast(should_be_on)
         self.gesture_detector.toggle_fist_contrast(should_be_on)
 
@@ -74,7 +72,8 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.database_manager.set_palm_high_contrast(int(new_high_contrast))
         self.gesture_detector.set_palm_high_contrast(new_high_contrast)
 
-    def set_toggle_palm_contrast(self, should_be_on):
+    def set_toggle_palm_contrast(self, status_container):
+        should_be_on = status_container.get()
         self.database_manager.set_toggle_palm_contrast(should_be_on)
         self.gesture_detector.toggle_palm_contrast(should_be_on)
 

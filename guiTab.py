@@ -7,12 +7,14 @@ import PIL.ImageTk
 import cv2
 import os
 import subprocess
+from functools import partial
 from fpdf import FPDF
 
 class GuiTab(Frame):
     def __init__(self, name, window, *args, **kwargs):
         self.event_map = {}
         self.initial_value_map = {}
+        self.window = window
 
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
@@ -130,21 +132,15 @@ class GuiTab(Frame):
                 column_index = 0
                 for event in element["events"]:
                     event_name = event
-                    check_box_command = lambda: self.event_map[event_name](self.initial_value_map[event_name])
-                    check_box_data = self.initial_value_map[event_name]
 
-                    if event_name == "on_toggle_fist_contrast":
-                        self.is_toggle_fist_contrast = True
+                    check_box_data = BooleanVar(self.window, self.initial_value_map[event_name])
+                    check_box_command = partial(self.event_map[event_name], check_box_data)
 
-                    elif event_name == "on_toggle_palm_contrast":
-                        self.is_toggle_palm_contrast = True
-
-                    self.radio_button = Checkbutton(self,
+                    self.check_box = Checkbutton(self,
                             command = check_box_command, 
                             variable = check_box_data)
-
-#                    self.radio_button.set(self.initial_value_map[event_name])
-                    self.radio_button.grid(row=self.row_index, column=column_index, padx=4, pady=4)
+                    
+                    self.check_box.grid(row=self.row_index, column=column_index, padx=4, pady=4)
 
                     column_index += 1
 
