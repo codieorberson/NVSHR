@@ -14,11 +14,23 @@ class GuiManager():
     def set_up_ear(self, initial_value, callback):
         self.gui.set_up_ear(initial_value, callback)
 
-    def set_up_low_contrast(self, initial_value, callback):
-        self.gui.set_up_low_contrast(initial_value, callback)
+    def set_up_fist_low_contrast(self, initial_value, callback):
+        self.gui.set_up_fist_low_contrast(initial_value, callback)
 
-    def set_up_high_contrast(self, initial_value, callback):
-        self.gui.set_up_high_contrast(initial_value, callback)
+    def set_up_fist_high_contrast(self, initial_value, callback):
+        self.gui.set_up_fist_high_contrast(initial_value, callback)
+
+    def set_up_toggle_fist_contrast(self, initial_value, callback):
+        self.gui.set_up_toggle_fist_contrast(initial_value, callback)
+
+    def set_up_palm_low_contrast(self, initial_value, callback):
+        self.gui.set_up_palm_low_contrast(initial_value, callback)
+
+    def set_up_palm_high_contrast(self, initial_value, callback):
+        self.gui.set_up_palm_high_contrast(initial_value, callback)
+
+    def set_up_toggle_palm_contrast(self, initial_value, callback):
+        self.gui.set_up_toggle_palm_contrast(initial_value, callback)
 
     def set_up_minimum_time_increment(self, initial_value, callback):
         self.gui.set_up_minimum_time_increment(initial_value, callback)

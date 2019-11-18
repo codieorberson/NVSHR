@@ -22,13 +22,29 @@ class GuiWindow(Tk):
         for tab in self.tabs:
             tab.set_up_ear(initial_value, callback)
 
-    def set_up_low_contrast(self, initial_value, callback):
+    def set_up_fist_low_contrast(self, initial_value, callback):
         for tab in self.tabs:
-            tab.set_up_low_contrast(initial_value, callback)
+            tab.set_up_fist_low_contrast(initial_value, callback)
 
-    def set_up_high_contrast(self, initial_value, callback):
+    def set_up_fist_high_contrast(self, initial_value, callback):
         for tab in self.tabs:
-            tab.set_up_high_contrast(initial_value, callback)
+            tab.set_up_fist_high_contrast(initial_value, callback)
+
+    def set_up_toggle_fist_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_toggle_fist_contrast(initial_value, callback)
+
+    def set_up_palm_low_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_palm_low_contrast(initial_value, callback)
+
+    def set_up_palm_high_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_palm_high_contrast(initial_value, callback)
+
+    def set_up_toggle_palm_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_toggle_palm_contrast(initial_value, callback)
 
     def set_up_minimum_time_increment(self, initial_value, callback):
         for tab in self.tabs:
@@ -70,10 +86,6 @@ class GuiWindow(Tk):
                 self.palm_label = tab
             if tab.is_logfile:
                 self.log_text = tab
-            if tab.is_low_contrast:
-                self.low_contrast = tab
-            if tab.is_high_contrast:
-                self.high_contrast = tab
 
     def get_debug_tab(self):
         return self.debug_tab

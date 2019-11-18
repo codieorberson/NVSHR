@@ -23,13 +23,8 @@ class GuiTab(Frame):
         self.is_logfile = False
         self.is_command_menu = False
         self.has_list_box = False
-        self.is_low_contrast = False
-        self.is_high_contrast = False
-        self.name = name
 
-        #Note to self: Move the next two lines to databaseManager.py and make hooks!
-        self.default_low_contrast = 0
-        self.default_high_contrast = 113
+        self.name = name
 
         self.option = 1
         self.command_index = 0
@@ -42,13 +37,29 @@ class GuiTab(Frame):
         self.initial_value_map['on_ear_change'] = initial_value
         self.event_map['on_ear_change'] = callback
 
-    def set_up_low_contrast(self, initial_value, callback):
-        self.initial_value_map['on_low_contrast'] = initial_value
-        self.event_map['on_low_contrast'] = callback
+    def set_up_fist_low_contrast(self, initial_value, callback):
+        self.initial_value_map['on_fist_low_contrast'] = initial_value
+        self.event_map['on_fist_low_contrast'] = callback
 
-    def set_up_high_contrast(self, initial_value, callback):
-        self.initial_value_map['on_high_contrast'] = initial_value
-        self.event_map['on_high_contrast'] = callback
+    def set_up_fist_high_contrast(self, initial_value, callback):
+        self.initial_value_map['on_fist_high_contrast'] = initial_value
+        self.event_map['on_fist_high_contrast'] = callback
+
+    def set_up_toggle_fist_contrast(self, initial_value, callback):
+        self.initial_value_map['on_toggle_fist_contrast'] = initial_value
+        self.event_map['on_toggle_fist_contrast'] = callback
+
+    def set_up_palm_low_contrast(self, initial_value, callback):
+        self.initial_value_map['on_palm_low_contrast'] = initial_value
+        self.event_map['on_palm_low_contrast'] = callback
+
+    def set_up_palm_high_contrast(self, initial_value, callback):
+        self.initial_value_map['on_palm_high_contrast'] = initial_value
+        self.event_map['on_palm_high_contrast'] = callback
+
+    def set_up_toggle_palm_contrast(self, initial_value, callback):
+        self.initial_value_map['on_toggle_palm_contrast'] = initial_value
+        self.event_map['on_toggle_palm_contrast'] = callback
 
     def set_up_minimum_time_increment(self, initial_value, callback):
         self.initial_value_map['on_min_time_inc'] = initial_value
@@ -97,13 +108,12 @@ class GuiTab(Frame):
                                                                 "camera and is not taking in any data. Please "
                                                                 "ensure your camera is connected properly.")
                 text_var.set("Camera On: " + str(self.cap.isOpened()))
-                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+                self.label.grid(row=self.row_index, column=0, padx=4, pady=4)
 
-            elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
                 self.label = Label(self, textvariable=self.fps_container, font=20)
                 self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
-                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+                self.label.grid(row=self.row_index, column=1, padx=4, pady=4)
                 self.is_fps = True
 
             elif element["format"] == "video":
@@ -112,7 +122,7 @@ class GuiTab(Frame):
                 self.debug_height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
-                self.debug_canvas.grid(row=self.row_index, column=0, padx=10, pady=10, columnspan=5)
+                self.debug_canvas.grid(row=self.row_index, column=0, padx=4, pady=4, columnspan=5)
 
             elif element["format"] == "slider":
                 column_index = 0

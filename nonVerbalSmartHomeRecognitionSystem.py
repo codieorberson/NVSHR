@@ -50,14 +50,30 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.open_eye_threshold = float(new_ear_value)
         self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
         self.gesture_detector.set_open_eye_threshold(self.open_eye_threshold)
-        
-    def set_low_contrast(self, new_low_contrast):
+         
+    def set_fist_low_contrast(self, new_low_contrast):
+        self.database_manager.set_fist_low_contrast(int(new_low_contrast))
+        self.gesture_detector.set_fist_low_contrast(new_low_contrast)
+
+    def set_fist_high_contrast(self, new_high_contrast):
+        self.database_manager.set_fist_high_contrast(int(new_high_contrast))
+        self.gesture_detector.set_fist_high_contrast(new_high_contrast)
+
+    def set_toggle_fist_contrast(self, should_be_on):
+        self.database_manager.set_toggle_fist_contrast(should_be_on)
+        self.gesture_detector.toggle_fist_contrast(should_be_on)
+
+    def set_palm_low_contrast(self, new_low_contrast):
         self.database_manager.set_palm_low_contrast(int(new_low_contrast))
         self.gesture_detector.set_palm_low_contrast(new_low_contrast)
 
-    def set_high_contrast(self, new_high_contrast):
+    def set_palm_high_contrast(self, new_high_contrast):
         self.database_manager.set_palm_high_contrast(int(new_high_contrast))
         self.gesture_detector.set_palm_high_contrast(new_high_contrast)
+
+    def set_toggle_palm_contrast(self, should_be_on):
+        self.database_manager.set_toggle_palm_contrast(should_be_on)
+        self.gesture_detector.toggle_palm_contrast(should_be_on)
 
     def set_minimum_time_increment(self, new_minimum_time_increment):
         self.minimum_time_increment = int(new_minimum_time_increment)
@@ -145,8 +161,13 @@ class NonVerbalSmartHomeRecognitionSystem():
  
     def __set_up_gui_values_and_watchers__(self):
         self.gui_manager.set_up_ear(self.open_eye_threshold, self.set_open_eye_threshold)
-        self.gui_manager.set_up_low_contrast(self.palm_low_contrast_value, self.set_low_contrast)
-        self.gui_manager.set_up_high_contrast(self.palm_high_contrast_value, self.set_high_contrast)
+        self.gui_manager.set_up_fist_low_contrast(self.fist_low_contrast_value, self.set_fist_low_contrast)
+        self.gui_manager.set_up_fist_high_contrast(self.fist_high_contrast_value, self.set_fist_high_contrast)
+        self.gui_manager.set_up_toggle_fist_contrast(self.should_use_fist_contrast, self.set_toggle_fist_contrast)
+        self.gui_manager.set_up_palm_low_contrast(self.palm_low_contrast_value, self.set_palm_low_contrast)
+        self.gui_manager.set_up_palm_high_contrast(self.palm_high_contrast_value, self.set_palm_high_contrast)
+        self.gui_manager.set_up_toggle_palm_contrast(self.should_use_palm_contrast, self.set_toggle_palm_contrast)
+ 
         self.gui_manager.set_up_minimum_time_increment(self.minimum_time_increment, self.set_minimum_time_increment)
         self.gui_manager.set_up_maximum_time_increment(self.maximum_time_increment, self.set_maximum_time_increment) 
         self.gui_manager.set_up_commands(self.database_manager.get_commands(), self.add_command)
