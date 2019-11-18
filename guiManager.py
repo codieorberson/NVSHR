@@ -4,8 +4,7 @@ from guiWindow import GuiWindow
 from framesPerSecondMeter import FramesPerSecondMeter
 
 class GuiManager():
-    def __init__(self, cap, is_admin):
-        self.cap = cap
+    def __init__(self, is_admin):
         self.gui = GuiWindow()
         self.gui.title("Non-Verbal Smart Home Recognition System")
 
@@ -34,6 +33,9 @@ class GuiManager():
         logged_lines.reverse()
         self.gui.set_initial_log(logged_lines)
 
+    def set_cap(self, cap):
+        self.gui.set_cap(cap)
+
     def __loop__(self):
         self.loop_callback()
         self.fps_tab.set_fps(self.frames_per_second_meter.cycle())
@@ -41,7 +43,7 @@ class GuiManager():
 
     def start(self, loop_callback, close_callback):
         self.frames_per_second_meter = FramesPerSecondMeter()
-        self.gui.set_cap(self.cap)
+        self.gui.set_up_tabs()
         self.debug_tab = self.gui.get_debug_tab()
         self.fps_tab = self.gui.get_fps_tab()
         self.blink_label = self.gui.get_blink_label()

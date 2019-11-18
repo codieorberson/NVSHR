@@ -8,60 +8,58 @@ from guiTab import GuiTab
 class GuiWindow(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
+        self.notebook = ttk.Notebook(width=1000, height=800)
+        self.notebook.grid(row=0)
+        self.page_configurations = []
+        self.tabs = []
+        self.tab_indices = range(len(list(gui_data.keys())))
+
+        for i in self.tab_indices:
+            self.page_configurations.append(gui_data[list(gui_data.keys())[i]])
+            self.tabs.append(GuiTab(self.notebook, self))
 
     def set_up_ear(self, initial_value, callback):
-        self.initial_ear = initial_value
-        self.on_ear_change = callback
+        for tab in self.tabs:
+            tab.set_up_ear(initial_value, callback)
 
     def set_up_low_contrast(self, initial_value, callback):
-        self.initial_low_contrast = initial_value
-        self.on_low_contrast_change = callback
+        for tab in self.tabs:
+            tab.set_up_low_contrast(initial_value, callback)
 
     def set_up_high_contrast(self, initial_value, callback):
-        self.initial_high_contrast = initial_value
-        self.on_high_contrast_change = callback
+        for tab in self.tabs:
+            tab.set_up_high_contrast(initial_value, callback)
 
     def set_up_minimum_time_increment(self, initial_value, callback):
-        self.initial_minimum_time_increment = initial_value
-        self.on_minimum_time_increment_change = callback
+        for tab in self.tabs:
+            tab.set_up_minimum_time_increment(initial_value, callback)
 
     def set_up_maximum_time_increment(self, initial_value, callback):
-        self.initial_maximum_time_increment = initial_value
-        self.on_maximum_time_increment_change = callback
+        for tab in self.tabs:
+            tab.set_up_maximum_time_increment(initial_value, callback)
 
     def set_up_commands(self, commands, callback):
-        self.initial_commands = commands
-        self.on_new_command_change = callback
+        for tab in self.tabs:
+            tab.set_up_commands(commands, callback)
 
     def set_initial_log(self, logged_lines):
-        self.initial_log = logged_lines
+        for tab in self.tabs:
+            tab.set_initial_log(logged_lines)
 
     def set_cap(self, cap):
-        self.cap = cap
-        self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(gui_data, self.on_new_command_change)
+        for tab in self.tabs:
+            tab.set_cap(cap)
 
-        self.notebook.grid(row=0)
-
-    def add_content(self, body, gesture_detected):
-        for i in range(len(list(body.keys()))):
-            page_configuration = body[list(body.keys())[i]]
-            tab = GuiTab(self.notebook, self)
-
-            tab.set_up_ear(self.initial_ear, self.on_ear_change)
-            tab.set_up_low_contrast(self.initial_low_contrast, self.on_low_contrast_change)
-            tab.set_up_high_contrast(self.initial_high_contrast, self.on_high_contrast_change)
-            tab.set_up_minimum_time_increment(self.initial_minimum_time_increment, self.on_minimum_time_increment_change)
-            tab.set_up_maximum_time_increment(self.initial_maximum_time_increment, self.on_maximum_time_increment_change)
-            tab.set_up_commands(self.initial_commands, self.on_new_command_change)
-            tab.set_initial_log(self.initial_log)
-            tab.set_cap(self.cap)
+    def set_up_tabs(self):
+        for i in self.tab_indices:
+            tab = self.tabs[i]
+            page_configuration = self.page_configurations[i]
 
             tab.load_data(page_configuration['elements'])
             self.notebook.add(tab, text=page_configuration["title"])
 
             if tab.is_debug:
-                debug_tab = tab
+                self.debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
             if tab.is_blink_label:
@@ -72,8 +70,6 @@ class GuiWindow(Tk):
                 self.palm_label = tab
             if tab.is_logfile:
                 self.log_text = tab
-
-        return debug_tab
 
     def get_debug_tab(self):
         return self.debug_tab
