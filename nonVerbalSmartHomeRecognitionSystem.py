@@ -40,6 +40,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detected = self.gesture_detector.get_gesture_detected()
         self.gui_manager.set_gesture_background(self.gesture_detected)
 
+        new_log_line = self.logger.get_output()
+        if self.gesture_detected != None:
+            self.gui_manager.update_log_text(new_log_line)
+
         self.update_commands()
 
     def set_open_eye_threshold(self, new_ear_value):

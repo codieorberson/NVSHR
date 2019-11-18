@@ -2,6 +2,7 @@
 from guiWindow import GuiWindow
 from framesPerSecondMeter import FramesPerSecondMeter
 
+
 class GuiManager():
     def __init__(self, cap, settings_manager, is_admin):
         self.cap = cap
@@ -58,6 +59,7 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
+        self.log_page = self.gui.get_log_page()
 
         self.loop_callback = loop_callback
         self.close_callback = close_callback
