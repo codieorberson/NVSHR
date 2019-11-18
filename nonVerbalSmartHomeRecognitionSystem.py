@@ -60,6 +60,9 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_detector.set_fist_high_contrast(new_high_contrast)
 
     def set_toggle_fist_contrast(self, should_be_on):
+        print("SHOULD FIST CONTRAST BE ON?")
+        print("Value:")
+        print(should_be_on)
         self.database_manager.set_toggle_fist_contrast(should_be_on)
         self.gesture_detector.toggle_fist_contrast(should_be_on)
 

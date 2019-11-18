@@ -20,6 +20,8 @@ class GuiTab(Frame):
         self.is_blink_label = False
         self.is_fist_label = False
         self.is_palm_label = False
+        self.is_fist_radio_button = False
+        self.is_palm_radio_button = False
         self.is_logfile = False
         self.is_command_menu = False
         self.has_list_box = False
@@ -124,6 +126,28 @@ class GuiTab(Frame):
 
                 self.debug_canvas.grid(row=self.row_index, column=0, padx=4, pady=4, columnspan=5)
 
+            elif element["format"] == "check_box":
+                column_index = 0
+                for event in element["events"]:
+                    event_name = event
+                    check_box_command = lambda: self.event_map[event_name](self.initial_value_map[event_name])
+                    check_box_data = self.initial_value_map[event_name]
+
+                    if event_name == "on_toggle_fist_contrast":
+                        self.is_toggle_fist_contrast = True
+
+                    elif event_name == "on_toggle_palm_contrast":
+                        self.is_toggle_palm_contrast = True
+
+                    self.radio_button = Checkbutton(self,
+                            command = check_box_command, 
+                            variable = check_box_data)
+
+#                    self.radio_button.set(self.initial_value_map[event_name])
+                    self.radio_button.grid(row=self.row_index, column=column_index, padx=4, pady=4)
+
+                    column_index += 1
+
             elif element["format"] == "slider":
                 column_index = 0
                 for event in element["events"]:
@@ -133,19 +157,15 @@ class GuiTab(Frame):
                     if event_name == "on_ear_change":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
 
-                    elif event_name == "on_low_contrast":
-                        self.is_low_contrast = True
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
-
-                    elif event_name == "on_high_contrast":
-                        self.is_high_contrast = True
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
-
                     elif event_name == "on_min_time_inc" or "on_max_time_inc":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
 
+                    else:
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
+                    
+
                     self.slider.set(self.initial_value_map[event_name])
-                    self.slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                    self.slider.grid(row=self.row_index, column=column_index, padx=4, pady=4)
                     column_index += 1
 
             elif element["format"] == "gestures":

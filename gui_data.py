@@ -137,6 +137,19 @@ gui_data = {
                 {
                     "format": "text",
                     "multicolumn" : "true",
+                    "body": {"text" : "Use fist contrast filters:"},
+                    "body2": {"text": "Use palm contrast filters:"}
+                },
+                {
+                    "format": "check_box",
+                    "events": [
+                        "on_toggle_fist_contrast",
+                        "on_toggle_palm_contrast"
+                    ]
+                },
+                {
+                    "format": "text",
+                    "multicolumn" : "true",
                     "body": {"text": "Set the Low Contrast for fist:"},
                     "body2": {"text": "Set the High Contrast for fist:"},
                     "body3": {"text": "Set the Low Contrast for palm:"},
