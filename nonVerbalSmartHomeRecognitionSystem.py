@@ -1,6 +1,5 @@
 import cv2
 from datetime import datetime
-from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
@@ -100,8 +99,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser = GestureParser()
         self.gesture_detected = None
         self.process_manager = ProcessManager()
-        # self.admin_settings_manager = AdminCmdManager()
-        # self.AdminSettingsManager.read_from_file()
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
 
