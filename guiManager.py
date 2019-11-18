@@ -449,9 +449,9 @@ class Page(Frame):
 
             elif element["format"] == "logfile":
                 self.is_logfile = True
-                self.scro = Scrollbar(self)
-                self.scro.grid(row = self.row_index, column = 1, sticky=N+E+S+W)
-                self.log_text = Text(self, font = 20, height = 30, width = 60, yscrollcommand = self.scro.set)
+                self.scroll = Scrollbar(self)
+                self.scroll.grid(row = self.row_index, column = 1, sticky=N+E+S+W)
+                self.log_text = Text(self, font = 20, height = 30, width = 60, yscrollcommand = self.scroll.set)
                 with open("./log.csv") as logfile:
                     content = logfile.readlines()
                     for line in content:
@@ -459,7 +459,7 @@ class Page(Frame):
                 self.log_text.config(state = DISABLED)
                 self.log_text.grid(row=self.row_index, column = 0, padx = 10, pady = 10)
                 self.log_text.see(END)
-                self.scro.config(command = self.log_text.yview)
+                self.scroll.config(command = self.log_text.yview)
 
 
             elif element["format"] == "listbox":
@@ -535,26 +535,6 @@ class Page(Frame):
             messagebox.showerror("No Command Created", "Please chose three gestures to create a full command.")
 
         self.is_full = 0
-
-    ''' The code block below is old version of log file display, we can remove it later'''
-    # def open_log_file(self):
-    #     if os.path.exists("logfile.pdf"):
-    #         self.delete_log_file()
-    #     pdf = FPDF()
-    #     pdf.add_page()
-    #     pdf.set_font("Arial", size = 10)
-    #     count =1
-    #     file = open('logfile.txt')
-    #     for line in file:
-    #         pdf.cell(200, 10, txt=line, ln=count, align="Left")
-    #         count +=1
-    #     file.close()
-    #     pdf.output("logfile.pdf")
-    #     subprocess.call(["open", "logfile.pdf"])
-
-    # def delete_log_file(self):
-    #     if os.path.exists("logfile.pdf"):
-    #         os.remove("logfile.pdf")
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
