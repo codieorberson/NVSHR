@@ -208,11 +208,9 @@ _gui_data = {
             ]
         },
     "tab4": {"title": "Log",
-             "elements": [
-                 {
-                     "format": "button",
-                 }
-             ]
+            "elements": [
+                {"format" : "logfile"}
+            ]
              }
 }
 
@@ -263,6 +261,8 @@ class _App(Tk):
                 self.fist_label = tab
             if tab.is_palm_label:
                 self.palm_label = tab
+            if tab.is_logfile:
+                self.log_text = tab
 
         return debug_tab
 
@@ -277,6 +277,9 @@ class _App(Tk):
 
     def get_palm_label(self):
         return self.palm_label
+
+    def get_log_page(self):
+        return self.log_text
 
 
 # An instance of this class represents a tab.
@@ -309,6 +312,7 @@ class Page(Frame):
         self.is_palm_label = False
         self.is_command_menu = False
         self.has_list_box = False
+        self.is_logfile = False
         self.gesture_detected = gesture_detected
 
         self.optionsManager = database_manager
@@ -443,9 +447,20 @@ class Page(Frame):
                 add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
                 add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
 
-            elif element["format"] == "button":
-                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
-                # self.delete_log_file()
+            elif element["format"] == "logfile":
+                self.is_logfile = True
+                self.scroll = Scrollbar(self)
+                self.scroll.grid(row = self.row_index, column = 1, sticky=N+E+S+W)
+                self.log_text = Text(self, font = 20, height = 30, width = 60, yscrollcommand = self.scroll.set)
+                with open("./log.csv") as logfile:
+                    content = logfile.readlines()
+                    for line in content:
+                        self.log_text.insert(INSERT,line)
+                self.log_text.config(state = DISABLED)
+                self.log_text.grid(row=self.row_index, column = 0, padx = 10, pady = 10)
+                self.log_text.see(END)
+                self.scroll.config(command = self.log_text.yview)
+
 
             elif element["format"] == "listbox":
                 if self.is_command_menu:
@@ -521,25 +536,6 @@ class Page(Frame):
 
         self.is_full = 0
 
-    def open_log_file(self):
-        if os.path.exists("logfile.pdf"):
-            self.delete_log_file()
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size = 10)
-        count =1
-        file = open('logfile.txt')
-        for line in file:
-            pdf.cell(200, 10, txt=line, ln=count, align="Left")
-            count +=1
-        file.close()
-        pdf.output("logfile.pdf")
-        subprocess.call(["open", "logfile.pdf"])
-
-    def delete_log_file(self):
-        if os.path.exists("logfile.pdf"):
-            os.remove("logfile.pdf")
-
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
@@ -596,6 +592,7 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
+        self.log_page = self.gui.get_log_page()
 
         if is_admin == False:
             self.gui.withdraw()
@@ -618,6 +615,12 @@ class GuiManager():
         self.blink_label.set_gesture_background(gesture_detected)
         self.fist_label.set_gesture_background(gesture_detected)
         self.palm_label.set_gesture_background(gesture_detected)
+
+    def update_log_text(self, content):
+        self.log_page.log_text.config(state = NORMAL)
+        self.log_page.log_text.insert(INSERT, content)
+        self.log_page.log_text.config(state = DISABLED)
+        self.log_page.log_text.see(END)
 
     def set_fps(self, fps):
         self.fps_tab.set_fps(fps)
