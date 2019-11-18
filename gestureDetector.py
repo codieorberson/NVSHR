@@ -14,24 +14,8 @@ from blinkDetector import BlinkDetector
 
 class GestureDetector():
     def __init__(self):
-        # Next value not being used right now, but may be in the near future.
-        # self.is_black_and_white = False
-
-        self.process_manager = ProcessManager()
-        self.hand_gesture_detector = HandGestureDetector()
-        self.blink_detector = BlinkDetector()
-
-        self.fist_perimeter = MultithreadedPerimeter()
-        self.palm_perimeter = MultithreadedPerimeter() 
-        self.left_eye_perimeter = MultithreadedPerimeter()
-        self.right_eye_perimeter = MultithreadedPerimeter()
- 
-        self.perimeters = [
-            self.fist_perimeter, 
-            self.palm_perimeter, 
-            self.left_eye_perimeter, 
-            self.right_eye_perimeter
-        ]
+        self.__set_up_perimeters__()
+        self.__set_up_helpers__()
 
         self.gesture_events = []
         self.gestures_detected = []
@@ -39,23 +23,44 @@ class GestureDetector():
     def on_gesture(self, callback):
         self.gesture_events.append(callback)
 
+    def set_palm_low_contrast(self, low_contrast):
+        self.hand_gesture_detector.set_palm_low_contrast(low_contrast)
+
+    def set_palm_high_contrast(self, low_contrast):
+        self.hand_gesture_detector.set_palm_high_contrast(low_contrast)
+
+    def toggle_palm_contrast(self, should_be_on):
+        self.hand_gesture_detector.toggle_palm_contrast(should_be_on)
+
+    def set_fist_low_contrast(self, low_contrast):
+        self.hand_gesture_detector.set_fist_low_contrast(low_contrast)
+
+    def set_fist_high_contrast(self, low_contrast):
+        self.hand_gesture_detector.set_fist_high_contrast(low_contrast)
+
+    def toggle_fist_contrast(self, should_be_on):
+        self.hand_gesture_detector.toggle_fist_contrast(should_be_on)
+
+    def set_open_eye_threshold(self, open_eye_threshold):
+        self.open_eye_threshold = open_eye_threshold
+
     def get_gestures_detected(self):
         return self.gestures_detected
 
-    def detect(self, frame, timestamp, open_eye_threshold, palm_low_contrast, palm_high_contrast):
+    def detect(self, frame, timestamp):
         current_frame = frame
         self.__reset_perimeters__()
 
         self.process_manager.add_process(
-                self.hand_gesture_detector.detect, (current_frame, palm_low_contrast, palm_high_contrast, self.fist_perimeter, self.palm_perimeter))
+                self.hand_gesture_detector.detect, (current_frame, ))
 
         self.blink_detector.detect(current_frame, self.left_eye_perimeter, self.right_eye_perimeter)
 
         self.process_manager.on_done()
-        self.__trigger_events__(timestamp, open_eye_threshold)
+        self.__trigger_events__(timestamp)
         return self.__draw_rectangles__(frame)
 
-    def __trigger_events__(self, timestamp, open_eye_threshold):
+    def __trigger_events__(self, timestamp):
         self.gestures_detected = []
 
         if self.fist_perimeter.is_set():
@@ -65,7 +70,7 @@ class GestureDetector():
             self.gestures_detected.append("palm")
         
         if self.left_eye_perimeter.is_set() and self.right_eye_perimeter.is_set():
-            if open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
+            if self.open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
                 self.gestures_detected.append("blink")
 
         for gesture_name in self.gestures_detected:
@@ -82,3 +87,22 @@ class GestureDetector():
     def __reset_perimeters__(self):
         for perimeter in self.perimeters:
             perimeter.set((0, 0, 0, 0))
+
+    def __set_up_perimeters__(self):
+        self.fist_perimeter = MultithreadedPerimeter()
+        self.palm_perimeter = MultithreadedPerimeter() 
+        self.left_eye_perimeter = MultithreadedPerimeter()
+        self.right_eye_perimeter = MultithreadedPerimeter()
+ 
+        self.perimeters = [
+            self.fist_perimeter, 
+            self.palm_perimeter, 
+            self.left_eye_perimeter, 
+            self.right_eye_perimeter
+        ]
+
+    def __set_up_helpers__(self):
+        self.process_manager = ProcessManager()
+        self.hand_gesture_detector = HandGestureDetector(self.fist_perimeter, self.palm_perimeter)
+        self.blink_detector = BlinkDetector()
+
