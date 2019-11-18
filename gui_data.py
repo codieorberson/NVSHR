@@ -197,9 +197,7 @@ gui_data = {
         },
     "tab4": {"title": "Log",
              "elements": [
-                 {
-                     "format": "button",
-                 }
+                 {"format": "logfile"}
              ]
              }
 }

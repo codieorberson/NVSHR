@@ -2,6 +2,7 @@ import os
 
 class Logger():
     def __init__(self):
+        self.output = ""
         exists = os.path.exists("logfile.txt")
         if not exists:
             self.file = open("logfile.txt", 'w+')
@@ -12,6 +13,7 @@ class Logger():
             
     def log(self, output):
         self.__init__()
+        self.output = output
         self.file.write(output)
         print(output) 
 
@@ -26,6 +28,9 @@ class Logger():
             ending = "] not recognised"
 
         self.log_gesture("pattern: [" + ', '.join(gesture_sequence) + ending, now)
+
+    def get_output(self):
+        return self.output
 
     def close(self):
         self.file.seek(0)

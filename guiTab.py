@@ -20,6 +20,7 @@ class GuiTab(Frame):
         self.is_blink_label = False
         self.is_fist_label = False
         self.is_palm_label = False
+        self.is_logfile = False
         self.is_command_menu = False
         self.has_list_box = False
         self.name = name
@@ -186,9 +187,19 @@ class GuiTab(Frame):
                 add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
                 add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
 
-            elif element["format"] == "button":
-                self.log_button = Button(self, text = 'Click to see contents of the logfile', command = self.open_log_file).pack()
-                # self.delete_log_file()
+            elif element["format"] == "logfile":
+                self.is_logfile = True
+                self.scroll = Scrollbar(self)
+                self.scroll.grid(row=self.row_index, column=1, sticky=N + E + S + W)
+                self.log_text = Text(self, font=20, height=30, width=60, yscrollcommand=self.scroll.set)
+                with open("./log.csv") as logfile:
+                    content = logfile.readlines()
+                    for line in content:
+                        self.log_text.insert(INSERT, line)
+                self.log_text.config(state=DISABLED)
+                self.log_text.grid(row=self.row_index, column=0, padx=10, pady=10)
+                self.log_text.see(END)
+                self.scroll.config(command=self.log_text.yview)
 
             elif element["format"] == "listbox":
                 if self.is_command_menu:
