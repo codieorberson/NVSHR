@@ -104,3 +104,6 @@ class GuiWindow(Tk):
 
     def get_log_page(self):
         return self.log_text
+
+    def withdraw_gui(self):
+        self.withdraw()

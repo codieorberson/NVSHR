@@ -15,6 +15,8 @@ class GuiTab(Frame):
         self.event_map = {}
         self.initial_value_map = {}
 
+        self.window = window
+
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
         self.is_fps = False
@@ -211,11 +213,10 @@ class GuiTab(Frame):
                     self.list_box.grid(row=self.row_index, column=0, pady=10)
                     self.has_list_box = True
 
-            elif element["format"] == "logo":
-                self.canvas = Canvas(self.list_box, width=100, height=66)
-                self.canvas.grid(row=self.row_index, column=0, pady=10)
-                image = PIL.ImageTk.PhotoImage(PIL.Image.open("NVSHRLogo.png"))
-                self.canvas.create_image(100, 66, anchor="nw", image=image)
+            elif element["format"] == "close_gui_button":
+                self.close_button = Button(self.list_box, text="Close Administrator Window",
+                                           command=self.close_gui_window)
+                self.close_button.grid(row=self.row_index, column=0)
 
             self.row_index += 1
 
@@ -330,3 +331,6 @@ class GuiTab(Frame):
             self.fist_label.configure(bg="White")
             self.palm_label.configure(bg="White")
             self.blink_label.configure(bg="White")
+
+    def close_gui_window(self):
+        self.window.withdraw_gui()

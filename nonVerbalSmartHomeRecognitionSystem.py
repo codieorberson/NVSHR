@@ -86,10 +86,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         # Close log file
         self.logger.close()
 
-    def __set_up_pop_up__(self):
-        self.pop_up_window = PopUp()
-        self.is_admin = self.pop_up_window.send_verification()
-
     def __set_up_helpers__(self):
         self.is_admin = True
         self.database_manager = DatabaseManager()

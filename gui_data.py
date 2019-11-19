@@ -6,9 +6,6 @@ gui_data = {
                      "format": "listbox"
                  },
                  {
-                     "format": "logo"
-                 },
-                 {
                      "format": "text",
                      "body":
                          {
@@ -106,6 +103,9 @@ gui_data = {
                              "anchor": "center",
                              "font": ("Helevetica", 14, "italic")
                          }
+                 },
+                 {
+                     "format": "close_gui_button"
                  }
              ]
              },
