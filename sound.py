@@ -6,4 +6,4 @@ class Sound:
         pass
 
     def from_file(self, file_name):
-        playsound(file_name)
+        playsound(file_name, False)
