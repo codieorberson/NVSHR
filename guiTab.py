@@ -96,10 +96,6 @@ class GuiTab(Frame):
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
                 self.label = Label(self, textvariable=text_var, font=20)
-                if self.cap.isOpened == False:
-                    messagebox.showerror("No Camera Connected", "The system cannot recognize the connected "
-                                                                "camera and is not taking in any data. Please "
-                                                                "ensure your camera is connected properly.")
                 text_var.set("Camera On: " + str(self.cap.isOpened()))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
 
@@ -155,26 +151,9 @@ class GuiTab(Frame):
 
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
-                row = self.row_index
                 for option in self.database_manager.get_commands():
-                    small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
-                    small_frame.grid(row=row, column=0, padx=10, pady=10)
-                    text = {"text": "Command " + str(self.option) + " (" + option["gesture_sequence"][
-                        0].capitalize() + ", " +
-                                    option["gesture_sequence"][1].capitalize() + ", " + option["gesture_sequence"][
-                                        2].capitalize() + ")"}
-                    self.label = Label(small_frame, text)
-                    self.label.grid(row=row, column=0, padx=10, pady=10)
-                    variable = StringVar()
-                    variable.set(option["command_text"])
-                    self.command_links[self.option] = variable
-                    self.optionMenu = OptionMenu(small_frame, self.command_links[self.option], *self.option_list,
-                                                 command=self.set_value)
-                    self.optionMenu.grid(row=row, column=1, padx=10, pady=10, columnspan=100)
-                    self.optionMenu.config(width=30)
-                    self.option += 1
-                    row += 1
-                self.row_index = row
+                    self.add_device_list_to_gui(option["gesture_sequence"][0], option["gesture_sequence"][1],
+                                                option["gesture_sequence"][2])
 
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
@@ -223,10 +202,27 @@ class GuiTab(Frame):
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
+    def add_device_list_to_gui(self, gesture1, gesture2, gesture3):
+        small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+        small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
+        text = {"text": "Command " + str(self.option) + " (" + gesture1.capitalize() + ", " +
+                        gesture2.capitalize() + ", " + gesture3.capitalize() + ")"}
+        self.label = Label(small_frame, text)
+        self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+        variable = StringVar()
+        variable.set("None")
+        self.command_links[self.option] = variable
+        self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
+        self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
+        self.optionMenu.config(width=30)
+        self.option += 1
+        self.row_index += 1
+
     def set_value(self, value):
         for option in self.database_manager.get_commands():
             if value == option["command_text"] and value != "None":
-                messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
+                self.display_error_message("Smart Home Device Linked",
+                                           "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
                                                                  "for this command.")
                 return
@@ -248,34 +244,36 @@ class GuiTab(Frame):
         self.is_full += 1
 
     def add_new_command(self):
+        does_not_exist = self.check_new_command()
         if self.is_full >= 3:
-            if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
-                    self.new_command[2].get():
-                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
-                small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
-                text = {"text": "Command " + str(self.option) + " (" + self.new_command[0].get().capitalize() + ", " +
-                                self.new_command[1].get().capitalize() + ", " + self.new_command[
-                                    2].get().capitalize() + ")"}
-                self.label = Label(small_frame, text)
-                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
-                variable = StringVar()
-                #  self.database_manager.change_keys()
-                variable.set("None")
-                self.command_links[self.option] = variable
-                self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
-                self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
-                self.optionMenu.config(width=30)
-                self.database_manager.set_command([self.new_command[0].get().lower(), self.new_command[1].get().lower(),
-                                                   self.new_command[2].get().lower()], "None", "None")
-                self.option += 1
-                self.row_index += 1
-            else:
-                messagebox.showerror("Incorrect Command",
-                                     "Commands may not have identical gestures in a successive order.")
+            if does_not_exist:
+                if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
+                        self.new_command[2].get():
+                    self.add_device_list_to_gui(self.new_command[0].get(), self.new_command[1].get(),
+                                                self.new_command[2].get())
+                    self.database_manager.set_command(
+                        [self.new_command[0].get().lower(), self.new_command[1].get().lower(),
+                         self.new_command[2].get().lower()], "None", "None")
+                else:
+                    self.display_error_message("Incorrect Command",
+                                               "Commands may not have identical gestures in a successive order.")
         else:
-            messagebox.showerror("No Command Created", "Please chose three gestures to create a full command.")
+            self.display_error_message("No Command Created", "Please chose three gestures to create a full command.")
 
         self.is_full = 0
+
+    def check_new_command(self):
+        is_not_equal = False
+        for option in self.database_manager.get_commands():
+            for x in range(0, 3):
+                if option["gesture_sequence"][x] != self.new_command[x]:
+                    is_not_equal = True
+
+        if not is_not_equal:
+            self.display_error_message("Command Exists", "This command is already created "
+                                                         "within the system. Please create a new, unique command.")
+
+        return is_not_equal
 
     def open_log_file(self):
         if os.path.exists("logfile.pdf"):
@@ -312,6 +310,9 @@ class GuiTab(Frame):
     def get_cam_fps(self, cap):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
+
+    def display_error_message(self, title, text):
+        messagebox.showerror(title, text)
 
     # This code, as written, cannot display two simultaneous gestures.
     def set_gesture_background(self, gesture_detected):

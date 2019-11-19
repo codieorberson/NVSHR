@@ -82,9 +82,11 @@ gui_data = {
                                      "Once all of the previous steps have been completed, the system will be ready for the user. "
                                      "If at anytime the system is not properly recognizing commands, the Log tab can be used to "
                                      "view previous gestures and commands. Feel free to use this tab to ensure that the linked "
-                                     "commands are being recognized properly as well.",
+                                     "commands are being recognized properly as well. Once you have completed the configuration "
+                                     "process, simply press the button below to withdraw the window to prepare the system for "
+                                     "actual users.",
                              "width": 100,
-                             "height": 34,
+                             "height": 35,
                              "wraplength": 800,
                              "justify": "left",
                              "anchor": "w",
