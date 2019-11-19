@@ -62,7 +62,7 @@ Follow these steps to initialize the NVSHR system on your device:
 
 1. Run `main.py`. 
 
-2. After running the previous command, a pop-up window will appear verifying what type of you you are. 
+2. After running the previous command, a pop-up window will appear verifying what type of user you are. 
 
     a. If you are a regular user, the window will disappear and you will be able to begin using the system.
     

@@ -32,6 +32,9 @@ class Logger():
 
         self.log_gesture("pattern: [" + ', '.join(gesture_sequence) + ending, now)
 
+    def get_output(self):
+        return self.output
+
     def close(self):
         self.file.seek(0)
         self.file.close()
