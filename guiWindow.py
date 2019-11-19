@@ -81,6 +81,8 @@ class GuiWindow(Tk):
                 self.fist_label = tab
             if tab.is_palm_label:
                 self.palm_label = tab
+            if tab.is_logfile:
+                self.log_text = tab
 
         return debug_tab
 
@@ -98,3 +100,6 @@ class GuiWindow(Tk):
 
     def get_palm_label(self):
         return self.palm_label
+
+    def get_log_page(self):
+        return self.log_text

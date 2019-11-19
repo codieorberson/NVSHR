@@ -1,6 +1,5 @@
 import cv2
 from datetime import datetime
-from adminCmdManager import AdminCmdManager
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
 from gestureLexer import GestureLexer
@@ -39,6 +38,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gesture_detected = self.gesture_detector.get_gesture_detected()
         self.gui_manager.set_gesture_background(self.gesture_detected)
+
+        new_log_line = self.logger.get_output()
+        if self.gesture_detected != None:
+            self.gui_manager.update_log_text(new_log_line)
 
         self.update_commands()
 
@@ -97,8 +100,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser = GestureParser()
         self.gesture_detected = None
         self.process_manager = ProcessManager()
-        # self.admin_settings_manager = AdminCmdManager()
-        # self.AdminSettingsManager.read_from_file()
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
 

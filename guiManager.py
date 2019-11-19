@@ -1,6 +1,9 @@
 #!/usr/local/bin/python3
 from guiWindow import GuiWindow
 from framesPerSecondMeter import FramesPerSecondMeter
+from tkinter import *
+
+
 
 class GuiManager():
     def __init__(self, cap, settings_manager, is_admin):
@@ -58,6 +61,7 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
+        self.log_page = self.gui.get_log_page()
 
         self.loop_callback = loop_callback
         self.close_callback = close_callback
@@ -72,6 +76,12 @@ class GuiManager():
         self.blink_label.set_gesture_background(gesture_detected)
         self.fist_label.set_gesture_background(gesture_detected)
         self.palm_label.set_gesture_background(gesture_detected)
+
+    def update_log_text(self, content):
+        self.log_page.log_text.config(state=NORMAL)
+        self.log_page.log_text.insert(INSERT, content)
+        self.log_page.log_text.config(state=DISABLED)
+        self.log_page.log_text.see(END)
 
     def destroy_gui(self):
         self.gui.destroy()
