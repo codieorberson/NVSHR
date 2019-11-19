@@ -10,8 +10,8 @@ class SmartHomeActivator():
     def activate(self, gesture_sequence, was_recognized):
         if was_recognized:
             try:
-                self.turn_on_off_TpLink_Device(gesture_sequence)
                 Sound.success()
+                self.turn_on_off_TpLink_Device(gesture_sequence)
             except:
                 print("Unable to connect command to requested smart home device")
         else:

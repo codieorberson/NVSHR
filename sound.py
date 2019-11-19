@@ -11,8 +11,8 @@ class Sound:
 
     @staticmethod
     def success():
-        playsound('Success.wav')
+        playsound('Success.wav', False)
 
     @staticmethod
     def failure():
-        playsound('Failure.wav')
+        playsound('Failure.wav', False)
