@@ -45,11 +45,11 @@ class GuiWindow(Tk):
     def set_cap(self, cap, settings_manager):
         self.cap = cap
         self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(gui_data, self.on_new_command_change, settings_manager)
+        self.debug_tab = self.add_content(gui_data, settings_manager)
 
         self.notebook.grid(row=0)
 
-    def add_content(self, body, gesture_detected, settings_manager):
+    def add_content(self, body, settings_manager):
         for i in range(len(list(body.keys()))):
             page_configuration = body[list(body.keys())[i]]
             tab = GuiTab(self.notebook, self, settings_manager)

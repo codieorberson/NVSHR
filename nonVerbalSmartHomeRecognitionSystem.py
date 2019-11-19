@@ -61,9 +61,10 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.database_manager.set_maximum_time_increment(new_maximum_time_increment)
 
     def add_command(self, gesture_sequence, command_text, device_name):
-        self.gesture_parser.add_pattern(gesture_sequence,
-                                        lambda: self.smart_home_activator.activate(command_text, device_name))
+        self.gesture_parser.add_pattern(gesture_sequence)
         self.database_manager.set_command(gesture_sequence, command_text, device_name)
+        commands = self.database_manager.get_commands()
+        self.smart_home_activator.set_commands(commands)
 
     def update_commands(self):
         for command_map in self.database_manager.get_commands():

@@ -3,8 +3,8 @@ class GestureParser():
         self.gesture_pattern_map = {}
         self.gesture_sequence_events = []
 
-    def add_pattern(self, gestures, event):
-        self.gesture_pattern_map["".join(gestures)] = event
+    def add_pattern(self, gestures):
+        self.gesture_pattern_map["".join(gestures)] = True
         
     def on_gesture_sequence(self, event):
         self.gesture_sequence_events.append(event)
@@ -15,7 +15,6 @@ class GestureParser():
         joined_gesture_sequence = "".join(gesture_sequence)
 
         if joined_gesture_sequence in self.gesture_pattern_map:
-            self.gesture_pattern_map[joined_gesture_sequence](now)
             was_recognised = True
         else:
             was_recognised = False
