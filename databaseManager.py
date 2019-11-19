@@ -9,21 +9,29 @@ _default_command_values = [
     "palm-blink-fist, None, None\n"
 ]
 
-_default_configuration_values = ["0.05\n",
-                                 "2\n",
-                                 "5\n",
-                                 "50\n",
-                                 "100\n"
-                                 ]
+_default_configuration_values = [
+    "0.05\n",
+    "2\n",
+    "5\n",
+    "0\n",
+    "113\n",
+    "False\n",
+    "0\n",
+    "113\n",
+    "True\n"
+]
 
 _configuration_index_map = {
-        'open_eye_ratio' : 0,
-        'minimum_time_increment' : 1,
-        'maximum_time_increment' : 2,
-        'low_contrast' : 3,
-        'high_contrast' : 4
-        }
-
+    'open_eye_ratio' : 0,
+    'minimum_time_increment' : 1,
+    'maximum_time_increment' : 2,
+    'fist_low_contrast' : 3,
+    'fist_high_contrast' : 4,
+    'toggle_fist_contrast' : 5,
+    'palm_low_contrast' : 6,
+    'palm_high_contrast' : 7,
+    'toggle_palm_contrast' : 8
+}
 
 def _get_configuration_index(configuration_column_name):
     return _configuration_index_map[configuration_column_name]
@@ -31,16 +39,15 @@ def _get_configuration_index(configuration_column_name):
 
 class DatabaseManager():
     def __init__(self):
-        self.log_manager = FileManager("log.csv",
-                                       _default_log_values)
-        self.command_manager = FileManager("commands.csv",
-                                           _default_command_values)
+        self.log_manager = FileManager("log.csv", _default_log_values)
+        self.command_manager = FileManager("commands.csv", 
+                _default_command_values)
         self.configuration_manager = FileManager("configuration.csv",
-                                                 _default_configuration_values)
+                _default_configuration_values)
 
     def set_gesture(self, gesture_name, now):
         self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
-                                              now.isoformat()[12:19], "    ", gesture_name, " \n")))
+                now.isoformat()[12:19], "    ", gesture_name, " \n")))
 
     def get_gestures(self):
         return self.log_manager.get_lines()
@@ -79,11 +86,11 @@ class DatabaseManager():
 
     def __set_configuration__(self, column_name, value):
         self.configuration_manager.set_line(
-            _get_configuration_index(column_name), str(value) + "\n")
+                _get_configuration_index(column_name), str(value) + "\n")
 
     def __get_configuration__(self, column_name):
         return self.configuration_manager.get_line(
-            _get_configuration_index(column_name))
+                _get_configuration_index(column_name))
 
     def set_open_eye_threshold(self, new_open_eye_ratio):
         self.__set_configuration__('open_eye_ratio', new_open_eye_ratio / 100)
@@ -91,17 +98,41 @@ class DatabaseManager():
     def get_open_eye_threshold(self):
         return  float(self.__get_configuration__('open_eye_ratio')) * 100
 
-    def set_low_contrast(self, new_low_contrast):
-        self.__set_configuration__('low_contrast', new_low_contrast)
+    def set_fist_low_contrast(self, new_low_contrast):
+        self.__set_configuration__('fist_low_contrast', new_low_contrast)
 
-    def get_low_contrast(self):
-        return float(self.__get_configuration__('low_contrast'))
+    def get_fist_low_contrast(self):
+        return float(self.__get_configuration__('fist_low_contrast'))
  
-    def set_high_contrast(self, new_high_contrast):
-        self.__set_configuration__('high_contrast', new_high_contrast)
+    def set_fist_high_contrast(self, new_high_contrast):
+        self.__set_configuration__('fist_high_contrast', new_high_contrast)
 
-    def get_high_contrast(self):
-        return float(self.__get_configuration__('high_contrast'))
+    def get_fist_high_contrast(self):
+        return float(self.__get_configuration__('fist_high_contrast'))
+
+    def set_toggle_fist_contrast(self, should_be_on):
+        self.__set_configuration__('toggle_fist_contrast', should_be_on)
+
+    def get_toggle_fist_contrast(self):
+        return self.__get_configuration__('toggle_fist_contrast')[:5] != "False"
+ 
+    def set_palm_low_contrast(self, new_low_contrast):
+        self.__set_configuration__('palm_low_contrast', new_low_contrast)
+
+    def get_palm_low_contrast(self):
+        return float(self.__get_configuration__('palm_low_contrast'))
+ 
+    def set_palm_high_contrast(self, new_high_contrast):
+        self.__set_configuration__('palm_high_contrast', new_high_contrast)
+
+    def get_palm_high_contrast(self):
+        return float(self.__get_configuration__('palm_high_contrast'))
+
+    def set_toggle_palm_contrast(self, should_be_on):
+        self.__set_configuration__('toggle_palm_contrast', str(should_be_on))
+
+    def get_toggle_palm_contrast(self):
+        return self.__get_configuration__('toggle_palm_contrast')[:5] != "False"
  
     def set_minimum_time_increment(self, new_minimum_time_increment):
         self.__set_configuration__('minimum_time_increment', new_minimum_time_increment)

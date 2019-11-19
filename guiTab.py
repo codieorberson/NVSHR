@@ -7,12 +7,14 @@ import PIL.ImageTk
 import cv2
 import os
 import subprocess
+from functools import partial
 from fpdf import FPDF
 
 class GuiTab(Frame):
-    def __init__(self, name, window, database_manager, *args, **kwargs):
+    def __init__(self, name, window, *args, **kwargs):
         self.event_map = {}
         self.initial_value_map = {}
+        self.window = window
 
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
@@ -20,12 +22,14 @@ class GuiTab(Frame):
         self.is_blink_label = False
         self.is_fist_label = False
         self.is_palm_label = False
+        self.is_fist_radio_button = False
+        self.is_palm_radio_button = False
         self.is_logfile = False
         self.is_command_menu = False
         self.has_list_box = False
+
         self.name = name
 
-        self.database_manager = database_manager
         self.option = 1
         self.command_index = 0
         self.is_full = 0
@@ -33,41 +37,55 @@ class GuiTab(Frame):
         self.command_links = {}
         self.new_command = {}
 
-    def set_initial_ear(self, initial_value):
+    def set_up_ear(self, initial_value, callback):
         self.initial_value_map['on_ear_change'] = initial_value
-
-    def set_initial_low_contrast(self, initial_value):
-        self.initial_value_map['on_low_contrast'] = initial_value
-
-    def set_initial_high_contrast(self, initial_value):
-        self.initial_value_map['on_high_contrast'] = initial_value
-
-    def set_initial_minimum_time_increment(self, initial_value):
-        self.initial_value_map['on_min_time_inc'] = initial_value
-
-    def set_initial_maximum_time_increment(self, initial_value):
-        self.initial_value_map['on_max_time_inc'] = initial_value
-
-    def set_cap(self, cap):
-        self.cap = cap
-
-    def on_ear_change(self, callback):
         self.event_map['on_ear_change'] = callback
 
-    def on_low_contrast_change(self, callback):
-        self.event_map['on_low_contrast'] = callback
+    def set_up_fist_low_contrast(self, initial_value, callback):
+        self.initial_value_map['on_fist_low_contrast'] = initial_value
+        self.event_map['on_fist_low_contrast'] = callback
 
-    def on_high_contrast_change(self, callback):
-        self.event_map['on_high_contrast'] = callback
+    def set_up_fist_high_contrast(self, initial_value, callback):
+        self.initial_value_map['on_fist_high_contrast'] = initial_value
+        self.event_map['on_fist_high_contrast'] = callback
 
-    def on_minimum_time_increment_change(self, callback):
+    def set_up_toggle_fist_contrast(self, initial_value, callback):
+        self.initial_value_map['on_toggle_fist_contrast'] = initial_value
+        self.event_map['on_toggle_fist_contrast'] = callback
+
+    def set_up_palm_low_contrast(self, initial_value, callback):
+        self.initial_value_map['on_palm_low_contrast'] = initial_value
+        self.event_map['on_palm_low_contrast'] = callback
+
+    def set_up_palm_high_contrast(self, initial_value, callback):
+        self.initial_value_map['on_palm_high_contrast'] = initial_value
+        self.event_map['on_palm_high_contrast'] = callback
+
+    def set_up_toggle_palm_contrast(self, initial_value, callback):
+        self.initial_value_map['on_toggle_palm_contrast'] = initial_value
+        self.event_map['on_toggle_palm_contrast'] = callback
+
+    def set_up_minimum_time_increment(self, initial_value, callback):
+        self.initial_value_map['on_min_time_inc'] = initial_value
         self.event_map['on_min_time_inc'] = callback
 
-    def on_maximum_time_increment_change(self, callback):
+    def set_up_maximum_time_increment(self, initial_value, callback):
+        self.initial_value_map['on_max_time_inc'] = initial_value
         self.event_map['on_max_time_inc'] = callback
 
-    def on_new_command(self, callback):
-        self.on_new_command_change = callback
+    def set_up_view(self, initial_view_name, on_view_change):
+        self.initial_value_map["on_view_change"] = initial_view_name
+        self.event_map["on_view_change"] = on_view_change
+       
+    def set_up_commands(self, commands, callback):
+        self.initial_value_map['initial_commands'] = commands
+        self.event_map['on_new_command'] = callback
+        
+    def set_initial_log(self, logged_lines):
+        self.initial_value_map['logged_lines'] = logged_lines
+ 
+    def set_cap(self, cap):
+        self.cap = cap
 
     def load_data(self, tab_elements):
         self.row_index = 1
@@ -98,13 +116,12 @@ class GuiTab(Frame):
                                                                 "camera and is not taking in any data. Please "
                                                                 "ensure your camera is connected properly.")
                 text_var.set("Camera On: " + str(self.cap.isOpened()))
-                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+                self.label.grid(row=self.row_index, column=0, padx=4, pady=4)
 
-            elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
                 self.label = Label(self, textvariable=self.fps_container, font=20)
                 self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
-                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+                self.label.grid(row=self.row_index, column=1, padx=4, pady=4)
                 self.is_fps = True
 
             elif element["format"] == "video":
@@ -113,22 +130,59 @@ class GuiTab(Frame):
                 self.debug_height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
                 self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
-                self.debug_canvas.grid(row=self.row_index, column=0, padx=10, pady=10, columnspan=5)
+                self.debug_canvas.grid(row=self.row_index, column=0, padx=4, pady=4, columnspan=5)
+
+            elif element["format"] == "check_box":
+                column_index = 0
+                for event in element["events"]:
+                    event_name = event
+
+                    check_box_data = BooleanVar(self.window, self.initial_value_map[event_name])
+                    check_box_command = partial(self.event_map[event_name], check_box_data)
+
+                    self.check_box = Checkbutton(self,
+                            command = check_box_command, 
+                            variable = check_box_data)
+                    
+                    self.check_box.grid(row=self.row_index, column=column_index, padx=4, pady=4)
+
+                    column_index += 1
+
+            elif element["format"] == "radio_button":
+                column_index = 0
+                radio_buttons_shared_variable = StringVar(self.window, self.initial_value_map["on_view_change"])
+                for event in element["events"]:
+                    event_name = event
+
+                    radio_button_command = partial(self.event_map['on_view_change'], radio_buttons_shared_variable)
+
+                    self.check_box = Radiobutton(self,
+                            command = radio_button_command, 
+                            variable = radio_buttons_shared_variable,
+                            value = event_name)
+                    
+                    self.check_box.grid(row=self.row_index, column=column_index, padx=4, pady=4)
+
+                    column_index += 1
 
             elif element["format"] == "slider":
                 column_index = 0
                 for event in element["events"]:
                     event_name = event
                     self.slider_command = self.event_map[event_name]
+
                     if event_name == "on_ear_change":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                    elif event_name == "on_low_contrast" or event_name == "on_high_contrast":
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
+
                     elif event_name == "on_min_time_inc" or "on_max_time_inc":
                         self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
 
-                    self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100
-                    self.slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                    else:
+                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
+                    
+
+                    self.slider.set(self.initial_value_map[event_name])
+                    self.slider.grid(row=self.row_index, column=column_index, padx=4, pady=4)
                     column_index += 1
 
             elif element["format"] == "gestures":
@@ -153,7 +207,7 @@ class GuiTab(Frame):
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
                 row = self.row_index
-                for option in self.database_manager.get_commands():
+                for option in self.initial_value_map['initial_commands']:
                     small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                     small_frame.grid(row=row, column=0, padx=10, pady=10)
                     text = {"text": "Command " + str(self.option) + " (" + option["gesture_sequence"][
@@ -222,7 +276,7 @@ class GuiTab(Frame):
         return frame[..., [2, 1, 0]]
 
     def set_value(self, value):
-        for option in self.database_manager.get_commands():
+        for option in self.initial_value_map['initial_commands']:
             if value == option["command_text"] and value != "None":
                 messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
@@ -230,7 +284,7 @@ class GuiTab(Frame):
                 return
 
         count = 1
-        for option in self.database_manager.get_commands():
+        for option in self.initial_value_map['initial_commands']:
             device = None
 
             if self.command_links[count].get() == "Heater" or self.command_links[count].get() == "Air Conditioning":
@@ -238,8 +292,12 @@ class GuiTab(Frame):
             else:
                 device = "Alexa"
 
-            self.database_manager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
-                                             option["gesture_sequence"][2]], self.command_links[count].get(), device)
+            self.event_map['on_new_command']([option["gesture_sequence"][0], 
+                    option["gesture_sequence"][1],
+                    option["gesture_sequence"][2]], 
+                    self.command_links[count].get(), 
+                    device)
+
             count += 1
 
     def is_full_command(self, value):
@@ -257,14 +315,17 @@ class GuiTab(Frame):
                 self.label = Label(small_frame, text)
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 variable = StringVar()
-                #  self.database_manager.change_keys()
                 variable.set("None")
                 self.command_links[self.option] = variable
                 self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
                 self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
                 self.optionMenu.config(width=30)
-                self.database_manager.set_command([self.new_command[0].get().lower(), self.new_command[1].get().lower(),
-                                                 self.new_command[2].get().lower()], "None", "None")
+                self.event_map['on_new_command']([self.new_command[0].get().lower(), 
+                        self.new_command[1].get().lower(), 
+                        self.new_command[2].get().lower()], 
+                        "None", 
+                        "None")
+
                 self.option += 1
                 self.row_index += 1
             else:
@@ -312,20 +373,15 @@ class GuiTab(Frame):
             return str(cap.get(cv2.CAP_PROP_FPS))
 
     # This code, as written, cannot display two simultaneous gestures.
-    def set_gesture_background(self, gesture_detected):
-        if gesture_detected == "fist":
-            self.fist_label.configure(bg="Black")
-            self.palm_label.configure(bg="White")
-            self.blink_label.configure(bg="White")
-        elif gesture_detected == "palm":
-            self.palm_label.configure(bg="Black")
-            self.fist_label.configure(bg="White")
-            self.blink_label.configure(bg="White")
-        elif gesture_detected == "blink":
-            self.blink_label.configure(bg="Black")
-            self.fist_label.configure(bg="White")
-            self.palm_label.configure(bg="White")
-        else:
-            self.fist_label.configure(bg="White")
-            self.palm_label.configure(bg="White")
-            self.blink_label.configure(bg="White")
+    def set_gesture_background(self, gestures_detected):
+        self.fist_label.configure(bg="White")
+        self.palm_label.configure(bg="White")
+        self.blink_label.configure(bg="White")
+ 
+        for gesture_detected in gestures_detected:
+            if gesture_detected == "fist":
+                self.fist_label.configure(bg="Black")
+            elif gesture_detected == "palm":
+                self.palm_label.configure(bg="Black")
+            elif gesture_detected == "blink":
+                self.blink_label.configure(bg="Black")

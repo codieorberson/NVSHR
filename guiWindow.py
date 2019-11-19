@@ -8,46 +8,63 @@ from guiTab import GuiTab
 class GuiWindow(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-
-    def set_initial_ear(self, initial_value):
-        self.initial_ear = initial_value
-
-    def set_initial_low_contrast(self, initial_value):
-        self.initial_low_contrast = initial_value
-
-    def set_initial_high_contrast(self, initial_value):
-        self.initial_high_contrast = initial_value
-
-    def set_initial_minimum_time_increment(self, initial_value):
-        self.initial_minimum_time_increment = initial_value
-
-    def set_initial_maximum_time_increment(self, initial_value):
-        self.initial_maximum_time_increment = initial_value
-
-    def on_ear_change(self, callback):
-        self.on_ear_change = callback
-
-    def on_low_contrast_change(self, callback):
-        self.on_low_contrast_change = callback
-
-    def on_high_contrast_change(self, callback):
-        self.on_high_contrast_change = callback
-
-    def on_minimum_time_increment_change(self, callback):
-        self.on_minimum_time_increment_change = callback
-
-    def on_maximum_time_increment_change(self, callback):
-        self.on_maximum_time_increment_change = callback
-
-    def on_new_command(self, callback):
-        self.on_new_command_change = callback
-
-    def set_cap(self, cap, settings_manager):
-        self.cap = cap
         self.notebook = ttk.Notebook(width=1000, height=800)
-        self.debug_tab = self.add_content(gui_data, settings_manager)
-
         self.notebook.grid(row=0)
+        self.page_configurations = []
+        self.tabs = []
+        self.tab_indices = range(len(list(gui_data.keys())))
+
+        for i in self.tab_indices:
+            self.page_configurations.append(gui_data[list(gui_data.keys())[i]])
+            self.tabs.append(GuiTab(self.notebook, self))
+
+    def set_up_ear(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_ear(initial_value, callback)
+
+    def set_up_fist_low_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_fist_low_contrast(initial_value, callback)
+
+    def set_up_fist_high_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_fist_high_contrast(initial_value, callback)
+
+    def set_up_toggle_fist_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_toggle_fist_contrast(initial_value, callback)
+
+    def set_up_palm_low_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_palm_low_contrast(initial_value, callback)
+
+    def set_up_palm_high_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_palm_high_contrast(initial_value, callback)
+
+    def set_up_toggle_palm_contrast(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_toggle_palm_contrast(initial_value, callback)
+
+    def set_up_minimum_time_increment(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_minimum_time_increment(initial_value, callback)
+
+    def set_up_maximum_time_increment(self, initial_value, callback):
+        for tab in self.tabs:
+            tab.set_up_maximum_time_increment(initial_value, callback)
+
+    def set_up_view(self, initial_view_name, on_view_change):
+        for tab in self.tabs:
+            tab.set_up_view(initial_view_name, on_view_change)
+
+    def set_up_commands(self, commands, callback):
+        for tab in self.tabs:
+            tab.set_up_commands(commands, callback)
+
+    def set_initial_log(self, logged_lines):
+        for tab in self.tabs:
+            tab.set_initial_log(logged_lines)
 
     def add_content(self, body, settings_manager):
         for i in range(len(list(body.keys()))):
@@ -68,11 +85,19 @@ class GuiWindow(Tk):
             tab.on_maximum_time_increment_change(self.on_maximum_time_increment_change)
             tab.on_new_command(self.on_new_command_change)
 
+    def set_cap(self, cap):
+        for tab in self.tabs:
+            tab.set_cap(cap)
+
+    def set_up_tabs(self):
+        for i in self.tab_indices:
+            tab = self.tabs[i]
+            page_configuration = self.page_configurations[i]
             tab.load_data(page_configuration['elements'])
             self.notebook.add(tab, text=page_configuration["title"])
 
             if tab.is_debug:
-                debug_tab = tab
+                self.debug_tab = tab
             if tab.is_fps:
                 self.fps_tab = tab
             if tab.is_blink_label:
@@ -83,8 +108,6 @@ class GuiWindow(Tk):
                 self.palm_label = tab
             if tab.is_logfile:
                 self.log_text = tab
-
-        return debug_tab
 
     def get_debug_tab(self):
         return self.debug_tab

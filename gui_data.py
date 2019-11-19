@@ -115,39 +115,68 @@ gui_data = {
                     "format": "video"
                 },
                 {
+                    "format": "gestures",
+                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
+                },
+                {
                     "format": "text",
                     "multicolumn" : "true",
                     "body": {"text" : "Set the EAR:"},
-                    "body2": {"text": "Set the Low Contrast:"},
-                    "body3": {"text": "Set the High Contrast:"},
-                    "body4": {"text": "Set the Minimum Time:"},
-                    "body5": {"text": "Set the Maximum Time:"}
+                    "body2": {"text": "Set the Minimum Time:"},
+                    "body3": {"text": "Set the Maximum Time:"}
                 },
                 {
                     "format": "slider",
 
-                    "events": ["on_ear_change", "on_low_contrast",
-                               "on_high_contrast", "on_min_time_inc",  "on_max_time_inc"]
+                    "events": [
+                        "on_ear_change", 
+                        "on_min_time_inc",  
+                        "on_max_time_inc"
+                    ]
+                },
+                {
+                    "format": "text",
+                    "multicolumn" : "true",
+                    "body": {"text" : "Use fist contrast filters:"},
+                    "body2": {"text": "Use palm contrast filters:"}
+                },
+                {
+                    "format": "check_box",
+                    "events": [
+                        "on_toggle_fist_contrast",
+                        "on_toggle_palm_contrast"
+                    ]
+                },
+                {
+                    "format": "radio_button",
+                    "events": [
+                        "normal",
+                        "eyes",
+                        "fists",
+                        "palms"
+                    ]
+                },
+                {
+                    "format": "text",
+                    "multicolumn" : "true",
+                    "body": {"text": "Set the Low Contrast for fist:"},
+                    "body2": {"text": "Set the High Contrast for fist:"},
+                    "body3": {"text": "Set the Low Contrast for palm:"},
+                    "body4": {"text": "Set the High Contrast for palm:"}
+                },
+                {
+                    "format": "slider",
+
+                    "events": [
+                        "on_fist_low_contrast",
+                        "on_fist_high_contrast",
+                        "on_palm_low_contrast",
+                        "on_palm_high_contrast"
+                    ]
 
                 },
                 {
                     "format": "text-cam-status"
-                },
-                {
-                    "format": "text-cam-fps",
-                    # Note that FPS is only being
-                    # calculated on initial
-                    # execution, but we should
-                    # really make a hook to update
-                    # this value as the program
-                    # executes because FPS will
-                    # probably drop as we execute
-                    # other code in between frame
-                    # capture events:
-                },
-                {
-                    "format": "gestures",
-                    "body": ["Current Gesture", "Blink", "Fist", "Palm"]
                 }
             ]
                  },
@@ -197,10 +226,9 @@ gui_data = {
         },
     "tab4": {"title": "Log",
              "elements": [
-                 {"format": "logfile"}
+                 {
+                     "format": "logfile"
+                 }
              ]
              }
 }
-
-
-
