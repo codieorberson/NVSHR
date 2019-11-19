@@ -1,11 +1,13 @@
 from TPLink import TPLinkDevice
-from sound import Sound 
+from soundPlayer import SoundPlayer
 
 class SmartHomeActivator():
-    def __init__(self, database_manager):
-        self.database_manager = database_manager
+    def __init__(self):
+        self.sound_player = SoundPlayer()
         self.tp_Link_Devices = TPLinkDevice()
-        self.commands = self.database_manager.get_commands()
+
+    def set_commands(self, commands):
+        self.commands = commands
 
     def activate(self, gesture_sequence, was_recognized):
         if was_recognized:
@@ -15,7 +17,7 @@ class SmartHomeActivator():
             except:
                 print("Unable to connect command to requested smart home device")
         else:
-            Sound.failure()
+            self.sound_player.play_failure_sound()
 
     #Iterating through the command dictionary and performing smart home action linked
     #with the given gesture sequence
