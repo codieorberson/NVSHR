@@ -22,7 +22,7 @@ class ContrastManager():
             mask_inv = cv2.bitwise_not(mask)
             color_frame = cv2.bitwise_and(frame, frame, mask=mask_inv)
             contrast_frame = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
-            cv2.imshow('Palm Detection', contrast_frame) #Uncomment this out if you want to see the different level contrast frame
+            #cv2.imshow('Palm Detection', contrast_frame) #Uncomment this out if you want to see the different level contrast frame
             return contrast_frame
         else:
             return frame

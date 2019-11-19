@@ -97,15 +97,15 @@ class GuiTab(Frame):
                 for body in list(element.keys())[body_index:]:
                     if self.is_command_menu:
                         self.label = Label(self.command_listbox, element.get(body))
-                        self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                        self.label.grid(row=self.row_index, column=column_index, padx=4, pady=10)
                         column_index += 1
                     elif self.has_list_box:
                         self.label = Label(self.list_box, element.get(body))
-                        self.label.grid(row=self.row_index, column=column_index, padx=10, pady=0)
+                        self.label.grid(row=self.row_index, column=column_index, padx=4, pady=0)
                         column_index += 1
                     else:
                         self.label = Label(self, element.get(body))
-                        self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                        self.label.grid(row=self.row_index, column=column_index, padx=4, pady=4)
                         column_index += 1
 
             elif element["format"] == "text-cam-status":

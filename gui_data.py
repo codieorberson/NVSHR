@@ -148,6 +148,14 @@ gui_data = {
                     ]
                 },
                 {
+                    "format": "text",
+                    "multicolumn" : "true",
+                    "body": {"text" : "Normal view:"},
+                    "body2": {"text": "Blink view:"},
+                    "body3": {"text": "Fist view:"},
+                    "body4": {"text": "Palm view:"}
+                },
+                {
                     "format": "radio_button",
                     "events": [
                         "normal",
