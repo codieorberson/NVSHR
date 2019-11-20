@@ -177,7 +177,7 @@ gui_data = {
                          {
                              "text": "The following commands have been created for initial use and are ready to be "
                                      "used within the system. Before you use them, please link them to the desired "
-                                     "smart home action. To create a new command, fill out all the fields below "
+                                     "smart home action. To create a new command, fill out all three fields below "
                                      "and press the ADD button "
                                      "to add it to the list below. Commands may not have the one gesture followed "
                                      "immediately by that same gesture (i.e. FIST, FIST, BLINK is not a valid command). "
