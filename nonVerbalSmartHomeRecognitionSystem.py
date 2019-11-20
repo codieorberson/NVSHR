@@ -98,6 +98,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.process_manager = ProcessManager()
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
+        self.smart_home_activator.set_log_manager(self.database_manager, self.logger)
 
     def __set_up_gestures__(self):
         self.gesture_detector.on_gesture(self.gesture_lexer.add)
@@ -106,6 +107,9 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_commands__(self):
         self.gesture_parser.on_gesture_sequence(self.logger.log_gesture_sequence)
+        self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised:
+                                                self.database_manager.set_gesture_sequence(gesture_sequence,
+                                                                                           timestamp, was_recognised))
         self.gesture_parser.on_gesture_sequence(
             lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence,
                                                                                                    was_recognised))

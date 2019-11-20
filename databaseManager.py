@@ -42,6 +42,28 @@ class DatabaseManager():
         self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
                                               now.isoformat()[12:19], "    ", gesture_name, " \n")))
 
+    def set_gesture_sequence(self, gesture_sequence, now, was_recognised):
+        if was_recognised:
+            ending = "] recognised."
+        else:
+            ending = "] not recognised."
+
+        self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
+                                              now.isoformat()[12:19], "    ", "pattern: [",
+                                              ", ".join(gesture_sequence), ending, " \n")))
+
+    def set_gesture_sequence_link(self, device, device_linked, state, now):
+        if device_linked:
+            ending = " is now " + state + "."
+        else:
+            ending = " is not linked to the system. No state change will be observed."
+
+        self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
+                                              now.isoformat()[12:19], "    ", device, ending, " \n")))
+
+    def set_gesture_sequence_error(self, output):
+        self.log_manager.append_line(output)
+
     def get_gestures(self):
         return self.log_manager.get_lines()
 

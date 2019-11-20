@@ -10,13 +10,19 @@ class SmartHomeActivator():
     def set_commands(self, commands):
         self.commands = commands
 
+    def set_log_manager(self, log_manager, logger):
+        self.log_manager = log_manager
+        self.logger = logger
+        self.tp_Link_Devices.set_log_manager(log_manager, logger)
+
     def activate(self, gesture_sequence, was_recognized):
         if was_recognized:
             try:
                 self.sound_player.play_success_sound()
                 self.turn_on_off_TpLink_Device(gesture_sequence)
             except:
-                print("Unable to connect command to requested smart home device.")
+                self.log_manager.set_gesture_sequence_error("Unable to connect command to requested smart home device.")
+                self.logger.log("Unable to connect command to requested smart home device.")
         else:
             self.sound_player.play_failure_sound()
 
