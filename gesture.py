@@ -14,8 +14,10 @@ class Gesture():
     def set_detection_criteria(self, detection_check):
         self.detection_check = detection_check
 
-    def detect(self, frame, multithreaded_perimeter):
+    def detect(self, frame, flipped_frame, multithreaded_perimeter):
         gestures = self.haar_cascade.detectMultiScale(frame, 1.3, 5)
-
+        flipped_gestures = self.haar_cascade.detectMultiScale(flipped_frame, 1.3, 5)
         if self.detection_check(gestures):
             multithreaded_perimeter.set(gestures[0])
+        elif self.detection_check(flipped_gestures):
+            multithreaded_perimeter.set(flipped_gestures[0])

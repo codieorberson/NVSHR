@@ -53,7 +53,7 @@ class GestureDetector():
 
     def __detect_shapes__(self, frame):
         self.process_manager.add_process(
-                self.hand_gesture_detector.detect, (frame, self.fist_perimeter, self.palm_perimeter))
+                self.hand_gesture_detector.detect, (frame, self.flip_frame(frame), self.fist_perimeter, self.palm_perimeter))
 
         self.blink_detector.detect(frame, self.left_eye_perimeter, self.right_eye_perimeter)
   
@@ -108,6 +108,10 @@ class GestureDetector():
             self.left_eye_perimeter, 
             self.right_eye_perimeter
         ]
+
+    def flip_frame(self, frame):
+        frame = cv2.flip(frame, flipCode =1)
+        return frame
 
 
 
