@@ -241,10 +241,16 @@ class GuiTab(Frame):
             count += 1
 
     def is_full_command(self, value):
-        self.is_full += 1
+        if value != "None":
+            self.is_full += 1
 
     def add_new_command(self):
         does_not_exist = self.check_new_command()
+        if self.option > 8:
+            self.display_error_message("Command Maximum Reached", "The system can only house 8 commands. "
+                                                                  "You have reached the maximum allowed commands.")
+            return
+
         if self.is_full >= 3:
             if does_not_exist:
                 if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
