@@ -159,9 +159,9 @@ class GuiTab(Frame):
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 for x in range(1, 4):
-                    self.gesture_list = ["Fist", "Palm", "Blink"]
+                    self.gesture_list = ["None", "Fist", "Palm", "Blink"]
                     variable = StringVar()
-                    variable.set(" ")
+                    variable.set("None")
                     self.new_command[self.command_index] = variable
                     gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
                     gesture.grid(row=self.row_index, column=self.command_index, pady=10)
@@ -263,11 +263,12 @@ class GuiTab(Frame):
         self.is_full = 0
 
     def check_new_command(self):
-        is_not_equal = False
+        is_not_equal = True
         for option in self.database_manager.get_commands():
-            for x in range(0, 3):
-                if option["gesture_sequence"][x] != self.new_command[x]:
-                    is_not_equal = True
+            if "".join(option["gesture_sequence"]) == "".join((self.new_command[0].get().lower(),
+                                                               self.new_command[1].get().lower(),
+                                                               self.new_command[2].get().lower())):
+                is_not_equal = False
 
         if not is_not_equal:
             self.display_error_message("Command Exists", "This command is already created "
