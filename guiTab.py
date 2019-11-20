@@ -275,25 +275,6 @@ class GuiTab(Frame):
 
         return is_not_equal
 
-    def open_log_file(self):
-        if os.path.exists("logfile.pdf"):
-            self.delete_log_file()
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=10)
-        count = 1
-        file = open('logfile.txt')
-        for line in file:
-            pdf.cell(200, 10, txt=line, ln=count, align="Left")
-            count += 1
-        file.close()
-        pdf.output("logfile.pdf")
-        subprocess.call(["open", "logfile.pdf"])
-
-    def delete_log_file(self):
-        if os.path.exists("logfile.pdf"):
-            os.remove("logfile.pdf")
-
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
 
