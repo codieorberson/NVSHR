@@ -62,8 +62,8 @@ class GuiManager():
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
         
-        self.low_contrast = self.gui.get_low_contrast()
-        self.high_contrast = self.gui.get_high_contrast()
+        #self.low_contrast = self.gui.get_low_contrast()
+        #self.high_contrast = self.gui.get_high_contrast()
         self.log_page = self.gui.get_log_page()
 
         self.loop_callback = loop_callback
