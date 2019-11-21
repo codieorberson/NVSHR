@@ -7,6 +7,7 @@ import PIL.ImageTk
 import cv2
 import os
 import subprocess
+import sys
 from fpdf import FPDF
 
 
@@ -102,7 +103,12 @@ class GuiTab(Frame):
             elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
                 self.label = Label(self, textvariable=self.fps_container, font=16, bg="White")
-                self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
+                try:
+                    self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
+                except:
+                    self.fps_container.set("FPS:       " + "0")
+                    self.display_error_message("Camera maufunction", "There is no camera connected or it is malfunctioning, please check it.")
+                    sys.exit()
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 self.is_fps = True
 
@@ -163,7 +169,7 @@ class GuiTab(Frame):
                     variable = StringVar()
                     variable.set("None")
                     self.new_command[self.command_index] = variable
-                    gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
+                    gesture = OptionMenu(small_frame, variable, *self.gesture_list,command=self.is_full_command)
                     gesture.grid(row=self.row_index, column=self.command_index, pady=10)
                     self.command_index += 1
                 add_button = Button(small_frame, text="Add New Command", command=self.add_new_command, bg="White")

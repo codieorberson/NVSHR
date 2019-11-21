@@ -72,6 +72,9 @@ class GuiManager():
     def set_debug_frame(self, frame):
         self.debug_tab.set_debug_frame(frame)
 
+    def display_error_message(self, title, text):
+        self.gui.messagebox.showerror(title, text)
+
     def set_gesture_background(self, gesture_detected):
         self.blink_label.set_gesture_background(gesture_detected)
         self.fist_label.set_gesture_background(gesture_detected)
