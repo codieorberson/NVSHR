@@ -24,7 +24,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # Aggregates gestures into gesture sequences.
         gesture_sequences = self.gesture_lexer.lex(
-                timestamp, self.minimum_time_increment, self.maximum_time_increment)
+            timestamp, self.minimum_time_increment, self.maximum_time_increment)
 
         # Creates a child process to check for predefined patterns of gestures in the list of gesture sequences
         self.process_manager.add_process(
@@ -86,10 +86,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         # Close log file
         self.logger.close()
 
-    def __set_up_pop_up__(self):
-        self.pop_up_window = PopUp()
-        self.is_admin = self.pop_up_window.send_verification()
-
     def __set_up_helpers__(self):
         self.is_admin = True
         self.database_manager = DatabaseManager()
@@ -102,6 +98,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.process_manager = ProcessManager()
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
+        self.smart_home_activator.set_log_manager(self.database_manager, self.logger)
 
     def __set_up_gestures__(self):
         self.gesture_detector.on_gesture(self.gesture_lexer.add)
@@ -110,10 +107,15 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_commands__(self):
         self.gesture_parser.on_gesture_sequence(self.logger.log_gesture_sequence)
-        self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence, was_recognised))
+        self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised:
+                                                self.database_manager.set_gesture_sequence(gesture_sequence,
+                                                                                           timestamp, was_recognised))
+        self.gesture_parser.on_gesture_sequence(
+            lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence,
+                                                                                                   was_recognised))
         self.update_commands()
 
-    def __set_up_camera__(self): 
+    def __set_up_camera__(self):
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
@@ -130,7 +132,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.__set_up_gui_values__()
         self.__set_up_gui_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)
- 
+
     def __set_up_gui_values__(self):
         self.gui_manager.set_initial_ear(self.open_eye_threshold)
         self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
@@ -138,7 +140,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_initial_minimum_time_increment(self.minimum_time_increment)
         self.gui_manager.set_initial_maximum_time_increment(self.maximum_time_increment)
 
-    def __set_up_gui_watchers__(self): 
+    def __set_up_gui_watchers__(self):
         self.gui_manager.on_ear_change(self.set_open_eye_threshold)
         self.gui_manager.on_low_contrast_change(self.set_low_contrast)
         self.gui_manager.on_high_contrast_change(self.set_high_contrast)

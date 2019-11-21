@@ -4,6 +4,7 @@ from tkinter import ttk
 from gui_data import gui_data
 from guiTab import GuiTab
 
+
 # An instance of this class represents a window with multiple tabs.
 class GuiWindow(Tk):
     def __init__(self, *args, **kwargs):
@@ -103,3 +104,6 @@ class GuiWindow(Tk):
 
     def get_log_page(self):
         return self.log_text
+
+    def withdraw_gui(self):
+        self.withdraw()

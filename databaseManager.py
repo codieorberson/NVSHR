@@ -42,6 +42,28 @@ class DatabaseManager():
         self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
                                               now.isoformat()[12:19], "    ", gesture_name, " \n")))
 
+    def set_gesture_sequence(self, gesture_sequence, now, was_recognised):
+        if was_recognised:
+            ending = "] recognised."
+        else:
+            ending = "] not recognised."
+
+        self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
+                                              now.isoformat()[12:19], "    ", "pattern: [",
+                                              ", ".join(gesture_sequence), ending, " \n")))
+
+    def set_gesture_sequence_link(self, device, device_linked, state, now):
+        if device_linked:
+            ending = " is now " + state + "."
+        else:
+            ending = " is not linked to the system. No state change will be observed."
+
+        self.log_manager.append_line(''.join((now.isoformat()[:10], "    ",
+                                              now.isoformat()[12:19], "    ", device, ending, " \n")))
+
+    def set_gesture_sequence_error(self, output):
+        self.log_manager.append_line(output)
+
     def get_gestures(self):
         return self.log_manager.get_lines()
 
@@ -102,13 +124,13 @@ class DatabaseManager():
 
     def get_high_contrast(self):
         return float(self.__get_configuration__('high_contrast'))
- 
+
     def set_minimum_time_increment(self, new_minimum_time_increment):
         self.__set_configuration__('minimum_time_increment', new_minimum_time_increment)
 
     def get_minimum_time_increment(self):
         return float(self.__get_configuration__('minimum_time_increment'))
- 
+
     def set_maximum_time_increment(self, new_maximum_time_increment):
         self.__set_configuration__('maximum_time_increment', new_maximum_time_increment)
 
