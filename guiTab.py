@@ -9,10 +9,13 @@ import os
 import subprocess
 from fpdf import FPDF
 
+
 class GuiTab(Frame):
     def __init__(self, name, window, database_manager, *args, **kwargs):
         self.event_map = {}
         self.initial_value_map = {}
+
+        self.window = window
 
         Frame.__init__(self, *args, **kwargs)
         self.is_debug = False
@@ -93,10 +96,6 @@ class GuiTab(Frame):
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
                 self.label = Label(self, textvariable=text_var, font=20)
-                if self.cap.isOpened == False:
-                    messagebox.showerror("No Camera Connected", "The system cannot recognize the connected "
-                                                                "camera and is not taking in any data. Please "
-                                                                "ensure your camera is connected properly.")
                 text_var.set("Camera On: " + str(self.cap.isOpened()))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
 
@@ -152,34 +151,17 @@ class GuiTab(Frame):
 
             elif element["format"] == "option":
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
-                row = self.row_index
                 for option in self.database_manager.get_commands():
-                    small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
-                    small_frame.grid(row=row, column=0, padx=10, pady=10)
-                    text = {"text": "Command " + str(self.option) + " (" + option["gesture_sequence"][
-                        0].capitalize() + ", " +
-                                    option["gesture_sequence"][1].capitalize() + ", " + option["gesture_sequence"][
-                                        2].capitalize() + ")"}
-                    self.label = Label(small_frame, text)
-                    self.label.grid(row=row, column=0, padx=10, pady=10)
-                    variable = StringVar()
-                    variable.set(option["command_text"])
-                    self.command_links[self.option] = variable
-                    self.optionMenu = OptionMenu(small_frame, self.command_links[self.option], *self.option_list,
-                                                 command=self.set_value)
-                    self.optionMenu.grid(row=row, column=1, padx=10, pady=10, columnspan=100)
-                    self.optionMenu.config(width=30)
-                    self.option += 1
-                    row += 1
-                self.row_index = row
+                    self.add_device_list_to_gui(option["gesture_sequence"][0], option["gesture_sequence"][1],
+                                                option["gesture_sequence"][2])
 
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 for x in range(1, 4):
-                    self.gesture_list = ["Fist", "Palm", "Blink"]
+                    self.gesture_list = ["None", "Fist", "Palm", "Blink"]
                     variable = StringVar()
-                    variable.set(" ")
+                    variable.set("None")
                     self.new_command[self.command_index] = variable
                     gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
                     gesture.grid(row=self.row_index, column=self.command_index, pady=10)
@@ -210,21 +192,37 @@ class GuiTab(Frame):
                     self.list_box.grid(row=self.row_index, column=0, pady=10)
                     self.has_list_box = True
 
-            elif element["format"] == "logo":
-                self.canvas = Canvas(self.list_box, width=100, height=66)
-                self.canvas.grid(row=self.row_index, column=0, pady=10)
-                image = PIL.ImageTk.PhotoImage(PIL.Image.open("NVSHRLogo.png"))
-                self.canvas.create_image(100, 66, anchor="nw", image=image)
+            elif element["format"] == "close_gui_button":
+                self.close_button = Button(self.list_box, text="Close Administrator Window",
+                                           command=self.close_gui_window)
+                self.close_button.grid(row=self.row_index, column=0)
 
             self.row_index += 1
 
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
+    def add_device_list_to_gui(self, gesture1, gesture2, gesture3):
+        small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+        small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
+        text = {"text": "Command " + str(self.option) + " (" + gesture1.capitalize() + ", " +
+                        gesture2.capitalize() + ", " + gesture3.capitalize() + ")"}
+        self.label = Label(small_frame, text)
+        self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
+        variable = StringVar()
+        variable.set("None")
+        self.command_links[self.option] = variable
+        self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
+        self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
+        self.optionMenu.config(width=30)
+        self.option += 1
+        self.row_index += 1
+
     def set_value(self, value):
         for option in self.database_manager.get_commands():
             if value == option["command_text"] and value != "None":
-                messagebox.showerror("Smart Home Device Linked", "This smart home device has already been linked to "
+                self.display_error_message("Smart Home Device Linked",
+                                           "This smart home device has already been linked to "
                                                                  "another command. Please chose a different device "
                                                                  "for this command.")
                 return
@@ -239,60 +237,50 @@ class GuiTab(Frame):
                 device = "Alexa"
 
             self.database_manager.set_command([option["gesture_sequence"][0], option["gesture_sequence"][1],
-                                             option["gesture_sequence"][2]], self.command_links[count].get(), device)
+                                               option["gesture_sequence"][2]], self.command_links[count].get(), device)
             count += 1
 
     def is_full_command(self, value):
-        self.is_full += 1
+        if value != "None":
+            self.is_full += 1
 
     def add_new_command(self):
+        does_not_exist = self.check_new_command()
+        if self.option > 8:
+            self.display_error_message("Command Maximum Reached", "The system can only house 8 commands. "
+                                                                  "You have reached the maximum allowed commands.")
+            return
+
         if self.is_full >= 3:
-            if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
-                    self.new_command[2].get():
-                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
-                small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
-                text = {"text": "Command " + str(self.option) + " (" + self.new_command[0].get().capitalize() + ", " +
-                                self.new_command[1].get().capitalize() + ", " + self.new_command[
-                                    2].get().capitalize() + ")"}
-                self.label = Label(small_frame, text)
-                self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
-                variable = StringVar()
-                #  self.database_manager.change_keys()
-                variable.set("None")
-                self.command_links[self.option] = variable
-                self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
-                self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
-                self.optionMenu.config(width=30)
-                self.database_manager.set_command([self.new_command[0].get().lower(), self.new_command[1].get().lower(),
-                                                 self.new_command[2].get().lower()], "None", "None")
-                self.option += 1
-                self.row_index += 1
-            else:
-                messagebox.showerror("Incorrect Command",
-                                     "Commands may not have identical gestures in a successive order.")
+            if does_not_exist:
+                if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
+                        self.new_command[2].get():
+                    self.add_device_list_to_gui(self.new_command[0].get(), self.new_command[1].get(),
+                                                self.new_command[2].get())
+                    self.database_manager.set_command(
+                        [self.new_command[0].get().lower(), self.new_command[1].get().lower(),
+                         self.new_command[2].get().lower()], "None", "None")
+                else:
+                    self.display_error_message("Incorrect Command",
+                                               "Commands may not have identical gestures in a successive order.")
         else:
-            messagebox.showerror("No Command Created", "Please chose three gestures to create a full command.")
+            self.display_error_message("No Command Created", "Please chose three gestures to create a full command.")
 
         self.is_full = 0
 
-    def open_log_file(self):
-        if os.path.exists("logfile.pdf"):
-            self.delete_log_file()
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size = 10)
-        count =1
-        file = open('logfile.txt')
-        for line in file:
-            pdf.cell(200, 10, txt=line, ln=count, align="Left")
-            count +=1
-        file.close()
-        pdf.output("logfile.pdf")
-        subprocess.call(["open", "logfile.pdf"])
+    def check_new_command(self):
+        is_not_equal = True
+        for option in self.database_manager.get_commands():
+            if "".join(option["gesture_sequence"]) == "".join((self.new_command[0].get().lower(),
+                                                               self.new_command[1].get().lower(),
+                                                               self.new_command[2].get().lower())):
+                is_not_equal = False
 
-    def delete_log_file(self):
-        if os.path.exists("logfile.pdf"):
-            os.remove("logfile.pdf")
+        if not is_not_equal:
+            self.display_error_message("Command Exists", "This command is already created "
+                                                         "within the system. Please create a new, unique command.")
+
+        return is_not_equal
 
     def set_fps(self, fps):
         self.fps_container.set("FPS:       " + str(fps))
@@ -310,6 +298,9 @@ class GuiTab(Frame):
     def get_cam_fps(self, cap):
         while cap.isOpened():
             return str(cap.get(cv2.CAP_PROP_FPS))
+
+    def display_error_message(self, title, text):
+        messagebox.showerror(title, text)
 
     # This code, as written, cannot display two simultaneous gestures.
     def set_gesture_background(self, gesture_detected):
@@ -329,3 +320,6 @@ class GuiTab(Frame):
             self.fist_label.configure(bg="White")
             self.palm_label.configure(bg="White")
             self.blink_label.configure(bg="White")
+
+    def close_gui_window(self):
+        self.window.withdraw_gui()

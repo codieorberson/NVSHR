@@ -1,3 +1,4 @@
+import sys
 import cv2
 from datetime import datetime
 from databaseManager import DatabaseManager
@@ -24,7 +25,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
         # Aggregates gestures into gesture sequences.
         gesture_sequences = self.gesture_lexer.lex(
-                timestamp, self.minimum_time_increment, self.maximum_time_increment)
+            timestamp, self.minimum_time_increment, self.maximum_time_increment)
 
         # Creates a child process to check for predefined patterns of gestures in the list of gesture sequences
         self.process_manager.add_process(
@@ -86,10 +87,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         # Close log file.
         self.logger.close()
 
-    def __set_up_pop_up__(self):
-        self.pop_up_window = PopUp()
-        self.is_admin = self.pop_up_window.send_verification()
-
     def __set_up_helpers__(self):
         self.is_admin = True
         self.database_manager = DatabaseManager()
@@ -110,7 +107,12 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_commands__(self):
         self.gesture_parser.on_gesture_sequence(self.logger.log_gesture_sequence)
-        self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence, was_recognised))
+        self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised:
+                                                self.database_manager.set_gesture_sequence(gesture_sequence,
+                                                                                           timestamp, was_recognised))
+        self.gesture_parser.on_gesture_sequence(
+            lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence,
+                                                                                                   was_recognised))
         self.update_commands()
 
     def __set_up_camera__(self):
