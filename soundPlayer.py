@@ -2,6 +2,7 @@ from subprocessExecutor import SubprocessExecutor
 from playsound import playsound
 from platform import system
 
+
 class SoundPlayer():
     def __init__(self):
         self.subprocess_executor = SubprocessExecutor()

@@ -53,7 +53,7 @@ class GestureDetector():
 
     def __detect_shapes__(self, frame):
         self.process_manager.add_process(
-                self.hand_gesture_detector.detect, (frame, self.fist_perimeter, self.palm_perimeter))
+            self.hand_gesture_detector.detect, (frame, self.fist_perimeter, self.palm_perimeter))
 
         self.blink_detector.detect(frame, self.left_eye_perimeter, self.right_eye_perimeter)
   
@@ -72,9 +72,10 @@ class GestureDetector():
             for event in self.gesture_events:
                 event(gesture_name, timestamp)
 
-    def __trigger_blink_events__(self, timestamp, open_eye_threshold):        
+    def __trigger_blink_events__(self, timestamp, open_eye_threshold):
         if self.left_eye_perimeter.is_set() and self.right_eye_perimeter.is_set():
-            if open_eye_threshold / 100 > (self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
+            if open_eye_threshold / 100 > (
+                    self.left_eye_perimeter.get_ratio() + self.right_eye_perimeter.get_ratio()) / 2:
                 self.gesture_detected = "blink"
 
                 for event in self.gesture_events:
@@ -84,7 +85,7 @@ class GestureDetector():
         for perimeter in self.perimeters:
             if perimeter.is_set():
                 cv2.rectangle(frame, perimeter.get_top_corner(), perimeter.get_bottom_corner(), (0, 0, 255), 2)
-                
+
         return frame
 
     def __reset_perimeters__(self):
@@ -98,14 +99,14 @@ class GestureDetector():
 
     def __set_up_perimeters__(self):
         self.fist_perimeter = MultithreadedPerimeter()
-        self.palm_perimeter = MultithreadedPerimeter() 
+        self.palm_perimeter = MultithreadedPerimeter()
         self.left_eye_perimeter = MultithreadedPerimeter()
         self.right_eye_perimeter = MultithreadedPerimeter()
- 
+
         self.perimeters = [
-            self.fist_perimeter, 
-            self.palm_perimeter, 
-            self.left_eye_perimeter, 
+            self.fist_perimeter,
+            self.palm_perimeter,
+            self.left_eye_perimeter,
             self.right_eye_perimeter
         ]
 

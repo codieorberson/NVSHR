@@ -32,6 +32,14 @@ class Logger():
 
         self.log_gesture("pattern: [" + ', '.join(gesture_sequence) + ending, now)
 
+    def log_device_state_change(self, device, device_linked, state, now):
+        if device_linked:
+            ending = " is now " + state + "."
+        else:
+            ending = " is not linked to the system. No state change will be observed."
+
+        self.log_gesture(device + ending, now)
+
     def get_output(self):
         return self.output
 

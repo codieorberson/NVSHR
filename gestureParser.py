@@ -5,7 +5,7 @@ class GestureParser():
 
     def add_pattern(self, gestures):
         self.gesture_pattern_map["".join(gestures)] = True
-        
+
     def on_gesture_sequence(self, event):
         self.gesture_sequence_events.append(event)
 
