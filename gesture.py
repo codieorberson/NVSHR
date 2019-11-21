@@ -21,17 +21,14 @@ class Gesture():
             multithreaded_perimeter.set(gesture[0])
         elif self.detection_check(flipped_gesture):
             if hand_gesture == 'fist':
-                flipped_gesture = self.detect_flipped_fist(flipped_gesture)
+                flipped_gesture = self.detect_flipped_gesture(flipped_gesture, 550)
                 multithreaded_perimeter.set(flipped_gesture[0])
             elif hand_gesture == 'palm':
-                flipped_gesture = self.detect_flipped_palm(flipped_gesture)
+                flipped_gesture = self.detect_flipped_gesture(flipped_gesture, 500)
                 multithreaded_perimeter.set(flipped_gesture[0])
 
-    def detect_flipped_fist(self, flipped_fist):
-        flipped_fist[0][0] = 550 - flipped_fist[0][0]
-        return(flipped_fist)
+    def detect_flipped_gesture(self, flipped_gesture, size):
+        flipped_gesture[0][0] = size - flipped_gesture[0][0]
+        return(flipped_gesture)
     
-    def detect_flipped_palm(self, flipped_palm):
-        flipped_palm[0][0] = 500 - flipped_palm[0][0]
-        return(flipped_palm)
         
