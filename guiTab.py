@@ -81,27 +81,27 @@ class GuiTab(Frame):
                 body_index = list(element.keys()).index("body")
                 for body in list(element.keys())[body_index:]:
                     if self.is_command_menu:
-                        self.label = Label(self.command_listbox, element.get(body))
+                        self.label = Label(self.command_listbox, element.get(body), bg="White")
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
                         column_index += 1
                     elif self.has_list_box:
-                        self.label = Label(self.list_box, element.get(body))
+                        self.label = Label(self.list_box, element.get(body), bg="White")
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=0)
                         column_index += 1
                     else:
-                        self.label = Label(self, element.get(body))
+                        self.label = Label(self, element.get(body), bg="White")
                         self.label.grid(row=self.row_index, column=column_index, padx=10, pady=10)
                         column_index += 1
 
             elif element["format"] == "text-cam-status":
                 text_var = StringVar()
-                self.label = Label(self, textvariable=text_var, font=20)
+                self.label = Label(self, textvariable=text_var, font=16, bg="White")
                 text_var.set("Camera On: " + str(self.cap.isOpened()))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
 
             elif element["format"] == "text-cam-fps":
                 self.fps_container = StringVar()
-                self.label = Label(self, textvariable=self.fps_container, font=20)
+                self.label = Label(self, textvariable=self.fps_container, font=16, bg="White")
                 self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 self.is_fps = True
@@ -131,19 +131,19 @@ class GuiTab(Frame):
                     column_index += 1
 
             elif element["format"] == "gestures":
-                self.gesturename = Label(self, text=element["body"][0], font=20, bg="White")
+                self.gesturename = Label(self, text=element["body"][0], font=16, bg="White")
                 self.gesturename.grid(row=self.row_index, column=0, padx=10, pady=10)
 
                 self.is_blink_label = True
-                self.blink_label = Label(self, text=element["body"][1], font=20, fg="Blue")
+                self.blink_label = Label(self, text=element["body"][1], font=16, fg="Blue")
                 self.blink_label.grid(row=self.row_index, column=1, padx=10, pady=10)
 
                 self.is_fist_label = True
-                self.fist_label = Label(self, text=element["body"][2], font=20, fg="Blue")
+                self.fist_label = Label(self, text=element["body"][2], font=16, fg="Blue")
                 self.fist_label.grid(row=self.row_index, column=2, padx=10, pady=10)
 
                 self.is_palm_label = True
-                self.palm_label = Label(self, text=element["body"][3], font=20, fg="Blue")
+                self.palm_label = Label(self, text=element["body"][3], font=16, fg="Blue")
                 self.palm_label.grid(row=self.row_index, column=3, padx=10, pady=10)
 
             elif element["format"] == "commands":
@@ -156,7 +156,7 @@ class GuiTab(Frame):
                                                 option["gesture_sequence"][2])
 
             elif element["format"] == "new":
-                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+                small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0, bg="White")
                 small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
                 for x in range(1, 4):
                     self.gesture_list = ["None", "Fist", "Palm", "Blink"]
@@ -166,14 +166,14 @@ class GuiTab(Frame):
                     gesture = OptionMenu(small_frame, variable, *self.gesture_list, command=self.is_full_command)
                     gesture.grid(row=self.row_index, column=self.command_index, pady=10)
                     self.command_index += 1
-                add_button = Button(small_frame, text="Add New Command", command=self.add_new_command)
+                add_button = Button(small_frame, text="Add New Command", command=self.add_new_command, bg="White")
                 add_button.grid(row=self.row_index, column=self.command_index + 1, pady=10)
 
             elif element["format"] == "logfile":
                 self.is_logfile = True
                 self.scroll = Scrollbar(self)
                 self.scroll.grid(row=self.row_index, column=1, sticky=N + E + S + W)
-                self.log_text = Text(self, font=20, height=30, width=60, yscrollcommand=self.scroll.set)
+                self.log_text = Text(self, font=16, height=30, width=60, yscrollcommand=self.scroll.set)
                 with open("./log.csv") as logfile:
                     content = logfile.readlines()
                     for line in content:
@@ -203,11 +203,11 @@ class GuiTab(Frame):
         return frame[..., [2, 1, 0]]
 
     def add_device_list_to_gui(self, gesture1, gesture2, gesture3):
-        small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0)
+        small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0, bg="White")
         small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
         text = {"text": "Command " + str(self.option) + " (" + gesture1.capitalize() + ", " +
                         gesture2.capitalize() + ", " + gesture3.capitalize() + ")"}
-        self.label = Label(small_frame, text)
+        self.label = Label(small_frame, text, bg="White")
         self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
         variable = StringVar()
         variable.set("None")

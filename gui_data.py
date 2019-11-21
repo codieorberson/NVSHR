@@ -29,8 +29,8 @@ gui_data = {
                              "height": 4,
                              "wraplength": 900,
                              "justify": "center",
-                             "anchor": "w",
-                             "font": ("Helevetica", 12, "italic")
+
+                             "font": ("Helevetica", 10, "italic")
                          }
                  },
                  {
@@ -88,9 +88,8 @@ gui_data = {
                              "width": 100,
                              "height": 35,
                              "wraplength": 800,
-                             "justify": "left",
-                             "anchor": "w",
-                             "font": ("Helevetica", 12)
+                             "justify": "center",
+                             "font": ("Helevetica", 10)
                          }
                  },
                  {
@@ -103,7 +102,7 @@ gui_data = {
                              "wraplength": 900,
                              "justify": "center",
                              "anchor": "center",
-                             "font": ("Helevetica", 14, "italic")
+                             "font": ("Helevetica", 12, "italic")
                          }
                  },
                  {
@@ -184,8 +183,8 @@ gui_data = {
                                      "Once it is added, make sure it is linked to the "
                                      "correct smart home device.",
                              "width": 120,
-                             "height": 4,
-                             "wraplength": 900,
+                             "height": 5,
+                             "wraplength": 800,
                              "justify": "center"
                          }
                  },
