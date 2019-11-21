@@ -14,7 +14,10 @@ class MultithreadedPerimeter():
         return (self.x2.value, self.y2.value)
 
     def get_ratio(self):
-        return (self.y2.value - self.y1.value) / (self.x2.value - self.x1.value)
+        if(self.x1.value != self.x2.value):
+            return (self.y2.value - self.y1.value) / (self.x2.value - self.x1.value)
+        else:
+            return 1
 
     def set(self, x_y_w_h_tuple):
         self.x1.value = x_y_w_h_tuple[0]
