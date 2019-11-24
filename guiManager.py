@@ -3,8 +3,6 @@ from guiWindow import GuiWindow
 from framesPerSecondMeter import FramesPerSecondMeter
 from tkinter import *
 
-
-
 class GuiManager():
     def __init__(self, cap, settings_manager, is_admin):
         self.cap = cap
@@ -71,6 +69,9 @@ class GuiManager():
         self.log_page.log_text.insert(INSERT, content)
         self.log_page.log_text.config(state=DISABLED)
         self.log_page.log_text.see(END)
+    
+    def resolution_message_popup(self):
+        messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is recommended for optimal performance")
 
     def destroy_gui(self):
         self.gui.destroy()

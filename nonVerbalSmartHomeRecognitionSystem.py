@@ -17,9 +17,12 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.__set_up_camera__()
         self.__set_up_configuration__()
         self.__set_up_gui__()
+        
 
     def main_loop(self):
         ret, frame = self.cap.read()
+
+        frame = self.rescale_frame(frame, 56, 47) #Rescaling frame with these numbers to fit it in the GUI debug tab
         timestamp = datetime.utcnow()
 
         # Aggregates gestures into gesture sequences.
@@ -44,6 +47,15 @@ class NonVerbalSmartHomeRecognitionSystem():
             self.gui_manager.update_log_text(new_log_line)
 
         self.update_commands()
+    
+    def rescale_frame(self, frame, width_frame_percent, height_frame_percent):
+        if self.valid_webcam:
+            width = int(frame.shape[1] * width_frame_percent/100)
+            height = int(frame.shape[0] * height_frame_percent/100)
+            dim = (width, height)
+            return cv2.resize(frame, dim, interpolation= cv2.INTER_AREA)
+        else:
+            return frame
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)
@@ -94,6 +106,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser = GestureParser()
         self.gesture_detected = None
         self.process_manager = ProcessManager()
+        self.valid_webcam = None
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
 
@@ -107,10 +120,20 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser.on_gesture_sequence(lambda gesture_sequence, timestamp, was_recognised: self.smart_home_activator.activate(gesture_sequence, was_recognised))
         self.update_commands()
 
+    def __check_camera_resolution__(self):
+        ret, frame = self.cap.read()
+        if((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
+            self.valid_webcam = True
+        else:
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+            self.valid_webcam = False
+            self.gui_manager.resolution_message_popup()
+        
     def __set_up_camera__(self): 
-        self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+        self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     def __set_up_configuration__(self):
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
@@ -119,6 +142,7 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_gui__(self):
         self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin)
+        self.__check_camera_resolution__()
         self.__set_up_gui_values__()
         self.__set_up_gui_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)

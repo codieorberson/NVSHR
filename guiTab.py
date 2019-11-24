@@ -107,8 +107,8 @@ class GuiTab(Frame):
 
             elif element["format"] == "video":
                 self.is_debug = True
-                self.debug_width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-                self.debug_height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+                self.debug_width = 600
+                self.debug_height = 400
                 self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
                 self.debug_canvas.grid(row=self.row_index, column=0, padx=10, pady=10, columnspan=5)
