@@ -38,8 +38,6 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gui_manager.set_debug_frame(cv2.flip(frame, 1))
         self.gesture_detected = self.gesture_detector.get_gesture_detected()
         self.gui_manager.set_gesture_background(self.gesture_detected)
-       # (self.gui_manager.update_low_contrast())
-        #self.gui_manager.update_high_contrast()
 
         new_log_line = self.logger.get_output()
         if self.gesture_detected != None:
@@ -50,12 +48,6 @@ class NonVerbalSmartHomeRecognitionSystem():
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)
         self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
-        
-    def set_low_contrast(self, new_low_contrast):
-        self.database_manager.set_low_contrast(int(new_low_contrast))
-
-    def set_high_contrast(self, new_high_contrast):
-        self.database_manager.set_high_contrast(int(new_high_contrast))
 
     def set_minimum_time_increment(self, new_minimum_time_increment):
         self.minimum_time_increment = int(new_minimum_time_increment)
@@ -122,8 +114,6 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __set_up_configuration__(self):
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
-        self.low_contrast_value = self.database_manager.get_low_contrast()
-        self.high_contrast_value = self.database_manager.get_high_contrast()
         self.minimum_time_increment = self.database_manager.get_minimum_time_increment()
         self.maximum_time_increment = self.database_manager.get_maximum_time_increment()
 
@@ -135,15 +125,11 @@ class NonVerbalSmartHomeRecognitionSystem():
  
     def __set_up_gui_values__(self):
         self.gui_manager.set_initial_ear(self.open_eye_threshold)
-        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
-        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
         self.gui_manager.set_initial_minimum_time_increment(self.minimum_time_increment)
         self.gui_manager.set_initial_maximum_time_increment(self.maximum_time_increment)
 
     def __set_up_gui_watchers__(self): 
         self.gui_manager.on_ear_change(self.set_open_eye_threshold)
-        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
-        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
         self.gui_manager.on_minimum_time_increment_change(self.set_minimum_time_increment)
         self.gui_manager.on_maximum_time_increment_change(self.set_maximum_time_increment)
         self.gui_manager.on_new_command(self.add_command)
