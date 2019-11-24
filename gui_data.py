@@ -65,9 +65,7 @@ gui_data = {
                                 "\n\n"
                                 "1. Each of the sliders lets you configure the system to the right specifications. "
                                 "The Eye Aspect Ratio (EAR) slider can be used to set the threshold for blink "
-                                "detection. The Low and High Contrast sliders allow you to change the contrast on "
-                                "the frame to improve the systems ability to recognize hand gestures if you aren't "
-                                "getting the results you expect. You also able to set how long the system should "
+                                "detection. You also able to set how long the system should "
                                 "wait to register a command and what the shortest amount of time between unique "
                                 "gestures should be."
                                 "\n\n"
@@ -118,16 +116,13 @@ gui_data = {
                     "format": "text",
                     "multicolumn" : "true",
                     "body": {"text" : "Set the EAR:"},
-                    "body2": {"text": "Set the Low Contrast:"},
-                    "body3": {"text": "Set the High Contrast:"},
-                    "body4": {"text": "Set the Minimum Time:"},
-                    "body5": {"text": "Set the Maximum Time:"}
+                    "body1": {"text": "Set the Minimum Time:"},
+                    "body2": {"text": "Set the Maximum Time:"}
                 },
                 {
                     "format": "slider",
 
-                    "events": ["on_ear_change", "on_low_contrast",
-                               "on_high_contrast", "on_min_time_inc",  "on_max_time_inc"]
+                    "events": ["on_ear_change", "on_min_time_inc",  "on_max_time_inc"]
 
                 },
                 {

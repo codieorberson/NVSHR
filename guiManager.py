@@ -18,12 +18,6 @@ class GuiManager():
     def set_initial_ear(self, initial_value):
         self.gui.set_initial_ear(initial_value)
 
-    def set_initial_low_contrast(self, initial_value):
-        self.gui.set_initial_low_contrast(initial_value)
-
-    def set_initial_high_contrast(self, initial_value):
-        self.gui.set_initial_high_contrast(initial_value)
-
     def set_initial_minimum_time_increment(self, initial_value):
         self.gui.set_initial_minimum_time_increment(initial_value)
 
@@ -32,13 +26,7 @@ class GuiManager():
 
     def on_ear_change(self, callback):
         self.gui.on_ear_change(callback)
-
-    def on_low_contrast_change(self, callback):
-        self.gui.on_low_contrast_change(callback)
-
-    def on_high_contrast_change(self, callback):
-        self.gui.on_high_contrast_change(callback)
-
+        
     def on_minimum_time_increment_change(self, callback):
         self.gui.on_minimum_time_increment_change(callback)
 
