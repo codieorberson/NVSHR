@@ -4,12 +4,12 @@ from framesPerSecondMeter import FramesPerSecondMeter
 from tkinter import *
 
 class GuiManager():
-    def __init__(self, cap, settings_manager, is_admin):
+    def __init__(self, cap, settings_manager, is_admin, valid_webcam):
         self.cap = cap
         self.settings_manager = settings_manager
         self.gui = GuiWindow()
         self.gui.title("Non-Verbal Smart Home Recognition System")
-
+        self.valid_webcam = valid_webcam
         if is_admin == False:
             self.gui.withdraw()
 
@@ -53,6 +53,7 @@ class GuiManager():
         self.loop_callback = loop_callback
         self.close_callback = close_callback
         self.gui.protocol("WM_DELETE_WINDOW", close_callback)
+        self.resolution_message_popup()
         self.gui.after(1, self.__loop__)
         self.gui.mainloop()
 
@@ -71,7 +72,9 @@ class GuiManager():
         self.log_page.log_text.see(END)
     
     def resolution_message_popup(self):
-        messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is recommended for optimal performance")
+        if self.valid_webcam == False:
+            messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is recommended for optimal performance")
+            self.valid_webcam = True
 
     def destroy_gui(self):
         self.gui.destroy()

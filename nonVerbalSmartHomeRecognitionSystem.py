@@ -124,16 +124,17 @@ class NonVerbalSmartHomeRecognitionSystem():
         ret, frame = self.cap.read()
         if((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
             self.valid_webcam = True
+            return True
         else:
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
             self.valid_webcam = False
-            self.gui_manager.resolution_message_popup()
+            return False
         
     def __set_up_camera__(self): 
         self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
 
     def __set_up_configuration__(self):
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
@@ -141,8 +142,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.maximum_time_increment = self.database_manager.get_maximum_time_increment()
 
     def __set_up_gui__(self):
-        self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin)
-        self.__check_camera_resolution__()
+        self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin, self.__check_camera_resolution__())
         self.__set_up_gui_values__()
         self.__set_up_gui_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)
