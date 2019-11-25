@@ -1,4 +1,5 @@
 import cv2
+import platform
 from datetime import datetime
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
@@ -132,9 +133,12 @@ class NonVerbalSmartHomeRecognitionSystem():
             return False
         
     def __set_up_camera__(self): 
-        self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+        if platform.system() == 'Windows':
+            self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        else:
+            self.cap=cv2.VideoCapture(0) #Not sure if this line or the one two above does the job for Linux
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     def __set_up_configuration__(self):
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
