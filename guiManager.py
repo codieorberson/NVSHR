@@ -3,26 +3,18 @@ from guiWindow import GuiWindow
 from framesPerSecondMeter import FramesPerSecondMeter
 from tkinter import *
 
-
-
 class GuiManager():
-    def __init__(self, cap, settings_manager, is_admin):
+    def __init__(self, cap, settings_manager, is_admin, valid_webcam):
         self.cap = cap
         self.settings_manager = settings_manager
         self.gui = GuiWindow()
         self.gui.title("Non-Verbal Smart Home Recognition System")
-
+        self.valid_webcam = valid_webcam
         if is_admin == False:
             self.gui.withdraw()
 
     def set_initial_ear(self, initial_value):
         self.gui.set_initial_ear(initial_value)
-
-    def set_initial_low_contrast(self, initial_value):
-        self.gui.set_initial_low_contrast(initial_value)
-
-    def set_initial_high_contrast(self, initial_value):
-        self.gui.set_initial_high_contrast(initial_value)
 
     def set_initial_minimum_time_increment(self, initial_value):
         self.gui.set_initial_minimum_time_increment(initial_value)
@@ -32,13 +24,7 @@ class GuiManager():
 
     def on_ear_change(self, callback):
         self.gui.on_ear_change(callback)
-
-    def on_low_contrast_change(self, callback):
-        self.gui.on_low_contrast_change(callback)
-
-    def on_high_contrast_change(self, callback):
-        self.gui.on_high_contrast_change(callback)
-
+        
     def on_minimum_time_increment_change(self, callback):
         self.gui.on_minimum_time_increment_change(callback)
 
@@ -61,11 +47,13 @@ class GuiManager():
         self.blink_label = self.gui.get_blink_label()
         self.fist_label = self.gui.get_fist_label()
         self.palm_label = self.gui.get_palm_label()
+   
         self.log_page = self.gui.get_log_page()
 
         self.loop_callback = loop_callback
         self.close_callback = close_callback
         self.gui.protocol("WM_DELETE_WINDOW", close_callback)
+        self.resolution_message_popup()
         self.gui.after(1, self.__loop__)
         self.gui.mainloop()
 
@@ -82,6 +70,12 @@ class GuiManager():
         self.log_page.log_text.insert(INSERT, content)
         self.log_page.log_text.config(state=DISABLED)
         self.log_page.log_text.see(END)
+    
+    def resolution_message_popup(self):
+        if self.valid_webcam == False:
+            messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is recommended for optimal performance")
+            self.valid_webcam = True
 
     def destroy_gui(self):
         self.gui.destroy()
+        

@@ -22,7 +22,7 @@ class BlinkDetector:
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # detect faces in the grayscala0dwe frame
+        # detect faces in the grayscale frame
         faces = self.detector(gray, 0)
         try:
             # loop over the face detections
