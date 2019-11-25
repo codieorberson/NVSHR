@@ -126,20 +126,21 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __check_camera_resolution__(self):
         ret, frame = self.cap.read()
-        if frame.any() == None:
+        try:
+            if((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
+                self.valid_webcam = True
+                return True
+            else:
+                self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+                self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+                self.valid_webcam = False
+                return False
+        except:
             return False
-        elif((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
-            self.valid_webcam = True
-            return True
-        else:
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
-            self.valid_webcam = False
-            return False
-        
+            
     def __set_up_camera__(self): 
         if platform.system() == 'Windows':
-            self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+            self.cap = cv2.VideoCapture(0)
         else:
             self.cap = cv2.VideoCapture(0)  # Not sure if this line or the one two above does the job for Linux
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
