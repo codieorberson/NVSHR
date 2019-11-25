@@ -104,6 +104,9 @@ gui_data = {
                         "anchor": "center",
                         "font": ("Helevetica", 14, "italic")
                     }
+                },
+                {
+                    "format": "close_gui_button"
                 }
             ]
         },

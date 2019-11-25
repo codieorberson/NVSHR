@@ -139,7 +139,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         if platform.system() == 'Windows':
             self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         else:
-            self.cap=cv2.VideoCapture(0) #Not sure if this line or the one two above does the job for Linux
+            self.cap = cv2.VideoCapture(0)  # Not sure if this line or the one two above does the job for Linux
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
