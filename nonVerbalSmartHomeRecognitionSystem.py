@@ -107,6 +107,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.valid_webcam = None
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
+        self.smart_home_activator.set_log_manager(self.database_manager, self.logger)
 
     def __set_up_gestures__(self):
         self.gesture_detector.on_gesture(self.gesture_lexer.add)

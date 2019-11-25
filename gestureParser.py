@@ -15,7 +15,7 @@ class GestureParser():
 
         if not was_recognised:
             for valid_gesture_sequence in self.gesture_pattern_map.keys():
-                if  valid_gesture_sequence in joined_gesture_sequence:
+                if valid_gesture_sequence in joined_gesture_sequence:
                     gesture_sequence = valid_gesture_sequence.split("-")
                     was_recognised = True
                     break
