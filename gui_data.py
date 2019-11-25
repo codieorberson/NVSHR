@@ -127,8 +127,7 @@ gui_data = {
                  {
                      "format": "slider",
 
-                     "events": ["on_ear_change", "on_low_contrast",
-                                "on_high_contrast", "on_min_time_inc", "on_max_time_inc"]
+                    "events": ["on_ear_change", "on_min_time_inc",  "on_max_time_inc"]
 
                  },
                  {

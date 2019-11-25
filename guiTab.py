@@ -40,12 +40,6 @@ class GuiTab(Frame):
     def set_initial_ear(self, initial_value):
         self.initial_value_map['on_ear_change'] = initial_value
 
-    def set_initial_low_contrast(self, initial_value):
-        self.initial_value_map['on_low_contrast'] = initial_value
-
-    def set_initial_high_contrast(self, initial_value):
-        self.initial_value_map['on_high_contrast'] = initial_value
-
     def set_initial_minimum_time_increment(self, initial_value):
         self.initial_value_map['on_min_time_inc'] = initial_value
 
@@ -58,12 +52,6 @@ class GuiTab(Frame):
     def on_ear_change(self, callback):
         self.event_map['on_ear_change'] = callback
 
-    def on_low_contrast_change(self, callback):
-        self.event_map['on_low_contrast'] = callback
-
-    def on_high_contrast_change(self, callback):
-        self.event_map['on_high_contrast'] = callback
-
     def on_minimum_time_increment_change(self, callback):
         self.event_map['on_min_time_inc'] = callback
 
@@ -72,6 +60,35 @@ class GuiTab(Frame):
 
     def on_new_command(self, callback):
         self.on_new_command_change = callback
+
+    def update_mininum_time_increment(self, val):
+        val = int(val)
+        if (self.minimum_time_slider.get() >= val):
+            self.minimum_time_slider.set(val - 1)
+            self.update_slider_command(self.minimum_time_slider.get(), val)
+        else:
+            self.update_slider_command(None, val)
+        
+
+    def update_maximum_time_increment(self, val):
+        val = int(val)
+        if (self.maximum_time_slider.get() <= val):
+            self.maximum_time_slider.set(val + 1)
+            self.update_slider_command(val, self.maximum_time_slider.get())
+        else:
+            self.update_slider_command(val, None)
+        
+    
+    def update_slider_command(self, min_time_value, max_time_value):
+        self.min_time_inc_slider_command = self.event_map["on_min_time_inc"]
+        self.max_time_inc_slider_command = self.event_map["on_max_time_inc"]
+        if min_time_value == None:
+            self.max_time_inc_slider_command(max_time_value)
+        elif max_time_value == None:
+            self.min_time_inc_slider_command(min_time_value)
+        else:
+            self.min_time_inc_slider_command(min_time_value)
+            self.max_time_inc_slider_command(max_time_value)
 
     def load_data(self, tab_elements):
         self.row_index = 1
@@ -114,8 +131,8 @@ class GuiTab(Frame):
 
             elif element["format"] == "video":
                 self.is_debug = True
-                self.debug_width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-                self.debug_height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+                self.debug_width = 600
+                self.debug_height = 400
                 self.debug_canvas = Canvas(self, width=self.debug_width, height=self.debug_height)
 
                 self.debug_canvas.grid(row=self.row_index, column=0, padx=10, pady=10, columnspan=5)
@@ -126,14 +143,18 @@ class GuiTab(Frame):
                     event_name = event
                     self.slider_command = self.event_map[event_name]
                     if event_name == "on_ear_change":
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
-                    elif event_name == "on_low_contrast" or event_name == "on_high_contrast":
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=255, command=self.slider_command)
-                    elif event_name == "on_min_time_inc" or "on_max_time_inc":
-                        self.slider = Scale(self, orient='horizontal', from_=0, to=15, command=self.slider_command)
-
-                    self.slider.set(self.initial_value_map[event_name])  # initial_ear * 100
-                    self.slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                        self.ear_slider = Scale(self, orient='horizontal', from_=0, to=100, command=self.slider_command)
+                        self.ear_slider.set(self.initial_value_map[event_name])  # initial_ear * 100
+                        self.ear_slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                    elif event_name == "on_min_time_inc":
+                        self.minimum_time_slider = Scale(self, orient='horizontal', from_=0, to=14, command=self.update_maximum_time_increment)
+                        self.minimum_time_slider.set(self.initial_value_map[event_name])
+                        self.minimum_time_slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                    elif event_name == "on_max_time_inc":
+                        self.maximum_time_slider = Scale(self, orient='horizontal', from_=1, to=15, command=self.update_mininum_time_increment)
+                        self.maximum_time_slider.set(self.initial_value_map[event_name])
+                        self.maximum_time_slider.grid(row=self.row_index, column=column_index, padx=10, pady=10)
+                    
                     column_index += 1
 
             elif element["format"] == "gestures":

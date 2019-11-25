@@ -1,4 +1,6 @@
+import sys
 import cv2
+import platform
 from datetime import datetime
 from databaseManager import DatabaseManager
 from gestureDetector import GestureDetector
@@ -17,9 +19,12 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.__set_up_camera__()
         self.__set_up_configuration__()
         self.__set_up_gui__()
+        
 
     def main_loop(self):
         ret, frame = self.cap.read()
+
+        frame = self.rescale_frame(frame, 56, 47) #Rescaling frame with these numbers to fit it in the GUI debug tab
         timestamp = datetime.utcnow()
 
         # Aggregates gestures into gesture sequences.
@@ -44,16 +49,19 @@ class NonVerbalSmartHomeRecognitionSystem():
             self.gui_manager.update_log_text(new_log_line)
 
         self.update_commands()
+    
+    def rescale_frame(self, frame, width_frame_percent, height_frame_percent):
+        if self.valid_webcam:
+            width = int(frame.shape[1] * width_frame_percent/100)
+            height = int(frame.shape[0] * height_frame_percent/100)
+            dim = (width, height)
+            return cv2.resize(frame, dim, interpolation= cv2.INTER_AREA)
+        else:
+            return frame
 
     def set_open_eye_threshold(self, new_ear_value):
         self.open_eye_threshold = float(new_ear_value)
         self.database_manager.set_open_eye_threshold(self.open_eye_threshold)
-        
-    def set_low_contrast(self, new_low_contrast):
-        self.database_manager.set_low_contrast(int(new_low_contrast))
-
-    def set_high_contrast(self, new_high_contrast):
-        self.database_manager.set_high_contrast(int(new_high_contrast))
 
     def set_minimum_time_increment(self, new_minimum_time_increment):
         self.minimum_time_increment = int(new_minimum_time_increment)
@@ -83,7 +91,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         # Close the GUI
         self.gui_manager.destroy_gui()
 
-        # Close log file
+        # Close log file.
         self.logger.close()
 
     def __set_up_helpers__(self):
@@ -96,6 +104,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.gesture_parser = GestureParser()
         self.gesture_detected = None
         self.process_manager = ProcessManager()
+        self.valid_webcam = None
 
         self.smart_home_activator.set_commands(self.database_manager.get_commands())
         self.smart_home_activator.set_log_manager(self.database_manager, self.logger)
@@ -115,35 +124,43 @@ class NonVerbalSmartHomeRecognitionSystem():
                                                                                                    was_recognised))
         self.update_commands()
 
-    def __set_up_camera__(self):
-        self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+    def __check_camera_resolution__(self):
+        ret, frame = self.cap.read()
+        if((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
+            self.valid_webcam = True
+            return True
+        else:
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
+            self.valid_webcam = False
+            return False
+        
+    def __set_up_camera__(self): 
+        if platform.system() == 'Windows':
+            self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        else:
+            self.cap = cv2.VideoCapture(0)  # Not sure if this line or the one two above does the job for Linux
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     def __set_up_configuration__(self):
         self.open_eye_threshold = self.database_manager.get_open_eye_threshold()
-        self.low_contrast_value = self.database_manager.get_low_contrast()
-        self.high_contrast_value = self.database_manager.get_high_contrast()
         self.minimum_time_increment = self.database_manager.get_minimum_time_increment()
         self.maximum_time_increment = self.database_manager.get_maximum_time_increment()
 
     def __set_up_gui__(self):
-        self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin)
+        self.gui_manager = GuiManager(self.cap, self.database_manager, self.is_admin, self.__check_camera_resolution__())
         self.__set_up_gui_values__()
         self.__set_up_gui_watchers__()
         self.gui_manager.start(self.main_loop, self.on_close)
 
     def __set_up_gui_values__(self):
         self.gui_manager.set_initial_ear(self.open_eye_threshold)
-        self.gui_manager.set_initial_low_contrast(self.low_contrast_value)
-        self.gui_manager.set_initial_high_contrast(self.high_contrast_value)
         self.gui_manager.set_initial_minimum_time_increment(self.minimum_time_increment)
         self.gui_manager.set_initial_maximum_time_increment(self.maximum_time_increment)
 
     def __set_up_gui_watchers__(self):
         self.gui_manager.on_ear_change(self.set_open_eye_threshold)
-        self.gui_manager.on_low_contrast_change(self.set_low_contrast)
-        self.gui_manager.on_high_contrast_change(self.set_high_contrast)
         self.gui_manager.on_minimum_time_increment_change(self.set_minimum_time_increment)
         self.gui_manager.on_maximum_time_increment_change(self.set_maximum_time_increment)
         self.gui_manager.on_new_command(self.add_command)
