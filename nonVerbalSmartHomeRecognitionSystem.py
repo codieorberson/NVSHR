@@ -126,7 +126,9 @@ class NonVerbalSmartHomeRecognitionSystem():
 
     def __check_camera_resolution__(self):
         ret, frame = self.cap.read()
-        if((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
+        if frame.any() == None:
+            return False
+        elif((frame.shape[1]) >= 1280) and ((frame.shape[0]) >=720):
             self.valid_webcam = True
             return True
         else:

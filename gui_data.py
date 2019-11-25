@@ -25,9 +25,9 @@ gui_data = {
                                      "NVSHR system can be used properly. Please follow the steps below to ensure the "
                                      "user has the best"
                                      " experience using this system.",
-                             "width": 100,
+                             "width": 120,
                              "height": 4,
-                             "wraplength": 900,
+                             "wraplength": 800,
                              "justify": "center",
 
                              "font": ("Helevetica", 10, "italic")
@@ -85,7 +85,7 @@ gui_data = {
                                      "commands are being recognized properly as well. Once you have completed the configuration "
                                      "process, simply press the button below to withdraw the window to prepare the system for "
                                      "actual users.",
-                             "width": 100,
+                             "width": 120,
                              "height": 35,
                              "wraplength": 800,
                              "justify": "center",
@@ -97,9 +97,9 @@ gui_data = {
                      "body":
                          {
                              "text": "Thank you for using the Non-Verbal Smart Home Recognition (NVSHR) System!",
-                             "width": 100,
+                             "width": 120,
                              "height": 2,
-                             "wraplength": 900,
+                             "wraplength": 800,
                              "justify": "center",
                              "anchor": "center",
                              "font": ("Helevetica", 12, "italic")
@@ -119,10 +119,8 @@ gui_data = {
                      "format": "text",
                      "multicolumn": "true",
                      "body": {"text": "Set the EAR:"},
-                     "body2": {"text": "Set the Low Contrast:"},
-                     "body3": {"text": "Set the High Contrast:"},
-                     "body4": {"text": "Set the Minimum Time:"},
-                     "body5": {"text": "Set the Maximum Time:"}
+                     "body2": {"text": "Set the Minimum Time:"},
+                     "body3": {"text": "Set the Maximum Time:"}
                  },
                  {
                      "format": "slider",
