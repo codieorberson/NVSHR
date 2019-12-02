@@ -5,9 +5,9 @@ import time
 
 class TPLinkDevice():
     def __init__(self):
-        self.light_Plug = SmartPlug("192.168.1.197")
+        self.light_Plug = SmartPlug("192.168.43.236")
         time.sleep(1.2)
-        self.fan_Plug = SmartPlug("192.168.1.198")
+        self.fan_Plug = SmartPlug("192.168.43.37")
 
     def set_log_manager(self, log_manager, logger):
         self.log_manager = log_manager
