@@ -180,7 +180,7 @@ class GuiTab(Frame):
                 self.option_list = ["None", "Lights", "Smart Plug", "Heater", "Air Conditioning", "Fan"]
                 for option in self.database_manager.get_commands():
                     self.add_device_list_to_gui(option["gesture_sequence"][0], option["gesture_sequence"][1],
-                                                option["gesture_sequence"][2])
+                                                option["gesture_sequence"][2], option["command_text"])
 
             elif element["format"] == "new":
                 small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0, bg="White")
@@ -229,7 +229,7 @@ class GuiTab(Frame):
     def __bgr_to_rgb__(self, frame):
         return frame[..., [2, 1, 0]]
 
-    def add_device_list_to_gui(self, gesture1, gesture2, gesture3):
+    def add_device_list_to_gui(self, gesture1, gesture2, gesture3, command):
         small_frame = LabelFrame(self.command_listbox, width=1000, height=100, bd=0, bg="White")
         small_frame.grid(row=self.row_index, column=0, padx=10, pady=10)
         text = {"text": "Command " + str(self.option) + " (" + gesture1.capitalize() + ", " +
@@ -237,7 +237,7 @@ class GuiTab(Frame):
         self.label = Label(small_frame, text, bg="White")
         self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
         variable = StringVar()
-        variable.set("None")
+        variable.set(command)
         self.command_links[self.option] = variable
         self.optionMenu = OptionMenu(small_frame, variable, *self.option_list, command=self.set_value)
         self.optionMenu.grid(row=self.row_index, column=1, padx=10, pady=10, columnspan=100)
@@ -283,7 +283,7 @@ class GuiTab(Frame):
                 if self.new_command[0].get() != self.new_command[1].get() and self.new_command[1].get() != \
                         self.new_command[2].get():
                     self.add_device_list_to_gui(self.new_command[0].get(), self.new_command[1].get(),
-                                                self.new_command[2].get())
+                                                self.new_command[2].get(), "None")
                     self.database_manager.set_command(
                         [self.new_command[0].get().lower(), self.new_command[1].get().lower(),
                          self.new_command[2].get().lower()], "None", "None")
