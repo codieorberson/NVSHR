@@ -1,14 +1,10 @@
 homeassistant.key
 logfile.txt
 logfile.pdf
-command.json
 log.csv
 configuration.csv
 *.sw[a-p]
 **/__pycache__
 *.pyc
-
-# The following file is no longer used, but we should keep ignoring it until 
-# we're sure that everyone has deleted it:
 data.txt
 commands.csv

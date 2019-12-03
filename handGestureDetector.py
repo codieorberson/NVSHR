@@ -1,6 +1,7 @@
 from processManager import ProcessManager
 from gesture import Gesture
 
+
 class HandGestureDetector():
     def __init__(self):
         self.process_manager = ProcessManager()
