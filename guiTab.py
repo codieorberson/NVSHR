@@ -1,3 +1,38 @@
+#!/usr/local/bin/python3
+"""
+CONTRIBUTORS:
+    Codie Orberson, Landan Ginther, Justin Culbertson-Faegre, Yutang Li
+DETAILED DESCRIPTION:
+    This file creates the needed content for each tab within the GUI. This file begins by loading all the needed data
+    from gui_data and creating each individual item to be displayed on each tab (using the initial configuration values
+    if needed) and sets all needed callbacks for buttons and option lists as well as sets the callbacks for various
+    configuration changes. This file is where a majority of the error message calls live. Most of the error messages
+    deal with the creation of new commands. This is also were the call for the GUI window to withdraw once the system is
+    configured is housed. This file also creates functions for checking the new values of the configuration sliders
+    and ensures there is not any errors made. The camera feedback is also displayed using this module. More detailed
+    information is available in section 3.2.2 in the SDD
+REQUIREMENTS ADDRESSED:
+    FR.5, FR.7, FR.12, NFR.5, EIR.1
+LICENSE INFORMATION:
+    Copyright (c) 2019, CSC 450 Group 4
+    All rights reserved.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+    following conditions are met:
+        * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+          following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+          the following disclaimer in the documentation and/or other materials provided with the distribution.
+        * Neither the name of the CSC 450 Group 4 nor the names of its contributors may be used to endorse or
+          promote products derived from this software without specific prior written permission.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+
 from tkinter import *
 from tkinter import ttk
 import tkinter
@@ -5,10 +40,6 @@ from tkinter import messagebox
 import PIL.Image
 import PIL.ImageTk
 import cv2
-import os
-import subprocess
-import sys
-from fpdf import FPDF
 
 
 class GuiTab(Frame):
@@ -63,22 +94,20 @@ class GuiTab(Frame):
 
     def update_mininum_time_increment(self, val):
         val = int(val)
-        if (self.minimum_time_slider.get() >= val):
+        if self.minimum_time_slider.get() >= val:
             self.minimum_time_slider.set(val - 1)
             self.update_slider_command(self.minimum_time_slider.get(), val)
         else:
             self.update_slider_command(None, val)
-        
 
     def update_maximum_time_increment(self, val):
         val = int(val)
-        if (self.maximum_time_slider.get() <= val):
+        if self.maximum_time_slider.get() <= val:
             self.maximum_time_slider.set(val + 1)
             self.update_slider_command(val, self.maximum_time_slider.get())
         else:
             self.update_slider_command(val, None)
-        
-    
+
     def update_slider_command(self, min_time_value, max_time_value):
         self.min_time_inc_slider_command = self.event_map["on_min_time_inc"]
         self.max_time_inc_slider_command = self.event_map["on_max_time_inc"]

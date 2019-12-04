@@ -1,3 +1,38 @@
+#!/usr/local/bin/python3
+"""
+CONTRIBUTORS:
+    Codie Orberson, Landan Ginther, Justin Culbertson-Faegre, Danielle Bode
+DETAILED DESCRIPTION:
+    This file is the main controller of the entire NVSHR system. It begins by setting up all needed modules/helpers to
+    be used within the system. It then sets up the callbacks for the recognition of gestures and adds all commands
+    stored within the database into the parser. Afterwards, it grabs access to the users webcam and checks to make sure
+    the resolution is at least 720p. If a lesser resolution camera is found, it simply displays a warning of degraded
+    performance. It then creates and sets up the GUI manager and begins the main loop of the system, which checks frames
+    from the camera for gestures. This module also provides all needed clean up for the system upon closure. More
+    detailed information is available in section 3.2.1 in the SDD
+REQUIREMENTS ADDRESSED:
+    Since this is the main controller of the system, all requirements should be present within this module and it's sub-
+    components.
+LICENSE INFORMATION:
+    Copyright (c) 2019, CSC 450 Group 4
+    All rights reserved.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+    following conditions are met:
+        * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+          following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+          the following disclaimer in the documentation and/or other materials provided with the distribution.
+        * Neither the name of the CSC 450 Group 4 nor the names of its contributors may be used to endorse or
+          promote products derived from this software without specific prior written permission.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+
 import sys
 import cv2
 import platform
@@ -11,7 +46,8 @@ from logger import Logger
 from processManager import ProcessManager
 from smartHomeActivator import SmartHomeActivator
 
-class NonVerbalSmartHomeRecognitionSystem():
+
+class NonVerbalSmartHomeRecognitionSystem:
     def __init__(self):
         self.__set_up_helpers__()
         self.__set_up_gestures__()
@@ -19,12 +55,12 @@ class NonVerbalSmartHomeRecognitionSystem():
         self.__set_up_camera__()
         self.__set_up_configuration__()
         self.__set_up_gui__()
-        
 
     def main_loop(self):
         ret, frame = self.cap.read()
 
-        frame = self.rescale_frame(frame, 56, 47) #Rescaling frame with these numbers to fit it in the GUI debug tab
+        # Rescaling frame with these numbers to fit it in the GUI debug tab
+        frame = self.rescale_frame(frame, 56, 47)
         timestamp = datetime.utcnow()
 
         # Aggregates gestures into gesture sequences.
@@ -142,7 +178,7 @@ class NonVerbalSmartHomeRecognitionSystem():
         if platform.system() == 'Windows':
             self.cap = cv2.VideoCapture(0)
         else:
-            self.cap = cv2.VideoCapture(0)  # Not sure if this line or the one two above does the job for Linux
+            self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
