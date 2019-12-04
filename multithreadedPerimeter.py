@@ -1,5 +1,6 @@
 from multiprocessing import Value
 
+
 class MultithreadedPerimeter():
     def __init__(self):
         self.x1 = Value('I', 0)
