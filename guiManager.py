@@ -50,7 +50,7 @@ class GuiManager:
         if not self.cap.isOpened():
             messagebox.showerror("Camera maufunction", "There is no camera connected or it is malfunctioning, please check it.")
             sys.exit()
-        if self.valid_webcam == False:
+        if not self.valid_webcam:
             messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is "
                                               "recommended for optimal performance")
 
