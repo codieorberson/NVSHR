@@ -35,16 +35,24 @@ from guiWindow import GuiWindow
 from framesPerSecondMeter import FramesPerSecondMeter
 from tkinter import *
 
-
 class GuiManager:
     def __init__(self, cap, settings_manager, is_admin, valid_webcam):
         self.cap = cap
         self.settings_manager = settings_manager
         self.gui = GuiWindow()
         self.gui.title("Non-Verbal Smart Home Recognition System")
+        self.is_admin = is_admin
         self.valid_webcam = valid_webcam
-        if not is_admin:
+
+    def check_configurations(self):
+        if not self.is_admin:
             self.gui.withdraw()
+        if not self.cap.isOpened():
+            messagebox.showerror("Camera maufunction", "There is no camera connected or it is malfunctioning, please check it.")
+            sys.exit()
+        if self.valid_webcam == False:
+            messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is "
+                                              "recommended for optimal performance")
 
     def set_initial_ear(self, initial_value):
         self.gui.set_initial_ear(initial_value)
@@ -86,7 +94,7 @@ class GuiManager:
         self.loop_callback = loop_callback
         self.close_callback = close_callback
         self.gui.protocol("WM_DELETE_WINDOW", close_callback)
-        self.resolution_message_popup()
+        self.check_configurations()
         self.gui.after(1, self.__loop__)
         self.gui.mainloop()
 
@@ -107,11 +115,5 @@ class GuiManager:
         self.log_page.log_text.config(state=DISABLED)
         self.log_page.log_text.see(END)
     
-    def resolution_message_popup(self):
-        if self.valid_webcam == False:
-            messagebox.showwarning("Warning", "Your camera is not 720p. A camera of 720p or higher is "
-                                              "recommended for optimal performance")
-            self.valid_webcam = True
-
     def destroy_gui(self):
         self.gui.destroy()

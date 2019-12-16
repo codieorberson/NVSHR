@@ -153,8 +153,6 @@ class GuiTab(Frame):
                     self.fps_container.set("FPS:       " + self.get_cam_fps(self.cap))
                 except:
                     self.fps_container.set("FPS:       " + "0")
-                    self.display_error_message("Camera maufunction", "There is no camera connected or it is malfunctioning, please check it.")
-                    sys.exit()
                 self.label.grid(row=self.row_index, column=0, padx=10, pady=10)
                 self.is_fps = True
 
